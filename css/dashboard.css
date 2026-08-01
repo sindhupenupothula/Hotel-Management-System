@@ -8,6 +8,7 @@
     background:#1f2937;
     color:white;
     padding:30px 20px;
+    min-height:100vh;
 }
 
 .sidebar h3{
@@ -35,16 +36,18 @@
     flex:1;
     padding:40px;
     text-align:center;
+    color: white;
 }
 
 .main-content h1{
-    font-size:38px;
+    font-size:40px;
     margin-bottom:10px;
 }
 
 .main-content p{
-    font-size:18px;
-    color:#555;
+    font-size:20px;
+    color:white;
+    margin-bottom: 10px;
 }
 .info-card{
     width:700px;
@@ -76,4 +79,13 @@
     text-align:center;
     color:#555;
     font-style:italic;
+}
+.dashboard-body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25)),
+               url("../images/home-bg.jpg.jpeg");
+    background-size:cover;
+    background-position:center;
+    background-attachment:fixed;
 }
