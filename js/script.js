@@ -8,3 +8,15 @@ function login() {
         alert("Invalid Username or Password");
     }
 }
+function updateDateTime() {
+    const now = new Date();
+
+    document.getElementById("current-date").innerHTML =
+        now.toLocaleDateString();
+
+    document.getElementById("current-time").innerHTML =
+        now.toLocaleTimeString();
+}
+
+setInterval(updateDateTime, 1000);
+updateDateTime();

@@ -15,17 +15,27 @@
     margin-bottom:25px;
     font-size:24px;
 }
-
+.sidebar h3 a{
+    color: white;
+    text-decoration: none;
+}
+.sidebar h3 a:hover{
+    color: :#38bdf8;
+}
 .sidebar ul{
     list-style:none;
+    margin-left: 15px; 
+    padding: 0;
 }
 
 .sidebar li{
-    padding:15px 10px;
-    margin-bottom:10px;
+    width:180px;
+    padding:15px;
+    margin-bottom:12px;
     background:#374151;
     border-radius:8px;
     cursor:pointer;
+    text-align: center;
 }
 
 .sidebar li:hover{
@@ -35,8 +45,10 @@
 .main-content{
     flex:1;
     padding:40px;
-    text-align:center;
+    align-items:center;
     color: white;
+    display: flex;
+    flex-direction: column;
 }
 
 .main-content h1{
@@ -50,19 +62,25 @@
     margin-bottom: 10px;
 }
 .info-card{
-    width:700px;
-    margin:40px auto;
+    width:650px;
+    margin:30px auto;
     background:white;
-    padding:30px;
+    padding:20px;
     border-radius:15px;
     box-shadow:0 8px 20px rgba(0,0,0,0.2);
 }
 
 .info-card h2{
     text-align:center;
-    margin-bottom:25px;
+    margin-bottom:20px;
+    color: #2563eb;
 }
-
+.info-card p{
+    color: #333;
+}
+.info-card strong{
+    color: #000;
+}
 .info-grid{
     display:flex;
     justify-content:space-between;
@@ -72,6 +90,7 @@
 .info-grid p{
     margin:15px 0;
     font-size:17px;
+    white-space: nowrap;
 }
 
 .info-card h3{
@@ -88,4 +107,23 @@
     background-size:cover;
     background-position:center;
     background-attachment:fixed;
+}
+.dashboard-top{
+    display:flex;
+    justify-content:center;
+    gap:25px;
+    margin:25px 0;
+    flex-wrap:wrap;
+}
+
+.date-box,
+.time-box,
+.weather-box{
+    background:rgba(255,255,255,0.15);
+    color:rgb(20, 2, 2);
+    padding:12px 25px;
+    border-radius:10px;
+    backdrop-filter:blur(8px);
+    font-size:18px;
+    font-weight:600;
 }
