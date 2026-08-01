@@ -12,7 +12,7 @@
         <h3><a href="../home.html">🏨 SAYORA HOTELS</a></h3>
 
         <ul>
-            <li>Total Rooms</li>
+            <li onclick="showTotalRooms()">Total Rooms</li>
             <li>Available Rooms</li>
             <li>Occupied Rooms</li>
             <li>Total Bookings</li>
@@ -20,46 +20,72 @@
             <li>Total Revenue</li>
         </ul>
     </div>
+       <div class="main-content">
+        <div id="totalRoomsSection">
 
-    <div class="main-content">
-        <h1>Admin Dashboard</h1>
-        <div class="dashboard-top">
-    <div class="date-box">
-        📅 <span id="current-date"></span>
-    </div>
+    <div class="room-summary">
 
-    <div class="time-box">
-        🕒 <span id="current-time"></span>
-    </div>
-
-    <div class="weather-box">
-        🌤️ 30°C | Rajahmundry
-    </div>
-</div>
-        <p>Welcome to Sayora Hotel Management System</p>
-        <div class="info-card">
-    <h2>Hotel Information</h2>
-
-    <div class="info-grid">
-
-        <div>
-            <p>🕐<strong>Check-In:</strong> 12:00 PM</p>
-            <p>🍽<strong>Breakfast:</strong> 7:00 AM - 10:00 AM</p>
-            <p>📶<strong>Free Wi-Fi:</strong> Available</p>
-            <p>🛎<strong>Reception:</strong> 24/7</p>
+        <div class="room-card">
+            <h3>Luxury Rooms</h3>
+            <h2>50</h2>
         </div>
-     <div>
-            <p>🕐<strong>Check-Out:</strong> 11:00 AM</p>
-            <p>🍴<strong>Restaurant:</strong> 7:00 AM - 11:00 PM</p>
-            <p>🚗<strong>Parking:</strong> Free Parking</p>
-            <p>🧹<strong>Housekeeping:</strong> Daily Service</p>
+
+        <div class="room-card">
+            <h3>Deluxe Rooms</h3>
+            <h2>50</h2>
+        </div>
+
+        <div class="room-card">
+            <h3>Suite Rooms</h3>
+            <h2>50</h2>
         </div>
 
     </div>
 
-    <h3>"Where Comfort Meets Hospitality"</h3>
+    <table class="room-table">
+
+        <thead>
+            <tr>
+                <th>S.No</th>
+                <th>Room Type</th>
+                <th>First Floor</th>
+                <th>Second Floor</th>
+                <th>Third Floor</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <tr>
+                <td>1</td>
+                <td>Luxury Rooms</td>
+                <td>101 - 120</td>
+                <td>201 - 220</td>
+                <td>301 - 320</td>
+            </tr>
+
+            <tr>
+                <td>2</td>
+                <td>Deluxe Rooms</td>
+                <td>121 - 135</td>
+                <td>221 - 235</td>
+                <td>321 - 335</td>
+            </tr>
+
+            <tr>
+                <td>3</td>
+                <td>Suite Rooms</td>
+                <td>136 - 150</td>
+                <td>236 - 250</td>
+                <td>336 - 350</td>
+            </tr>
+
+        </tbody>
+
+    </table>
+
 </div>
-    </div>
+      </div>
 </div>
      <script src="../js/script.js"></script>
 </body>

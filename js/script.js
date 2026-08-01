@@ -20,3 +20,7 @@ function updateDateTime() {
 
 setInterval(updateDateTime, 1000);
 updateDateTime();
+function showTotalRooms(){
+    document.querySelector(".info-card").style.display = "none";
+    document.getElementById("totalRoomsSection").style.display = "block";
+}
