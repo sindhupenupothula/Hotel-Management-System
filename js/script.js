@@ -3,24 +3,30 @@ function login() {
     let password = document.getElementById("password").value;
 
     if (username === "admin" && password === "1234") {
-        window.location.href = "pages/dashboard.html";
+        window.location.href = "home.html";
     } else {
         alert("Invalid Username or Password");
     }
 }
+function showTotalRooms() {
+    document.getElementById("dashboardHome").style.display = "none";
+    document.getElementById("totalRoomsSection").style.display = "block";
+    document.getElementById("availableRoomsSection").style.display = "none";
+}
+function showAvailableRooms() {
+    document.getElementById("dashboardHome").style.display = "none";
+    document.getElementById("totalRoomsSection").style.display = "none";
+    document.getElementById("availableRoomsSection").style.display = "block";
+}
 function updateDateTime() {
     const now = new Date();
 
-    document.getElementById("current-date").innerHTML =
+    document.getElementById("currentDate").innerHTML =
         now.toLocaleDateString();
 
-    document.getElementById("current-time").innerHTML =
+    document.getElementById("currentTime").innerHTML =
         now.toLocaleTimeString();
 }
 
-setInterval(updateDateTime, 1000);
 updateDateTime();
-function showTotalRooms(){
-    document.querySelector(".info-card").style.display = "none";
-    document.getElementById("totalRoomsSection").style.display = "block";
-}
+setInterval(updateDateTime, 1000);

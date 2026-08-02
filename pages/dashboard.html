@@ -13,7 +13,7 @@
 
         <ul>
             <li onclick="showTotalRooms()">Total Rooms</li>
-            <li>Available Rooms</li>
+            <li onclick="showAvailableRooms()">Available Rooms</li>
             <li>Occupied Rooms</li>
             <li>Total Bookings</li>
             <li>Total Customers</li>
@@ -21,9 +21,55 @@
         </ul>
     </div>
        <div class="main-content">
-        <div id="totalRoomsSection">
+        <div id="dashboardHome">
+<h1 class="dashboard-title">Admin Dashboard</h1>
+
+<div class="dashboard-top">
+
+    <div class="date-box">
+        📅 <span id="currentDate"></span>
+    </div>
+
+    <div class="time-box">
+        🕒 <span id="currentTime"></span>
+    </div>
+
+    <div class="weather-box">
+       ☀️ 30°C | Rajahmundry
+    </div>
+
+</div>
+
+<p>Welcome to Sayora Hotel Management System</p>
+    <div class="info-card">
+        <h2>Welcome to Sayora Hotels</h2>
+        <div class="info-grid">
+            <!--Left Column-->
+<div>
+        <p>🕐<strong>Check-In:</strong>12:00 PM</p>
+        <p>🍽<strong>Breakfast:</strong> 7:00 AM - 10:00 AM</p>
+        <p>📶<strong>Free Wi-Fi:</strong>Available</p>
+        <p>🔔<strong>Reception:</strong> 24/7</p>
+        </div>
+        <!--Right Column-->
+        <div>
+        <p>🕐<strong>Check-Out:</strong>11:00 AM</p>
+        <p>🍴<strong>Restuarant:</strong> 7:00 AM - 11:00 PM</p>
+        <p>🚗<strong>Parking:</strong>Free Parking</p>
+        <p>🧹<strong>Housekeeping:</strong>Daily Service</p>
+        </div>
+</div>
+        <h3>Luxury Meets Comfort</h3>
+    </div>
+
+</div>
+        <div id="totalRoomsSection"style="display:none;">
 
     <div class="room-summary">
+        <div class="total-card">
+            <h3>Total Rooms</h3>
+            <h2>150</h2>
+        </div>
 
         <div class="room-card">
             <h3>Luxury Rooms</h3>
@@ -59,17 +105,17 @@
             <tr>
                 <td>1</td>
                 <td>Luxury Rooms</td>
-                <td>101 - 120</td>
-                <td>201 - 220</td>
-                <td>301 - 320</td>
+                <td>101 - 117</td>
+                <td>201 - 217</td>
+                <td>301 - 316</td>
             </tr>
 
             <tr>
                 <td>2</td>
                 <td>Deluxe Rooms</td>
-                <td>121 - 135</td>
-                <td>221 - 235</td>
-                <td>321 - 335</td>
+                <td>118 - 134</td>
+                <td>218 - 234</td>
+                <td>317 - 332</td>
             </tr>
 
             <tr>
@@ -77,7 +123,7 @@
                 <td>Suite Rooms</td>
                 <td>136 - 150</td>
                 <td>236 - 250</td>
-                <td>336 - 350</td>
+                <td>333 - 348</td>
             </tr>
 
         </tbody>
@@ -85,8 +131,77 @@
     </table>
 
 </div>
-      </div>
+<div id="availableRoomsSection" style="display:none;">
+
+    <div class="room-summary">
+        <div class="total-card">
+            <h3>Total Available Rooms</h3>
+            <h2>115</h2>
+        </div>
+
+        <div class="room-card">
+            <h3>Luxury Rooms</h3>
+            <h2>42</h2>
+        </div>
+
+        <div class="room-card">
+            <h3>Deluxe Rooms</h3>
+            <h2>38</h2>
+        </div>
+
+        <div class="room-card">
+            <h3>Suite Rooms</h3>
+            <h2>35</h2>
+        </div>
+
+    </div>
+
+    <table class="room-table">
+
+        <thead>
+            <tr>
+                <th>S.No</th>
+                <th>Room Type</th>
+                <th>First Floor</th>
+                <th>Second Floor</th>
+                <th>Third Floor</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>Luxury Rooms</td>
+                <td>101 - 117</td>
+                <td>201 - 217</td>
+                <td>301 - 316</td>
+            </tr>
+
+            <tr>
+                <td>2</td>
+                <td>Deluxe Rooms</td>
+                <td>118 - 134</td>
+                <td>218 - 234</td>
+                <td>317 - 332</td>
+            </tr>
+
+            <tr>
+                <td>3</td>
+                <td>Suite Rooms</td>
+                <td>135 - 151</td>
+                <td>235 - 251</td>
+                <td>333 - 348</td>
+            </tr>
+        </tbody>
+
+    </table>
+
 </div>
-     <script src="../js/script.js"></script>
+
+</div>  
+
+</div>   
+
+<script src="../js/script.js"></script>
 </body>
 </html>
