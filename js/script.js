@@ -445,3 +445,165 @@ createOccupiedRoomNumbers("occupiedDeluxeThird", [333,334,335,336,337,338,339,34
 createOccupiedRoomNumbers("occupiedSuiteFirst", [148,149,150,151,152,153,154,155]);
 createOccupiedRoomNumbers("occupiedSuiteSecond", [248,249,250,251,252,253,254,255]);
 createOccupiedRoomNumbers("occupiedSuiteThird", [346,347,348,349,350,351,352,353]);
+
+function showTotalRevenue() {
+    document.getElementById("dashboardHome").style.display = "none";
+    document.getElementById("totalRoomsSection").style.display = "none";
+    document.getElementById("availableRoomsSection").style.display = "none";
+    document.getElementById("occupiedRoomsSection").style.display = "none";
+    document.getElementById("totalBookingsSection").style.display = "none";
+    document.getElementById("totalCustomersSection").style.display = "none";
+
+    document.getElementById("totalRevenueSection").style.display = "block";
+    document.querySelector("#totalRevenueSection .overview-header h2").innerText = "💰 Revenue Overview";
+}
+function showTodaysRevenue() {
+
+    document.getElementById("dashboardHome").style.display = "none";
+    document.getElementById("totalRoomsSection").style.display = "none";
+    document.getElementById("availableRoomsSection").style.display = "none";
+    document.getElementById("occupiedRoomsSection").style.display = "none";
+    document.getElementById("totalBookingsSection").style.display = "none";
+    document.getElementById("totalCustomersSection").style.display = "none";
+    document.getElementById("totalRevenueSection").style.display = "block";
+
+    document.querySelector("#totalRevenueSection .overview-header h2").innerText =
+        "📅 Today's Revenue";
+
+    document.querySelector("#totalRevenueSection tbody").innerHTML = `
+        <tr>
+            <td>B001</td>
+            <td>Ravi Kumar</td>
+            <td>Luxury</td>
+            <td>105</td>
+            <td>₹15,000</td>
+            <td>Paid</td>
+        </tr>
+
+        <tr>
+            <td>B002</td>
+            <td>Priya</td>
+            <td>Deluxe</td>
+            <td>125</td>
+            <td>₹10,000</td>
+            <td>Paid</td>
+        </tr>
+    `;
+}
+function showThisMonthRevenue() {
+
+    document.getElementById("dashboardHome").style.display = "none";
+    document.getElementById("totalRoomsSection").style.display = "none";
+    document.getElementById("availableRoomsSection").style.display = "none";
+    document.getElementById("occupiedRoomsSection").style.display = "none";
+    document.getElementById("totalBookingsSection").style.display = "none";
+    document.getElementById("totalCustomersSection").style.display = "none";
+    document.getElementById("totalRevenueSection").style.display = "block";
+
+    document.querySelector("#totalRevenueSection .overview-header h2").innerText =
+        "📆 This Month Revenue";
+
+    document.querySelector("#totalRevenueSection tbody").innerHTML = `
+        <tr>
+            <td>B001</td>
+            <td>Ravi Kumar</td>
+            <td>Luxury</td>
+            <td>105</td>
+            <td>₹25,000</td>
+            <td>Paid</td>
+        </tr>
+
+        <tr>
+            <td>B002</td>
+            <td>Priya</td>
+            <td>Deluxe</td>
+            <td>125</td>
+            <td>₹20,000</td>
+            <td>Paid</td>
+        </tr>
+
+        <tr>
+            <td>B003</td>
+            <td>Ramesh</td>
+            <td>Suite</td>
+            <td>205</td>
+            <td>₹30,000</td>
+            <td>Paid</td>
+        </tr>
+
+        <tr>
+            <td>B004</td>
+            <td>Suresh</td>
+            <td>Luxury</td>
+            <td>110</td>
+            <td>₹15,000</td>
+            <td>Paid</td>
+        </tr>
+
+        <tr>
+            <td>B005</td>
+            <td>Anjali</td>
+            <td>Deluxe</td>
+            <td>130</td>
+            <td>₹28,000</td>
+            <td>Paid</td>
+        </tr>
+
+        <tr>
+            <td>B006</td>
+            <td>Kavya</td>
+            <td>Suite</td>
+            <td>210</td>
+            <td>₹22,000</td>
+            <td>Paid</td>
+        </tr>
+
+        <tr>
+            <td>B007</td>
+            <td>Lakshmi</td>
+            <td>Luxury</td>
+            <td>115</td>
+            <td>₹35,000</td>
+            <td>Paid</td>
+        </tr>
+
+        <tr>
+            <td>B008</td>
+            <td>Arjun</td>
+            <td>Deluxe</td>
+            <td>135</td>
+            <td>₹18,000</td>
+            <td>Paid</td>
+        </tr>
+
+        <tr>
+            <td>B009</td>
+            <td>Swathi</td>
+            <td>Suite</td>
+            <td>220</td>
+            <td>₹27,000</td>
+            <td>Paid</td>
+        </tr>
+
+        <tr>
+            <td>B010</td>
+            <td>Rahul</td>
+            <td>Luxury</td>
+            <td>120</td>
+            <td>₹30,000</td>
+            <td>Paid</td>
+        </tr>
+    `;
+}
+function showAverageRevenue() {
+    document.getElementById("dashboardHome").style.display = "none";
+    document.getElementById("totalRoomsSection").style.display = "none";
+    document.getElementById("availableRoomsSection").style.display = "none";
+    document.getElementById("occupiedRoomsSection").style.display = "none";
+    document.getElementById("totalBookingsSection").style.display = "none";
+    document.getElementById("totalCustomersSection").style.display = "none";
+    document.getElementById("totalRevenueSection").style.display = "block";
+
+    document.querySelector("#totalRevenueSection .overview-header h2").innerText =
+        "📊 Average Revenue";
+}
