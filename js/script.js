@@ -131,6 +131,105 @@ function showCancelledBookings() {
     document.querySelector("#totalBookingsSection .overview-header h2").innerText =
         "❌ Cancelled Bookings";
 }
+function generateBookingData() {
+
+    const tbody = document.getElementById("bookingsTableBody");
+
+    tbody.innerHTML = "";
+
+    const names = [
+        "Ravi Kumar", "Priya", "Ramesh", "Suresh", "Anjali",
+        "Kiran", "Lakshmi", "Rahul", "Sneha", "Arjun",
+        "Pooja", "Vijay", "Swathi", "Naveen", "Divya",
+        "Sai Kumar", "Keerthi", "Manoj", "Harika", "Rohit"
+    ];
+
+    const roomTypes = ["Luxury", "Deluxe", "Suite"];
+
+    // Today's date
+    const today = new Date();
+
+    function formatDate(date) {
+        const months = [
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        ];
+
+        return String(date.getDate()).padStart(2, "0") +
+            "-" +
+            months[date.getMonth()] +
+            "-" +
+            date.getFullYear();
+    }
+
+    function addDays(date, days) {
+        const newDate = new Date(date);
+        newDate.setDate(newDate.getDate() + days);
+        return newDate;
+    }
+
+    // Create 85 bookings
+    for (let i = 1; i <= 85; i++) {
+
+        let status;
+        let checkIn;
+        let checkOut;
+
+        // First 12 = Today's bookings + Confirmed
+        if (i <= 12) {
+
+            status = "Confirmed";
+            checkIn = formatDate(today);
+            checkOut = formatDate(addDays(today, 2));
+
+        // Next 53 = Confirmed
+        } else if (i <= 65) {
+
+            status = "Confirmed";
+
+            const oldDate = addDays(today, -(i - 12));
+            checkIn = formatDate(oldDate);
+            checkOut = formatDate(addDays(oldDate, 2));
+
+        // Next 8 = Cancelled
+        } else if (i <= 73) {
+
+            status = "Cancelled";
+
+            const oldDate = addDays(today, -(i - 20));
+            checkIn = formatDate(oldDate);
+            checkOut = formatDate(addDays(oldDate, 2));
+
+        // Last 12 = Pending
+        } else {
+
+            status = "Pending";
+
+            const futureDate = addDays(today, i - 60);
+            checkIn = formatDate(futureDate);
+            checkOut = formatDate(addDays(futureDate, 2));
+        }
+
+        const name = names[(i - 1) % names.length];
+        const roomType = roomTypes[(i - 1) % roomTypes.length];
+        const roomNo = 101 + ((i - 1) % 248);
+
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td>B${String(i).padStart(3, "0")}</td>
+            <td>${name}</td>
+            <td>${roomType}</td>
+            <td>${roomNo}</td>
+            <td>${checkIn}</td>
+            <td>${checkOut}</td>
+            <td>${status}</td>
+        `;
+
+        tbody.appendChild(row);
+    }
+}
+generateBookingData();
 function updateDateTime() {
     const now = new Date();
 
