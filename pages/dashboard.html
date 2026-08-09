@@ -18,7 +18,7 @@
             <li onclick="showAvailableRooms()">Available Rooms</li>
             <li onclick="showOccupiedRooms()">Occupied Rooms</li>
             <li onclick="showTotalBookings()">Total Bookings</li>
-            <li>Total Customers</li>
+            <li onclick="showTotalCustomers()">Total Customers</li>
             <li>Total Revenue</li>
         </ul>
     </div>
@@ -337,7 +337,8 @@
 
     <div class="room-summary">
 
-        <div class="total-card">
+        <div class="total-card" onclick="showTotalBookings()"
+         style="cursor:pointer;">
             <div class="card-icon">📖</div>
             <h3>Total Bookings</h3>
             <h2>85</h2>
@@ -416,6 +417,255 @@
                     <td>10-Aug-2026</td>
                     <td>Cancelled</td>
                 </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+<div id="totalCustomersSection" style="display:none;">
+
+    <div class="room-summary">
+
+        <div class="total-card" onclick="showTotalCustomers();return false;"
+        style="cursor:pointer;">
+            <div class="card-icon">👥</div>
+            <h3>Total Customers</h3>
+            <h2>85</h2>
+        </div>
+
+        <div class="room-card" onclick="showNewCustomers()"
+        style="cursor:pointer;">
+            <div class="card-icon">🆕</div>
+            <h3>New Customers</h3>
+            <h2>20</h2>
+        </div>
+
+        <div class="room-card" onclick="showReturningCustomers()"
+        style="cursor:pointer;">
+            <div class="card-icon">🔄</div>
+            <h3>Returning Customers</h3>
+            <h2>50</h2>
+        </div>
+
+        <div class="room-card" onclick="showVIPCustomers()"
+        style="cursor:pointer;">
+            <div class="card-icon">⭐</div>
+            <h3>VIP Customers</h3>
+            <h2>15</h2>
+        </div>
+
+    </div>
+
+    <div class="available-overview">
+
+        <div class="overview-header">
+            <h2>👥 Customers Overview</h2>
+        </div>
+
+        <table class="overview-table">
+
+            <thead>
+                <tr>
+                    <th>Customer ID</th>
+                    <th>Customer Name</th>
+                    <th>Phone</th>
+                    <th>Room Type</th>
+                    <th>Room No</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>C001</td>
+                    <td>Ravi Kumar</td>
+                    <td>9876543210</td>
+                    <td>Luxury</td>
+                    <td>101</td>
+                    <td>Active</td>
+                </tr>
+
+                <tr>
+                    <td>C002</td>
+                    <td>Priya</td>
+                    <td>9876543211</td>
+                    <td>Deluxe</td>
+                    <td>102</td>
+                    <td>Active</td>
+                </tr>
+
+                <tr>
+                    <td>C003</td>
+                    <td>Ramesh</td>
+                    <td>9876543212</td>
+                    <td>Suite</td>
+                    <td>103</td>
+                    <td>Active</td>
+                </tr>
+
+                <tr>
+                    <td>C004</td>
+                    <td>Suresh</td>
+                    <td>9876543213</td>
+                    <td>Luxury</td>
+                    <td>104</td>
+                    <td>Active</td>
+                </tr>
+
+                <tr>
+                    <td>C005</td>
+                    <td>Anjali</td>
+                    <td>9876543214</td>
+                    <td>Deluxe</td>
+                    <td>105</td>
+                    <td>Active</td>
+                </tr>
+                <tr>
+    <td>C006</td>
+    <td>Kavya</td>
+    <td>9876543215</td>
+    <td>Suite</td>
+    <td>106</td>
+    <td>Active</td>
+</tr>
+
+<tr>
+    <td>C007</td>
+    <td>Lakshmi</td>
+    <td>9876543216</td>
+    <td>Luxury</td>
+    <td>107</td>
+    <td>Active</td>
+</tr>
+
+<tr>
+    <td>C008</td>
+    <td>Arjun</td>
+    <td>9876543217</td>
+    <td>Deluxe</td>
+    <td>108</td>
+    <td>Active</td>
+</tr>
+
+<tr>
+    <td>C009</td>
+    <td>Swathi</td>
+    <td>9876543218</td>
+    <td>Suite</td>
+    <td>109</td>
+    <td>Active</td>
+</tr>
+
+<tr>
+    <td>C010</td>
+    <td>Rahul</td>
+    <td>9876543219</td>
+    <td>Luxury</td>
+    <td>110</td>
+    <td>Active</td>
+</tr>
+
+<tr>
+    <td>C011</td>
+    <td>Neha</td>
+    <td>9876543220</td>
+    <td>Deluxe</td>
+    <td>111</td>
+    <td>Active</td>
+</tr>
+
+<tr>
+    <td>C012</td>
+    <td>Vijay</td>
+    <td>9876543221</td>
+    <td>Suite</td>
+    <td>112</td>
+    <td>Active</td>
+</tr>
+
+<tr>
+    <td>C013</td>
+    <td>Pooja</td>
+    <td>9876543222</td>
+    <td>Luxury</td>
+    <td>113</td>
+    <td>Active</td>
+</tr>
+
+<tr>
+    <td>C014</td>
+    <td>Manoj</td>
+    <td>9876543223</td>
+    <td>Deluxe</td>
+    <td>114</td>
+    <td>Active</td>
+</tr>
+
+<tr>
+    <td>C015</td>
+    <td>Divya</td>
+    <td>9876543224</td>
+    <td>Suite</td>
+    <td>115</td>
+    <td>Active</td>
+</tr>
+
+<tr>
+    <td>C016</td>
+    <td>Rohit</td>
+    <td>9876543225</td>
+    <td>Luxury</td>
+    <td>116</td>
+    <td>Active</td>
+</tr>
+
+<tr>
+    <td>C017</td>
+    <td>Meena</td>
+    <td>9876543226</td>
+    <td>Deluxe</td>
+    <td>117</td>
+    <td>Active</td>
+</tr>
+
+<tr>
+    <td>C018</td>
+    <td>Akash</td>
+    <td>9876543227</td>
+    <td>Suite</td>
+    <td>118</td>
+    <td>Active</td>
+</tr>
+
+<tr>
+    <td>C019</td>
+    <td>Sneha</td>
+    <td>9876543228</td>
+    <td>Luxury</td>
+    <td>119</td>
+    <td>Active</td>
+</tr>
+
+<tr>
+    <td>C020</td>
+    <td>Kiran</td>
+    <td>9876543229</td>
+    <td>Deluxe</td>
+    <td>120</td>
+    <td>Active</td>
+</tr>
+<tr>
+    <td>C021</td>
+    <td>Sanjay</td>
+    <td>9876543230</td>
+    <td>Luxury</td>
+    <td>121</td>
+    <td>Active</td>
+</tr>
 
             </tbody>
 

@@ -25,12 +25,152 @@ function showOccupiedRooms() {
     document.getElementById("occupiedRoomsSection").style.display = "block";
     document.getElementById("totalBookingsSection").style.display = "none";
 }
+function showTotalCustomers() {
+addMoreCustomers();
+const rows =
+document.querySelectorAll("#totalCustomersSection tbody tr");
+ rows.forEach(function(row) {
+    row.style.display = "";
+ });
+    // Hide all dashboard sections
+    document.getElementById("dashboardHome").style.display = "none";
+    document.getElementById("totalRoomsSection").style.display = "none";
+    document.getElementById("availableRoomsSection").style.display = "none";
+    document.getElementById("occupiedRoomsSection").style.display = "none";
+    document.getElementById("totalBookingsSection").style.display = "none";
+
+    // Show Total Customers section
+    document.getElementById("totalCustomersSection").style.display = "block";
+    document.querySelector("#totalCustomersSection .overview-header h2").innerText="👥 Customers Overview";
+}
+function addMoreCustomers() {
+    const tbody = document.querySelector("#totalCustomersSection tbody");
+
+    if (!tbody) return;
+
+    // Already added ayithe malli add cheyyakudadhu
+    if (document.getElementById("C085")) return;
+     const names = [
+    "Arun", "Bhavani", "Charan", "Deepika", "Eswar",
+    "Harini", "Jeevan", "Kavya", "Lokesh", "Manisha",
+    "Naveen", "Pooja", "Rahul", "Sneha", "Tarun",
+    "Uma", "Varun", "Swathi", "Vikram", "Keerthi",
+    "Rakesh", "Anusha", "Karthik", "Divya", "Srinivas",
+    "Lavanya", "Praveen", "Meghana", "Sai", "Nandini",
+    "Rohit", "Priyanka", "Vamsi", "Aishwarya", "Surya",
+    "Tejas", "Bhavana", "Manoj", "Shravani", "Akshay",
+    "Pallavi", "Sandeep", "Ramya", "Harsha", "Deepak",
+    "Anjali", "Ravi", "Swetha", "Abhishek", "Kiran",
+    "Mounika", "Rajesh", "Sowmya", "Nikhil", "Keerthana",
+    "Ajay", "Sindhu", "Prasad", "Divya", "Sai Kumar",
+    "Varsha", "Chaitanya", "Sravani", "Ramesh"
+];
+    for (let i = 22; i <= 85; i++) {
+        const row = document.createElement("tr");
+
+        row.id = "C" + String(i).padStart(3, "0");
+
+        row.innerHTML = `
+            <td>C${String(i).padStart(3, "0")}</td>
+            <td>${names[i-22]}</td>
+            <td>9876543${String(i).padStart(3, "0")}</td>
+            <td>${i % 3 === 0 ? "Suite" : i % 2 === 0 ? "Deluxe" : "Luxury"}</td>
+            <td>${100 + i}</td>
+            <td>Active</td>
+        `;
+
+        tbody.appendChild(row);
+    }
+}
+function showNewCustomers() {
+//Make sure all customer rows exit//
+addMoreCustomers();
+
+    // Show Total Customers section
+    document.getElementById("dashboardHome").style.display = "none";
+    document.getElementById("totalRoomsSection").style.display = "none";
+    document.getElementById("availableRoomsSection").style.display = "none";
+    document.getElementById("occupiedRoomsSection").style.display = "none";
+    document.getElementById("totalBookingsSection").style.display = "none";
+    document.getElementById("totalCustomersSection").style.display = "block";
+
+    // Get customer table rows
+    const rows = document.querySelectorAll("#totalCustomersSection tbody tr");
+
+    rows.forEach((row) => {
+        const customerId = row.cells[0].innerText.trim();
+        const customerNumber = parseInt(customerId.substring(1));
+        if (customerNumber <= 20) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+
+    // Change heading
+    document.querySelector("#totalCustomersSection .overview-header h2").innerText =
+        "🆕 New Customers";
+}
+function showReturningCustomers() {
+    document.getElementById("dashboardHome").style.display = "none";
+    document.getElementById("totalRoomsSection").style.display = "none";
+    document.getElementById("availableRoomsSection").style.display = "none";
+    document.getElementById("occupiedRoomsSection").style.display = "none";
+    document.getElementById("totalBookingsSection").style.display = "none";
+    document.getElementById("totalCustomersSection").style.display = "block";
+
+    const rows = document.querySelectorAll("#totalCustomersSection tbody tr");
+
+    rows.forEach(function(row) {
+        const customerId = row.cells[0].innerText.trim();
+        const customerNumber = parseInt(customerId.substring(1));
+
+        if (customerNumber >= 21 && customerNumber <= 70) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+
+    document.querySelector(
+        "#totalCustomersSection .overview-header h2"
+    ).innerText = "🔄 Returning Customers";
+}
+function showVIPCustomers() {
+
+    document.getElementById("dashboardHome").style.display = "none";
+    document.getElementById("totalRoomsSection").style.display = "none";
+    document.getElementById("availableRoomsSection").style.display = "none";
+    document.getElementById("occupiedRoomsSection").style.display = "none";
+    document.getElementById("totalBookingsSection").style.display = "none";
+    document.getElementById("totalCustomersSection").style.display = "block";
+
+    const rows = document.querySelectorAll("#totalCustomersSection tbody tr");
+
+    rows.forEach(function(row) {
+
+        const customerId = row.cells[0].innerText.trim();
+        const customerNumber = parseInt(customerId.substring(1));
+
+        if (customerNumber >= 71 && customerNumber <= 85) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+
+    });
+
+    document.querySelector(
+        "#totalCustomersSection .overview-header h2"
+    ).innerText = "⭐ VIP Customers";
+}
 function showTotalBookings() {
     document.getElementById("dashboardHome").style.display = "none";
     document.getElementById("totalRoomsSection").style.display = "none";
     document.getElementById("availableRoomsSection").style.display = "none";
     document.getElementById("occupiedRoomsSection").style.display = "none";
     document.getElementById("totalBookingsSection").style.display = "block";
+    document.querySelector("#totalBookingsSection .overview-header h2").innerText = "📋 Total Bookings";
 }
 function showTodaysBookings() {
 
