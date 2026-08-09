@@ -53,10 +53,47 @@ body{
 .login-container button:hover{
     background:#0056b3;
 }
-.logo{
+.login-logo{
     width: 140px;
     height: 140px;
     border-radius:50%;
     display: block;
     margin:0 auto 20px;
+}
+.navbar{
+    display: flex;
+    align-items: center;
+}
+
+.nav-links{
+    display: flex;
+    list-style: none;
+}
+
+.profile-icon{
+    margin-left: auto;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+}
+
+.profile-icon:hover{
+    color: #38bdf8;
+}
+.logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.logo img{
+    width:55px;
+    height:55px;
+    border-radius:50%;
+}
+
+.logo h2{
+    margin:0;
+    color:white;
+    font-size:18px;
 }

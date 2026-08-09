@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body class="dashboard-body">
 <div class="dashboard-container">
@@ -14,13 +16,15 @@
         <ul>
             <li onclick="showTotalRooms()">Total Rooms</li>
             <li onclick="showAvailableRooms()">Available Rooms</li>
-            <li>Occupied Rooms</li>
+            <li onclick="showOccupiedRooms()">Occupied Rooms</li>
             <li>Total Bookings</li>
             <li>Total Customers</li>
             <li>Total Revenue</li>
         </ul>
     </div>
        <div class="main-content">
+        <div class="dashboard-top">
+</div>
         <div id="dashboardHome">
 <h1 class="dashboard-title">Admin Dashboard</h1>
 
@@ -37,8 +41,7 @@
     <div class="weather-box">
        ☀️ 30°C | Rajahmundry
     </div>
-
-</div>
+    </div>
 
 <p>Welcome to Sayora Hotel Management System</p>
     <div class="info-card">
@@ -67,21 +70,25 @@
 
     <div class="room-summary">
         <div class="total-card">
+            <div class="card-icon">🛏️</div>
             <h3>Total Rooms</h3>
             <h2>150</h2>
         </div>
 
         <div class="room-card">
+            <div class="card-icon">👑</div>
             <h3>Luxury Rooms</h3>
             <h2>50</h2>
         </div>
 
         <div class="room-card">
+            <div class="card-icon">🛎️</div>
             <h3>Deluxe Rooms</h3>
             <h2>50</h2>
         </div>
 
         <div class="room-card">
+            <div class="card-icon">🛋️</div>
             <h3>Suite Rooms</h3>
             <h2>50</h2>
         </div>
@@ -133,69 +140,200 @@
 </div>
 <div id="availableRoomsSection" style="display:none;">
 
-    <div class="room-summary">
+    <div class="room-summary available-summary">
+      <div class="total-card">
+    <div class="card-icon blue">🛏️</div>
+    <div>
+        <h3>Total Available Rooms</h3>
+        <h2>115</h2>
+    </div>
+</div>
+
+<div class="room-card">
+    <div class="card-icon green">👑</div>
+    <div>
+        <h3>Luxury Rooms</h3>
+        <h2>42</h2>
+    </div>
+</div>
+
+<div class="room-card">
+    <div class="card-icon orange">🛎️</div>
+    <div>
+        <h3>Deluxe Rooms</h3>
+        <h2>38</h2>
+    </div>
+</div>
+
+<div class="room-card">
+    <div class="card-icon purple">🛋️</div>
+    <div>
+        <h3>Suite Rooms</h3>
+        <h2>35</h2>
+    </div>
+</div>
+</div>
+    <div class="available-overview">
+
+    <div class="overview-header">
+        <h2>🛏 Available Rooms Overview</h2>
+
+        <div class="status-legend">
+            <span><span class="green-dot"></span> Available</span>
+        </div>
+    </div>
+
+    <table class="overview-table">
+        <thead>
+
+        <tr>
+            <th>Room Type</th>
+            <th>First Floor</th>
+            <th>Second Floor</th>
+            <th>Third Floor</th>
+        </tr>
+        </thead>
+<tbody>
+        <tr>
+            <td><b>Luxury Rooms</b></td>
+
+            <td class="floor-rooms" id="luxuryFirst"></td>
+
+            <td class="floor-rooms" id="luxurySecond"></td>
+
+            <td class="floor-rooms" id="luxuryThird"></td>
+        </tr>
+
+        <tr>
+            <td><b>Deluxe Rooms</b></td>
+
+            <td class="floor-rooms" id="deluxeFirst"></td>
+
+            <td class="floor-rooms" id="deluxeSecond"></td>
+
+            <td class="floor-rooms" id="deluxeThird"></td>
+        </tr>
+
+        <tr>
+            <td><b>Suite Rooms</b></td>
+
+            <td class="floor-rooms" id="suiteFirst"></td>
+
+            <td class="floor-rooms" id="suiteSecond"></td>
+
+            <td class="floor-rooms" id="suiteThird"></td>
+        </tr>
+</tbody>
+    </table>
+
+</div>
+</div>
+<div id="occupiedRoomsSection" style="display:none;">
+
+    <div class="room-summary available-summary">
+
         <div class="total-card">
-            <h3>Total Available Rooms</h3>
-            <h2>115</h2>
+            <div class="card-icon red">🛏️</div>
+            <div>
+                <h3>Total Occupied Rooms</h3>
+                <h2>35</h2>
+            </div>
         </div>
 
         <div class="room-card">
-            <h3>Luxury Rooms</h3>
-            <h2>42</h2>
+            <div class="card-icon red">👑</div>
+            <div>
+                <h3>Luxury Rooms</h3>
+                <h2>10</h2>
+            </div>
         </div>
 
         <div class="room-card">
-            <h3>Deluxe Rooms</h3>
-            <h2>38</h2>
+            <div class="card-icon red">🛎️</div>
+            <div>
+                <h3>Deluxe Rooms</h3>
+                <h2>17</h2>
+            </div>
         </div>
 
         <div class="room-card">
-            <h3>Suite Rooms</h3>
-            <h2>35</h2>
+            <div class="card-icon red">🛋️</div>
+            <div>
+                <h3>Suite Rooms</h3>
+                <h2>8</h2>
+            </div>
         </div>
 
     </div>
 
-    <table class="room-table">
 
-        <thead>
-            <tr>
-                <th>S.No</th>
-                <th>Room Type</th>
-                <th>First Floor</th>
-                <th>Second Floor</th>
-                <th>Third Floor</th>
-            </tr>
-        </thead>
+    <div class="available-overview">
 
-        <tbody>
-            <tr>
-                <td>1</td>
-                <td>Luxury Rooms</td>
-                <td>101 - 117</td>
-                <td>201 - 217</td>
-                <td>301 - 316</td>
-            </tr>
+        <div class="overview-header">
+            <h2>🛏 Occupied Rooms Overview</h2>
 
-            <tr>
-                <td>2</td>
-                <td>Deluxe Rooms</td>
-                <td>118 - 134</td>
-                <td>218 - 234</td>
-                <td>317 - 332</td>
-            </tr>
+            <div class="status-legend">
+                <span>
+                    <span class="red-dot"></span>
+                    Occupied
+                </span>
+            </div>
+        </div>
 
-            <tr>
-                <td>3</td>
-                <td>Suite Rooms</td>
-                <td>135 - 151</td>
-                <td>235 - 251</td>
-                <td>333 - 348</td>
-            </tr>
-        </tbody>
 
-    </table>
+        <table class="overview-table">
 
+            <thead>
+                <tr>
+                    <th>Room Type</th>
+                    <th>First Floor</th>
+                    <th>Second Floor</th>
+                    <th>Third Floor</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td><b>Luxury Rooms</b></td>
+
+                    <td class="floor-rooms" id="occupiedLuxuryFirst"></td>
+
+                    <td class="floor-rooms" id="occupiedLuxurySecond"></td>
+
+                    <td class="floor-rooms" id="occupiedLuxuryThird"></td>
+                </tr>
+
+
+                <tr>
+                    <td><b>Deluxe Rooms</b></td>
+
+                    <td class="floor-rooms" id="occupiedDeluxeFirst"></td>
+
+                    <td class="floor-rooms" id="occupiedDeluxeSecond"></td>
+
+                    <td class="floor-rooms" id="occupiedDeluxeThird"></td>
+                </tr>
+
+
+                <tr>
+                    <td><b>Suite Rooms</b></td>
+
+                    <td class="floor-rooms" id="occupiedSuiteFirst"></td>
+
+                    <td class="floor-rooms" id="occupiedSuiteSecond"></td>
+
+                    <td class="floor-rooms" id="occupiedSuiteThird"></td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+</div>
 </div>
 
 </div>  
