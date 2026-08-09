@@ -23,6 +23,113 @@ function showOccupiedRooms() {
     document.getElementById("totalRoomsSection").style.display = "none";
     document.getElementById("availableRoomsSection").style.display = "none";
     document.getElementById("occupiedRoomsSection").style.display = "block";
+    document.getElementById("totalBookingsSection").style.display = "none";
+}
+function showTotalBookings() {
+    document.getElementById("dashboardHome").style.display = "none";
+    document.getElementById("totalRoomsSection").style.display = "none";
+    document.getElementById("availableRoomsSection").style.display = "none";
+    document.getElementById("occupiedRoomsSection").style.display = "none";
+    document.getElementById("totalBookingsSection").style.display = "block";
+}
+function showTodaysBookings() {
+
+    // Hide other sections
+    document.getElementById("dashboardHome").style.display = "none";
+    document.getElementById("totalRoomsSection").style.display = "none";
+    document.getElementById("availableRoomsSection").style.display = "none";
+    document.getElementById("occupiedRoomsSection").style.display = "none";
+
+    // Show Total Bookings section
+    document.getElementById("totalBookingsSection").style.display = "block";
+
+    // Change heading
+    document.querySelector("#totalBookingsSection .overview-header h2").innerText =
+        "📅 Today's Bookings";
+
+    // Get today's date
+    const today = new Date();
+
+    const months = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+
+    const todayDate =
+        String(today.getDate()).padStart(2, "0") +
+        "-" +
+        months[today.getMonth()] +
+        "-" +
+        today.getFullYear();
+
+    // Get booking rows
+    const rows = document.querySelectorAll("#bookingsTableBody tr");
+
+    // Show only today's bookings
+    rows.forEach(function(row) {
+
+        const checkInDate = row.cells[4].innerText.trim();
+
+        if (checkInDate === todayDate) {
+            row.style.display = "table-row";
+        } else {
+            row.style.display = "none";
+        }
+
+    });
+}
+
+function showConfirmedBookings() {
+
+    // Hide other sections
+    document.getElementById("dashboardHome").style.display = "none";
+    document.getElementById("totalRoomsSection").style.display = "none";
+    document.getElementById("availableRoomsSection").style.display = "none";
+    document.getElementById("occupiedRoomsSection").style.display = "none";
+
+    // Show Total Bookings section
+    document.getElementById("totalBookingsSection").style.display = "block";
+
+    // Change heading
+    document.querySelector("#totalBookingsSection .overview-header h2").innerText =
+        "✅ Confirmed Bookings";
+
+    // Get all booking rows
+    const rows = document.querySelectorAll("#bookingsTableBody tr");
+
+    // Show only confirmed bookings
+    rows.forEach(function(row) {
+
+        const status = row.cells[6].innerText.trim();
+
+        if (status === "Confirmed") {
+            row.style.display = "table-row";
+        } else {
+            row.style.display = "none";
+        }
+
+    });
+}
+function showCancelledBookings() {
+
+    showTotalBookings();
+
+    const rows = document.querySelectorAll("#bookingsTableBody tr");
+
+    rows.forEach(function(row) {
+
+        const status = row.cells[6].innerText.trim();
+
+        if (status === "Cancelled") {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+
+    });
+
+    document.querySelector("#totalBookingsSection .overview-header h2").innerText =
+        "❌ Cancelled Bookings";
 }
 function updateDateTime() {
     const now = new Date();

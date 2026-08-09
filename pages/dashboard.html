@@ -17,7 +17,7 @@
             <li onclick="showTotalRooms()">Total Rooms</li>
             <li onclick="showAvailableRooms()">Available Rooms</li>
             <li onclick="showOccupiedRooms()">Occupied Rooms</li>
-            <li>Total Bookings</li>
+            <li onclick="showTotalBookings()">Total Bookings</li>
             <li>Total Customers</li>
             <li>Total Revenue</li>
         </ul>
@@ -324,6 +324,87 @@
                     <td class="floor-rooms" id="occupiedSuiteSecond"></td>
 
                     <td class="floor-rooms" id="occupiedSuiteThird"></td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+<div id="totalBookingsSection" style="display:none;">
+
+    <div class="room-summary">
+
+        <div class="total-card">
+            <div class="card-icon">📖</div>
+            <h3>Total Bookings</h3>
+            <h2>85</h2>
+        </div>
+
+        <div class="room-card" onclick="showTodaysBookings()"
+        style="cursor:pointer;">
+            <div class="card-icon">📅</div>
+            <h3>Today's Bookings</h3>
+            <h2>12</h2>
+        </div>
+
+        <div class="room-card" onclick="showConfirmedBookings()">
+            <div class="card-icon">✅</div>
+            <h3>Confirmed Bookings</h3>
+            <h2>65</h2>
+        </div>
+
+        <div class="room-card" onclick="showCancelledBookings()"
+            style="cursor:pointer;">
+            <div class="card-icon">❌</div>
+            <h3>Cancelled Bookings</h3>
+            <h2>8</h2>
+        </div>
+
+    </div>
+
+    <div class="available-overview">
+
+        <div class="overview-header">
+            <h2>📖 Bookings Overview</h2>
+        </div>
+
+        <table class="overview-table">
+
+            <thead>
+                <tr>
+                    <th>Booking ID</th>
+                    <th>Customer Name</th>
+                    <th>Room Type</th>
+                    <th>Room No</th>
+                    <th>Check-In</th>
+                    <th>Check-Out</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody id="bookingsTableBody">
+
+                <tr>
+                    <td>B001</td>
+                    <td>Ravi Kumar</td>
+                    <td>Luxury</td>
+                    <td>105</td>
+                    <td>09-Aug-2026</td>
+                    <td>11-Aug-2026</td>
+                    <td>Confirmed</td>
+                </tr>
+
+                <tr>
+                    <td>B002</td>
+                    <td>Priya</td>
+                    <td>Deluxe</td>
+                    <td>125</td>
+                    <td>09-Aug-2026</td>
+                    <td>12-Aug-2026</td>
+                    <td>Confirmed</td>
                 </tr>
 
             </tbody>
