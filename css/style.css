@@ -100,8 +100,8 @@ body{
 /* FIX FOR MANAGE ROOMS PAGE */
 body {
     height: auto;
-    min-height: 100vh;
-    display: block;
+    min-height:100vh;
+    display:block;
     background: #f7f8fa;
 }
 
