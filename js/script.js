@@ -763,6 +763,58 @@ function updateRoom() {
     alert("Room updated successfully!");
 }
 // ===============================
+// ADD NEW ROOM
+// ===============================
+
+function openAddRoom() {
+    document.getElementById("addRoomModal").style.display = "flex";
+}
+
+function closeAddRoom() {
+    document.getElementById("addRoomModal").style.display = "none";
+}
+
+function addRoom() {
+
+    const roomNo = document.getElementById("addRoomNo").value.trim();
+    const roomType = document.getElementById("addRoomType").value;
+    const floor = document.getElementById("addFloor").value;
+    const price = document.getElementById("addPrice").value.trim();
+    const status = document.getElementById("addStatus").value;
+    const description = document.getElementById("addDescription").value.trim();
+    const features = document.getElementById("addFeatures").value.trim();
+
+    if (!roomNo || !roomType || !floor || !price || !status) {
+        alert("Please fill all required fields.");
+        return;
+    }
+
+    const tbody = document.getElementById("roomTableBody");
+
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+        <td>${roomNo}</td>
+        <td>${roomType}</td>
+        <td>${floor}</td>
+        <td>₹${Number(price).toLocaleString("en-IN")}</td>
+        <td>
+            <span class="status ${status.toLowerCase()}">${status}</span>
+        </td>
+        <td>
+            <button class="view-btn" onclick="viewRoom('${roomNo}')">👁</button>
+            <button class="edit-btn" onclick="editRoom('${roomNo}')">✎</button>
+            <button class="delete-btn" onclick="deleteRoom('${roomNo}')">🗑</button>
+        </td>
+    `;
+
+    tbody.appendChild(row);
+
+    closeAddRoom();
+
+    alert("Room added successfully!");
+}
+// ===============================
 // DELETE ROOM
 // ===============================
 

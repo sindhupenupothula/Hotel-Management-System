@@ -276,6 +276,73 @@
     </div>
 
 </div>
+<!-- ADD ROOM MODAL -->
+<div id="addRoomModal" class="room-modal">
+
+    <div class="edit-room-card">
+
+        <button class="close-modal" onclick="closeAddRoom()">×</button>
+
+        <h2>Add New Room</h2>
+
+        <div class="edit-room-form">
+
+            <div>
+                <label>Room No.</label>
+                <input type="text" id="addRoomNo">
+            </div>
+
+            <div>
+                <label>Room Type</label>
+                <select id="addRoomType">
+                    <option value="Luxury">Luxury</option>
+                    <option value="Deluxe">Deluxe</option>
+                    <option value="Suite">Suite</option>
+                </select>
+            </div>
+
+            <div>
+                <label>Floor</label>
+                <select id="addFloor">
+                    <option value="1st Floor">1st Floor</option>
+                    <option value="2nd Floor">2nd Floor</option>
+                    <option value="3rd Floor">3rd Floor</option>
+                </select>
+            </div>
+
+            <div>
+                <label>Price / Night</label>
+                <input type="number" id="addPrice">
+            </div>
+
+            <div>
+                <label>Status</label>
+                <select id="addStatus">
+                    <option value="Available">Available</option>
+                    <option value="Occupied">Occupied</option>
+                    <option value="Maintenance">Maintenance</option>
+                </select>
+            </div>
+
+            <div>
+                <label>Description</label>
+                <textarea id="addDescription"></textarea>
+            </div>
+
+            <div>
+                <label>Features</label>
+                <textarea id="addFeatures"></textarea>
+            </div>
+
+        </div>
+
+        <div class="edit-room-actions">
+            <button class="cancel-btn" onclick="closeAddRoom()">Cancel</button>
+            <button class="update-btn" onclick="addRoom()">Add Room</button>
+        </div>
+
+    </div>
+</div>
 <script src="../js/script.js"></script>
 
 </body>
