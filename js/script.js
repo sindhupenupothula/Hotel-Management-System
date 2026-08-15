@@ -773,7 +773,90 @@ function openAddRoom() {
 function closeAddRoom() {
     document.getElementById("addRoomModal").style.display = "none";
 }
+function autoFillRoomDetails() {
 
+    const roomNo = document.getElementById("addRoomNo").value.trim();
+    const roomType = document.getElementById("addRoomType");
+    const floor = document.getElementById("addFloor");
+    const price = document.getElementById("addPrice");
+
+    if (!roomNo) {
+        roomType.value = "";
+        floor.value = "";
+        price.value = "";
+        return;
+    }
+
+    const roomNumber = Number(roomNo);
+
+    if (!Number.isInteger(roomNumber)) {
+        roomType.value = "";
+        floor.value = "";
+        price.value = "";
+        return;
+    }
+
+    if (roomNumber >= 101 && roomNumber <= 117) {
+
+        roomType.value = "Luxury";
+        floor.value = "1st Floor";
+        price.value = 10000;
+
+    } else if (roomNumber >= 118 && roomNumber <= 134) {
+
+        roomType.value = "Deluxe";
+        floor.value = "1st Floor";
+        price.value = 7000;
+
+    } else if (roomNumber >= 135 && roomNumber <= 150) {
+
+        roomType.value = "Suite";
+        floor.value = "1st Floor";
+        price.value = 15000;
+
+    } else if (roomNumber >= 201 && roomNumber <= 217) {
+
+        roomType.value = "Luxury";
+        floor.value = "2nd Floor";
+        price.value = 11000;
+
+    } else if (roomNumber >= 218 && roomNumber <= 234) {
+
+        roomType.value = "Deluxe";
+        floor.value = "2nd Floor";
+        price.value = 8000;
+
+    } else if (roomNumber >= 235 && roomNumber <= 250) {
+
+        roomType.value = "Suite";
+        floor.value = "2nd Floor";
+        price.value = 16000;
+
+    } else if (roomNumber >= 301 && roomNumber <= 316) {
+
+        roomType.value = "Luxury";
+        floor.value = "3rd Floor";
+        price.value = 12000;
+
+    } else if (roomNumber >= 317 && roomNumber <= 332) {
+
+        roomType.value = "Deluxe";
+        floor.value = "3rd Floor";
+        price.value = 9000;
+
+    } else if (roomNumber >= 333 && roomNumber <= 350) {
+
+        roomType.value = "Suite";
+        floor.value = "3rd Floor";
+        price.value = 17000;
+
+    } else {
+
+        roomType.value = "";
+        floor.value = "";
+        price.value = "";
+    }
+}
 function addRoom() {
 
     const roomNo = document.getElementById("addRoomNo").value.trim();
@@ -788,7 +871,49 @@ function addRoom() {
         alert("Please fill all required fields.");
         return;
     }
+     const roomNumber = Number(roomNo);
 
+if (!Number.isInteger(roomNumber)) {
+    alert("Please enter a valid room number.");
+    return;
+}
+
+let validRoom = false;
+
+if (roomNumber >= 101 && roomNumber <= 117 && roomType === "Luxury" && floor === "1st Floor") {
+    validRoom = true;
+} else if (roomNumber >= 118 && roomNumber <= 134 && roomType === "Deluxe" && floor === "1st Floor") {
+    validRoom = true;
+} else if (roomNumber >= 135 && roomNumber <= 150 && roomType === "Suite" && floor === "1st Floor") {
+    validRoom = true;
+} else if (roomNumber >= 201 && roomNumber <= 217 && roomType === "Luxury" && floor === "2nd Floor") {
+    validRoom = true;
+} else if (roomNumber >= 218 && roomNumber <= 234 && roomType === "Deluxe" && floor === "2nd Floor") {
+    validRoom = true;
+} else if (roomNumber >= 235 && roomNumber <= 250 && roomType === "Suite" && floor === "2nd Floor") {
+    validRoom = true;
+} else if (roomNumber >= 301 && roomNumber <= 316 && roomType === "Luxury" && floor === "3rd Floor") {
+    validRoom = true;
+} else if (roomNumber >= 317 && roomNumber <= 332 && roomType === "Deluxe" && floor === "3rd Floor") {
+    validRoom = true;
+} else if (roomNumber >= 333 && roomNumber <= 350 && roomType === "Suite" && floor === "3rd Floor") {
+    validRoom = true;
+}
+
+if (!validRoom) {
+    alert("Invalid room number, room type or floor. Please use the room ranges defined in Dashboard.");
+    return;
+}
+const existingRooms = document.querySelectorAll("#roomTableBody tr");
+
+for (const row of existingRooms) {
+    const existingRoomNo = row.cells[0]?.innerText.trim();
+
+    if (existingRoomNo === roomNo) {
+        alert("Room number " + roomNo + " already exists.");
+        return;
+    }
+}
     const tbody = document.getElementById("roomTableBody");
 
     const row = document.createElement("tr");
@@ -809,69 +934,21 @@ function addRoom() {
     `;
 
     tbody.appendChild(row);
-    setupRoomPagination();
+    const savedRooms = JSON.parse(localStorage.getItem("sayoraRooms")) || [];
+
+savedRooms.push({
+    roomNo: roomNo,
+    roomType: roomType,
+    floor: floor,
+    price: price,
+    status: status
+});
+
+localStorage.setItem("sayoraRooms", JSON.stringify(savedRooms));
+    renderRoomPagination();
     closeAddRoom();
 
     alert("Room added successfully!");
-}
-function setupRoomPagination() {
-    const tbody = document.getElementById("roomTableBody");
-    const pagination = document.getElementById("roomPagination");
-
-    if (!tbody || !pagination) return;
-
-    const rows = Array.from(tbody.querySelectorAll("tr"));
-    const rowsPerPage = 5;
-    const totalPages = Math.ceil(rows.length / rowsPerPage);
-
-    pagination.innerHTML = "";
-
-    if (totalPages <= 1) return;
-
-    let currentPage = 1;
-
-    function showPage(page) {
-        currentPage = page;
-
-        const start = (page - 1) * rowsPerPage;
-        const end = start + rowsPerPage;
-
-        rows.forEach((row, index) => {
-            row.style.display =
-                index >= start && index < end ? "" : "none";
-        });
-
-        pagination.innerHTML = "";
-
-        // Previous button
-        const prev = document.createElement("button");
-        prev.innerHTML = "‹";
-        prev.disabled = currentPage === 1;
-        prev.onclick = () => showPage(currentPage - 1);
-        pagination.appendChild(prev);
-
-        // Page buttons
-        for (let i = 1; i <= totalPages; i++) {
-            const button = document.createElement("button");
-            button.innerText = i;
-
-            if (i === currentPage) {
-                button.classList.add("active");
-            }
-
-            button.onclick = () => showPage(i);
-            pagination.appendChild(button);
-        }
-
-        // Next button
-        const next = document.createElement("button");
-        next.innerHTML = "›";
-        next.disabled = currentPage === totalPages;
-        next.onclick = () => showPage(currentPage + 1);
-        pagination.appendChild(next);
-    }
-
-    showPage(1);
 }
 // ===============================
 // DELETE ROOM
@@ -986,4 +1063,103 @@ function renderRoomPagination() {
 
 // Initial pagination
 renderRoomPagination();
-setupRoomPagination();
+
+function applyFilters() {
+    const searchRoom = document.getElementById("searchRoom").value.trim().toLowerCase();
+    const roomType = document.getElementById("roomTypeFilter").value;
+    const floor = document.getElementById("floorFilter").value;
+    const status = document.getElementById("statusFilter").value;
+
+    const rows = document.querySelectorAll("#roomTableBody tr");
+
+    rows.forEach(function(row) {
+        const roomNo = row.cells[0]?.innerText.trim().toLowerCase();
+        const type = row.cells[1]?.innerText.trim();
+        const roomFloor = row.cells[2]?.innerText.trim();
+        const roomStatus = row.cells[4]?.innerText.trim();
+
+        const matchesSearch =
+            !searchRoom || roomNo.includes(searchRoom);
+
+        const matchesType =
+            !roomType || type === roomType;
+
+        const matchesFloor =
+            !floor || roomFloor === floor;
+
+        const matchesStatus =
+            !status || roomStatus === status;
+
+        if (
+            matchesSearch &&
+            matchesType &&
+            matchesFloor &&
+            matchesStatus
+        ) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+}
+
+
+function resetFilters() {
+    document.getElementById("searchRoom").value = "";
+    document.getElementById("roomTypeFilter").value = "";
+    document.getElementById("floorFilter").value = "";
+    document.getElementById("statusFilter").value = "";
+
+    const rows = document.querySelectorAll("#roomTableBody tr");
+
+    rows.forEach(function(row) {
+        row.style.display = "";
+    });
+}
+document.getElementById("addRoomNo").addEventListener("input",autoFillRoomDetails);
+function loadSavedRooms() {
+
+    const savedRooms =
+        JSON.parse(localStorage.getItem("sayoraRooms")) || [];
+
+    const tbody = document.getElementById("roomTableBody");
+
+    if (!tbody) return;
+
+    savedRooms.forEach(function(room) {
+
+        // Avoid duplicate rooms
+        const existingRows = tbody.querySelectorAll("tr");
+
+        for (const row of existingRows) {
+            if (row.cells[0]?.innerText.trim() === room.roomNo) {
+                return;
+            }
+        }
+
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td>${room.roomNo}</td>
+            <td>${room.roomType}</td>
+            <td>${room.floor}</td>
+            <td>₹${Number(room.price).toLocaleString("en-IN")}</td>
+            <td>
+                <span class="status ${room.status.toLowerCase()}">
+                    ${room.status}
+                </span>
+            </td>
+            <td>
+                <button class="view-btn" onclick="viewRoom('${room.roomNo}')">👁</button>
+                <button class="edit-btn" onclick="editRoom('${room.roomNo}')">✎</button>
+                <button class="delete-btn" onclick="deleteRoom('${room.roomNo}')">🗑</button>
+            </td>
+        `;
+
+        tbody.appendChild(row);
+    });
+
+    renderRoomPagination();
+}
+
+loadSavedRooms();
