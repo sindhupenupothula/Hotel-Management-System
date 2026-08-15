@@ -125,9 +125,9 @@
                         <td>₹10,000</td>
                         <td><span class="status available">Available</span></td>
                         <td>
-                            <button class="view-btn">👁</button>
-                            <button class="edit-btn">✎</button>
-                            <button class="delete-btn">🗑</button>
+                            <button class="view-btn" onclick="viewRoom(101)">👁</button>
+                            <button class="edit-btn" onclick="editRoom(101)">✎</button>
+                            <button class="delete-btn" onclick="deleteRoom(101)">🗑</button>
                         </td>
                     </tr>
 
@@ -138,9 +138,9 @@
                         <td>₹10,000</td>
                         <td><span class="status available">Available</span></td>
                         <td>
-                            <button class="view-btn">👁</button>
-                            <button class="edit-btn">✎</button>
-                            <button class="delete-btn">🗑</button>
+                            <button class="view-btn" onclick="viewRoom(102)">👁</button>
+                            <button class="edit-btn" onclick="editRoom(102)">✎</button>
+                            <button class="delete-btn" onclick="deleteRoom(102)">🗑</button>
                         </td>
                     </tr>
 
@@ -151,9 +151,9 @@
                         <td>₹7,000</td>
                         <td><span class="status occupied">Occupied</span></td>
                         <td>
-                            <button class="view-btn">👁</button>
-                            <button class="edit-btn">✎</button>
-                            <button class="delete-btn">🗑</button>
+                            <button class="view-btn" onclick="viewRoom(118)">👁</button>
+                            <button class="edit-btn" onclick="editRoom(118)">✎</button>
+                            <button class="delete-btn" onclick="deleteRoom(118)">🗑</button>
                         </td>
                     </tr>
 
@@ -164,9 +164,9 @@
                         <td>₹15,000</td>
                         <td><span class="status available">Available</span></td>
                         <td>
-                            <button class="view-btn">👁</button>
-                            <button class="edit-btn">✎</button>
-                            <button class="delete-btn">🗑</button>
+                            <button class="view-btn" onclick="viewRoom(136)">👁</button>
+                            <button class="edit-btn" onclick="editRoom(136)">✎</button>
+                            <button class="delete-btn" onclick="deleteRoom(136)">🗑</button>
                         </td>
                     </tr>
 
@@ -179,8 +179,103 @@
     </div>
 
 </main>
+<!-- VIEW ROOM DETAILS MODAL -->
+<div id="viewRoomModal" class="room-modal">
+    <div class="view-room-card">
 
+        <button class="close-modal" onclick="closeViewRoom()">×</button>
 
+        <h2>View Room Details</h2>
+
+        <div class="room-details">
+            <p><strong>Room No.</strong> <span id="viewRoomNo"></span></p>
+            <p><strong>Room Type</strong> <span id="viewRoomType"></span></p>
+            <p><strong>Floor</strong> <span id="viewRoomFloor"></span></p>
+            <p><strong>Price / Night</strong> <span id="viewRoomPrice"></span></p>
+            <p><strong>Status</strong> <span id="viewRoomStatus"></span></p>
+            <p><strong>Description</strong> <span id="viewRoomDescription"></span></p>
+            <p><strong>Features</strong> <span id="viewRoomFeatures"></span></p>
+            <p><strong>Last Cleaned</strong> <span id="viewRoomCleaned"></span></p>
+        </div>
+
+        <button class="close-btn" onclick="closeViewRoom()">Close</button>
+
+    </div>
+</div>
+<!-- EDIT ROOM MODAL -->
+
+<div id="editRoomModal" class="room-modal">
+
+    <div class="edit-room-card">
+
+        <button class="close-modal" onclick="closeEditRoom()">×</button>
+
+        <h2>Edit Room</h2>
+
+        <div class="edit-room-form">
+
+            <div class="form-group">
+                <label>Room No.</label>
+                <input type="text" id="editRoomNo">
+            </div>
+
+            <div class="form-group">
+                <label>Room Type</label>
+                <select id="editRoomType">
+                    <option value="Luxury">Luxury</option>
+                    <option value="Deluxe">Deluxe</option>
+                    <option value="Suite">Suite</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Floor</label>
+                <select id="editFloor">
+                    <option value="1st Floor">1st Floor</option>
+                    <option value="2nd Floor">2nd Floor</option>
+                    <option value="3rd Floor">3rd Floor</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Price / Night</label>
+                <input type="number" id="editPrice">
+            </div>
+
+            <div class="form-group">
+                <label>Status</label>
+                <select id="editStatus">
+                    <option value="Available">Available</option>
+                    <option value="Occupied">Occupied</option>
+                    <option value="Maintenance">Maintenance</option>
+                </select>
+            </div>
+
+            <div class="form-group full-width">
+                <label>Description</label>
+                <textarea id="editDescription"></textarea>
+            </div>
+
+            <div class="form-group full-width">
+                <label>Features</label>
+                <input type="text" id="editFeatures">
+            </div>
+
+        </div>
+
+        <div class="edit-room-actions">
+            <button class="cancel-edit-btn" onclick="closeEditRoom()">
+                Cancel
+            </button>
+
+            <button class="update-room-btn" onclick="updateRoom()">
+                Update Room
+            </button>
+        </div>
+
+    </div>
+
+</div>
 <script src="../js/script.js"></script>
 
 </body>

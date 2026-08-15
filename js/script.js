@@ -611,3 +611,184 @@ function showAverageRevenue() {
     document.querySelector("#totalRevenueSection .overview-header h2").innerText =
         "📊 Average Revenue";
 }
+// ===============================
+// VIEW ROOM DETAILS
+// ===============================
+
+function viewRoom(roomNumber) {
+
+    const rows = document.querySelectorAll("#roomTableBody tr");
+
+    let selectedRoom = null;
+
+    rows.forEach(function(row) {
+
+        const roomNo = row.cells[0].innerText.trim();
+
+        if (roomNo === String(roomNumber)) {
+            selectedRoom = row;
+        }
+
+    });
+
+    if (!selectedRoom) return;
+
+    const roomNo = selectedRoom.cells[0].innerText.trim();
+    const roomType = selectedRoom.cells[1].innerText.trim();
+    const floor = selectedRoom.cells[2].innerText.trim();
+    const price = selectedRoom.cells[3].innerText.trim();
+    const status = selectedRoom.cells[4].innerText.trim();
+
+    document.getElementById("viewRoomNo").innerText = roomNo;
+    document.getElementById("viewRoomType").innerText = roomType;
+    document.getElementById("viewRoomFloor").innerText = floor;
+    document.getElementById("viewRoomPrice").innerText = price;
+    document.getElementById("viewRoomStatus").innerText = status;
+
+    document.getElementById("viewRoomDescription").innerText =
+        "Spacious " + roomType.toLowerCase() + " room with king size bed.";
+
+    document.getElementById("viewRoomFeatures").innerText =
+        "Wi-Fi, AC, TV, Mini Bar";
+
+    document.getElementById("viewRoomCleaned").innerText =
+        "13-Aug-2026";
+
+    document.getElementById("viewRoomModal").style.display = "flex";
+}
+
+
+function closeViewRoom() {
+
+    document.getElementById("viewRoomModal").style.display = "none";
+
+}
+// ===============================
+// EDIT ROOM
+// ===============================
+
+let editingRoomRow = null;
+
+function editRoom(roomNumber) {
+
+    const rows = document.querySelectorAll("#roomTableBody tr");
+
+    editingRoomRow = null;
+
+    rows.forEach(function(row) {
+
+        if (row.cells[0].innerText.trim() === String(roomNumber)) {
+            editingRoomRow = row;
+        }
+
+    });
+
+    if (!editingRoomRow) return;
+
+    document.getElementById("editRoomNo").value =
+        editingRoomRow.cells[0].innerText.trim();
+
+    document.getElementById("editRoomType").value =
+        editingRoomRow.cells[1].innerText.trim();
+
+    document.getElementById("editFloor").value =
+        editingRoomRow.cells[2].innerText.trim();
+
+    document.getElementById("editPrice").value =
+        editingRoomRow.cells[3].innerText
+            .replace("₹", "")
+            .replace(/,/g, "")
+            .trim();
+
+    document.getElementById("editStatus").value =
+        editingRoomRow.cells[4].innerText.trim();
+
+    document.getElementById("editDescription").value =
+        "Spacious " +
+        editingRoomRow.cells[1].innerText.trim().toLowerCase() +
+        " room with king size bed.";
+
+    document.getElementById("editFeatures").value =
+        "Wi-Fi, AC, TV, Mini Bar";
+
+    document.getElementById("editRoomModal").style.display = "flex";
+}
+
+
+function closeEditRoom() {
+
+    document.getElementById("editRoomModal").style.display = "none";
+
+    editingRoomRow = null;
+}
+
+
+function updateRoom() {
+
+    if (!editingRoomRow) return;
+
+    const roomNo =
+        document.getElementById("editRoomNo").value.trim();
+
+    const roomType =
+        document.getElementById("editRoomType").value;
+
+    const floor =
+        document.getElementById("editFloor").value;
+
+    const price =
+        document.getElementById("editPrice").value.trim();
+
+    const status =
+        document.getElementById("editStatus").value;
+
+    if (!roomNo || !roomType || !floor || !price || !status) {
+
+        alert("Please fill all required fields.");
+
+        return;
+    }
+
+    editingRoomRow.cells[0].innerText = roomNo;
+    editingRoomRow.cells[1].innerText = roomType;
+    editingRoomRow.cells[2].innerText = floor;
+    editingRoomRow.cells[3].innerText =
+        "₹" + Number(price).toLocaleString("en-IN");
+
+    editingRoomRow.cells[4].innerHTML =
+        `<span class="status ${status.toLowerCase()}">${status}</span>`;
+
+    closeEditRoom();
+
+    alert("Room updated successfully!");
+}
+// ===============================
+// DELETE ROOM
+// ===============================
+
+function deleteRoom(roomNumber) {
+
+    const rows = document.querySelectorAll("#roomTableBody tr");
+
+    let selectedRoom = null;
+
+    rows.forEach(function(row) {
+
+        if (row.cells[0].innerText.trim() === String(roomNumber)) {
+            selectedRoom = row;
+        }
+
+    });
+
+    if (!selectedRoom) return;
+
+    const confirmDelete = confirm(
+        "Are you sure you want to delete Room " + roomNumber + "?"
+    );
+
+    if (!confirmDelete) return;
+
+    selectedRoom.remove();
+
+    alert("Room deleted successfully!");
+}
