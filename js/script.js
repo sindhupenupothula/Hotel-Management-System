@@ -809,10 +809,69 @@ function addRoom() {
     `;
 
     tbody.appendChild(row);
-
+    setupRoomPagination();
     closeAddRoom();
 
     alert("Room added successfully!");
+}
+function setupRoomPagination() {
+    const tbody = document.getElementById("roomTableBody");
+    const pagination = document.getElementById("roomPagination");
+
+    if (!tbody || !pagination) return;
+
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+    const rowsPerPage = 5;
+    const totalPages = Math.ceil(rows.length / rowsPerPage);
+
+    pagination.innerHTML = "";
+
+    if (totalPages <= 1) return;
+
+    let currentPage = 1;
+
+    function showPage(page) {
+        currentPage = page;
+
+        const start = (page - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+
+        rows.forEach((row, index) => {
+            row.style.display =
+                index >= start && index < end ? "" : "none";
+        });
+
+        pagination.innerHTML = "";
+
+        // Previous button
+        const prev = document.createElement("button");
+        prev.innerHTML = "‹";
+        prev.disabled = currentPage === 1;
+        prev.onclick = () => showPage(currentPage - 1);
+        pagination.appendChild(prev);
+
+        // Page buttons
+        for (let i = 1; i <= totalPages; i++) {
+            const button = document.createElement("button");
+            button.innerText = i;
+
+            if (i === currentPage) {
+                button.classList.add("active");
+            }
+
+            button.onclick = () => showPage(i);
+            pagination.appendChild(button);
+        }
+
+        // Next button
+        const next = document.createElement("button");
+        next.innerHTML = "›";
+        next.disabled = currentPage === totalPages;
+        next.onclick = () => showPage(currentPage + 1);
+        pagination.appendChild(next);
+    }
+
+    showPage(1);
 }
 // ===============================
 // DELETE ROOM
@@ -844,3 +903,87 @@ function deleteRoom(roomNumber) {
 
     alert("Room deleted successfully!");
 }
+// ===============================
+// ROOM PAGINATION
+// ===============================
+
+let currentRoomPage = 1;
+const roomsPerPage = 5;
+
+function renderRoomPagination() {
+
+    const tbody = document.getElementById("roomTableBody");
+    const pagination = document.getElementById("roomPagination");
+
+    if (!tbody || !pagination) return;
+
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+
+    const totalPages = Math.ceil(rows.length / roomsPerPage);
+
+    if (currentRoomPage > totalPages) {
+        currentRoomPage = totalPages || 1;
+    }
+
+    rows.forEach(function(row, index) {
+
+        const start = (currentRoomPage - 1) * roomsPerPage;
+        const end = start + roomsPerPage;
+
+        row.style.display =
+            index >= start && index < end ? "table-row" : "none";
+    });
+
+    pagination.innerHTML = "";
+
+    // Previous button
+    const previousButton = document.createElement("button");
+    previousButton.innerText = "‹";
+    previousButton.disabled = currentRoomPage === 1;
+
+    previousButton.onclick = function() {
+        if (currentRoomPage > 1) {
+            currentRoomPage--;
+            renderRoomPagination();
+        }
+    };
+
+    pagination.appendChild(previousButton);
+
+    // Page buttons
+    for (let page = 1; page <= totalPages; page++) {
+
+        const pageButton = document.createElement("button");
+
+        pageButton.innerText = page;
+
+        if (page === currentRoomPage) {
+            pageButton.classList.add("active");
+        }
+
+        pageButton.onclick = function() {
+            currentRoomPage = page;
+            renderRoomPagination();
+        };
+
+        pagination.appendChild(pageButton);
+    }
+
+    // Next button
+    const nextButton = document.createElement("button");
+    nextButton.innerText = "›";
+    nextButton.disabled = currentRoomPage === totalPages;
+
+    nextButton.onclick = function() {
+        if (currentRoomPage < totalPages) {
+            currentRoomPage++;
+            renderRoomPagination();
+        }
+    };
+
+    pagination.appendChild(nextButton);
+}
+
+// Initial pagination
+renderRoomPagination();
+setupRoomPagination();

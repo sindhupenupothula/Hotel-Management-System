@@ -447,3 +447,37 @@ header {
 .update-room-btn:hover {
     background: #0f46b5;
 }
+.pagination {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 10px 0;
+}
+
+.pagination button {
+    min-width: 42px;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.pagination button:hover {
+    background: #f1f5ff;
+}
+
+.pagination button.active {
+    background: #1769e0;
+    color: #fff;
+    border-color: #1769e0;
+}
+
+.pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
