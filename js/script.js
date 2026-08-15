@@ -975,9 +975,31 @@ function deleteRoom(roomNumber) {
     );
 
     if (!confirmDelete) return;
-
     selectedRoom.remove();
 
+let savedRooms =
+    JSON.parse(localStorage.getItem("sayoraRooms")) || [];
+
+savedRooms = savedRooms.filter(function(room) {
+    return String(room.roomNo) !== String(roomNumber);
+});
+
+localStorage.setItem("sayoraRooms", JSON.stringify(savedRooms));
+// Remember deleted room
+let deletedRooms =
+    JSON.parse(localStorage.getItem("deletedRooms")) || [];
+
+if (!deletedRooms.includes(String(roomNumber))) {
+    deletedRooms.push(String(roomNumber));
+}
+
+localStorage.setItem(
+    "deletedRooms",
+    JSON.stringify(deletedRooms)
+);
+renderRoomPagination();
+
+alert("Room deleted successfully!");
     alert("Room deleted successfully!");
 }
 // ===============================
@@ -1125,7 +1147,19 @@ function loadSavedRooms() {
     const tbody = document.getElementById("roomTableBody");
 
     if (!tbody) return;
+    const deletedRooms =
+    JSON.parse(localStorage.getItem("deletedRooms")) || [];
 
+const existingRows = tbody.querySelectorAll("tr");
+
+existingRows.forEach(function(row) {
+
+    const roomNo = row.cells[0]?.innerText.trim();
+
+    if (deletedRooms.includes(String(roomNo))) {
+        row.remove();
+    }
+});
     savedRooms.forEach(function(room) {
 
         // Avoid duplicate rooms
