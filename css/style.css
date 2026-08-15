@@ -97,3 +97,20 @@ body{
     color:white;
     font-size:18px;
 }
+/* FIX FOR MANAGE ROOMS PAGE */
+body {
+    height: auto;
+    min-height: 100vh;
+    display: block;
+    background: #f7f8fa;
+}
+
+header {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar {
+    width: 100%;
+}

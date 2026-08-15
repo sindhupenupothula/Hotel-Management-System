@@ -1,0 +1,284 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f7f8fa;
+    color: #1f2937;
+}
+
+/* NAVBAR */
+.navbar {
+    width: 100%;
+    height: 58px;
+    background: #050505;
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 0 38px;
+    margin: 0;
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    z-index: 1000;
+}
+header {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+.rooms-page {
+    width: 100%;
+    margin: 0;
+    padding: 25px 38px;
+}
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-right: 55px;
+}
+
+.logo img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.logo h2 {
+    font-size: 21px;
+    margin: 0;
+    color: white;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: #00b7ff;
+}
+
+/* PAGE */
+.rooms-page {
+    padding: 25px 38px;
+}
+
+/* HEADER */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+}
+
+.page-header h1 {
+    margin: 0 0 5px;
+    font-size: 28px;
+}
+
+.page-header p {
+    margin: 0;
+    color: #6b7280;
+}
+
+.add-room-btn {
+    background: #1557d6;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.add-room-btn:hover {
+    background: #0f46b5;
+}
+
+/* MAIN LAYOUT */
+.rooms-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 30px;
+}
+
+/* FILTERS */
+.filters-card,
+.room-list-card {
+    background: white;
+    border: 1px solid #e2e5e9;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.filters-card h2,
+.room-list-card h2 {
+    margin-top: 0;
+    font-size: 18px;
+}
+
+.filters-card label {
+    display: block;
+    margin-top: 18px;
+    margin-bottom: 7px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.filters-card input,
+.filters-card select {
+    width: 100%;
+    height: 40px;
+    border: 1px solid #d1d5db;
+    border-radius: 5px;
+    padding: 0 10px;
+    font-size: 13px;
+    background: white;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.filter-buttons button {
+    flex: 1;
+    height: 40px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.filter-buttons button:first-child {
+    background: #1557d6;
+    color: white;
+}
+
+.filter-buttons button:last-child {
+    background: white;
+    border: 1px solid #d1d5db;
+}
+
+/* TABLE */
+.room-list-card {
+    overflow-x: auto;
+}
+
+.room-list-card h2 {
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 15px;
+}
+
+.room-list-card table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.room-list-card th {
+    background: #eef3fb;
+    padding: 13px 10px;
+    text-align: left;
+    color: #374151;
+}
+
+.room-list-card td {
+    padding: 13px 10px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.room-list-card tr:hover {
+    background: #fafafa;
+}
+
+/* STATUS */
+.status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status.available {
+    background: #dff5e8;
+    color: #16804a;
+}
+
+.status.occupied {
+    background: #fde1e1;
+    color: #c62828;
+}
+
+.status.maintenance {
+    background: #fff0d5;
+    color: #b76b00;
+}
+
+/* ACTION BUTTONS */
+.view-btn,
+.edit-btn,
+.delete-btn {
+    width: 34px;
+    height: 32px;
+    margin-right: 5px;
+    background: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.view-btn {
+    border: 1px solid #2765c7;
+    color: #1557d6;
+}
+
+.edit-btn {
+    border: 1px solid #e0a21a;
+    color: #d58b00;
+}
+
+.delete-btn {
+    border: 1px solid #dc3545;
+    color: #dc3545;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1000px) {
+
+    .navbar {
+        padding: 10px 20px;
+    }
+
+    .logo {
+        margin-right: 20px;
+    }
+
+    .nav-links {
+        gap: 12px;
+    }
+
+    .rooms-layout {
+        grid-template-columns: 1fr;
+    }
+}

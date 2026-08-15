@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Rooms - Sayora Hotels</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/rooms.css">
+</head>
+
+<body>
+
+<header>
+    <nav class="navbar">
+
+        <div class="logo">
+            <img src="../images/logo.jpg" alt="Sayora Hotels">
+            <h2>SAYORA HOTELS</h2>
+        </div>
+
+        <ul class="nav-links">
+            <li><a href="../home.html">Home</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="rooms.html" class="active">Manage Rooms</a></li>
+            <li><a href="bookings.html">Bookings</a></li>
+            <li><a href="customers.html">Customers</a></li>
+            <li><a href="#">Check-In</a></li>
+            <li><a href="#">Check-Out</a></li>
+            <li><a href="#">Staff</a></li>
+            <li><a href="#">Payments</a></li>
+            <li><a href="#">Reviews</a></li>
+            <li><a href="../index.html">Logout</a></li>
+        </ul>
+
+        <div class="profile-icon">
+            <i class="fa-solid fa-circle-user"></i>
+        </div>
+
+    </nav>
+</header>
+
+
+<main class="rooms-page">
+
+    <div class="page-header">
+        <div>
+            <h1>🛏️ Manage Rooms</h1>
+            <p>Add, update and manage hotel room details</p>
+        </div>
+
+        <button class="add-room-btn" onclick="openAddRoom()">
+            + Add New Room
+        </button>
+    </div>
+
+
+    <div class="rooms-layout">
+
+        <!-- FILTERS -->
+        <aside class="filters-card">
+
+            <h2>Filters</h2>
+
+            <label>Search Room</label>
+            <input type="text" id="searchRoom"
+                   placeholder="Search by room number...">
+
+            <label>Room Type</label>
+            <select id="roomTypeFilter">
+                <option value="">All Types</option>
+                <option value="Luxury">Luxury</option>
+                <option value="Deluxe">Deluxe</option>
+                <option value="Suite">Suite</option>
+            </select>
+
+            <label>Floor</label>
+            <select id="floorFilter">
+                <option value="">All Floors</option>
+                <option value="1st Floor">1st Floor</option>
+                <option value="2nd Floor">2nd Floor</option>
+                <option value="3rd Floor">3rd Floor</option>
+            </select>
+
+            <label>Status</label>
+            <select id="statusFilter">
+                <option value="">All Status</option>
+                <option value="Available">Available</option>
+                <option value="Occupied">Occupied</option>
+                <option value="Maintenance">Maintenance</option>
+            </select>
+
+            <div class="filter-buttons">
+                <button onclick="applyFilters()">Apply Filters</button>
+                <button onclick="resetFilters()">Reset</button>
+            </div>
+
+        </aside>
+
+
+        <!-- ROOM LIST -->
+        <section class="room-list-card">
+
+            <h2>☷ Room List</h2>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Room No.</th>
+                        <th>Room Type</th>
+                        <th>Floor</th>
+                        <th>Price / Night</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody id="roomTableBody">
+
+                    <tr>
+                        <td>101</td>
+                        <td>Luxury</td>
+                        <td>1st Floor</td>
+                        <td>₹10,000</td>
+                        <td><span class="status available">Available</span></td>
+                        <td>
+                            <button class="view-btn">👁</button>
+                            <button class="edit-btn">✎</button>
+                            <button class="delete-btn">🗑</button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>102</td>
+                        <td>Luxury</td>
+                        <td>1st Floor</td>
+                        <td>₹10,000</td>
+                        <td><span class="status available">Available</span></td>
+                        <td>
+                            <button class="view-btn">👁</button>
+                            <button class="edit-btn">✎</button>
+                            <button class="delete-btn">🗑</button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>118</td>
+                        <td>Deluxe</td>
+                        <td>1st Floor</td>
+                        <td>₹7,000</td>
+                        <td><span class="status occupied">Occupied</span></td>
+                        <td>
+                            <button class="view-btn">👁</button>
+                            <button class="edit-btn">✎</button>
+                            <button class="delete-btn">🗑</button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>136</td>
+                        <td>Suite</td>
+                        <td>1st Floor</td>
+                        <td>₹15,000</td>
+                        <td><span class="status available">Available</span></td>
+                        <td>
+                            <button class="view-btn">👁</button>
+                            <button class="edit-btn">✎</button>
+                            <button class="delete-btn">🗑</button>
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+    </div>
+
+</main>
+
+
+<script src="../js/script.js"></script>
+
+</body>
+</html>

@@ -274,7 +274,7 @@ function showCancelledBookings() {
 function generateBookingData() {
 
     const tbody = document.getElementById("bookingsTableBody");
-
+    if (!tbody)return;
     tbody.innerHTML = "";
 
     const names = [
@@ -372,12 +372,16 @@ function generateBookingData() {
 generateBookingData();
 function updateDateTime() {
     const now = new Date();
+const currentDate = document.getElementById("currentDate");
+const currentTime = document.getElementById("currentTime");
 
-    document.getElementById("currentDate").innerHTML =
-        now.toLocaleDateString();
+if (currentDate) {
+    currentDate.innerHTML = now.toLocaleDateString();
+}
 
-    document.getElementById("currentTime").innerHTML =
-        now.toLocaleTimeString();
+if (currentTime) {
+    currentTime.innerHTML = now.toLocaleTimeString();
+}
 }
 
 updateDateTime();
