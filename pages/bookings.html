@@ -399,25 +399,13 @@
                         Room Type
                     </label>
 
-                    <select id="bookingRoomType" required>
-
-                        <option value="">
-                            Select Room Type
-                        </option>
-
-                        <option value="Luxury">
-                            Luxury
-                        </option>
-
-                        <option value="Deluxe">
-                            Deluxe
-                        </option>
-
-                        <option value="Suite">
-                            Suite
-                        </option>
-
-                    </select>
+                    <input
+    type="text"
+    id="bookingRoomType"
+    placeholder="Room type will appear automatically"
+    readonly
+    required
+>
 
                 </div>
 
@@ -486,7 +474,8 @@
                     <input
                         type="number"
                         id="bookingAmount"
-                        placeholder="₹ Enter amount"
+                        placeholder="Amount will appear automatically"
+                        readonly
                         required
                     >
 
@@ -567,6 +556,183 @@
 
 
 <script src="../js/script.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
 
+    const addNewBookingBtn = document.getElementById("addNewBookingBtn");
+    const newBookingModal = document.getElementById("newBookingModal");
+    const closeModalBtn = document.querySelector(".close-modal-btn");
+    const cancelBookingBtn = document.querySelector(".cancel-booking-btn");
+    const newBookingForm = document.getElementById("newBookingForm");
+    const bookingsTableBody = document.getElementById("bookingsTableBody");
+
+    // Open New Booking Modal
+    addNewBookingBtn.addEventListener("click", function () {
+        newBookingModal.style.display = "flex";
+    });
+
+    // Close Modal
+    closeModalBtn.addEventListener("click", function () {
+        newBookingModal.style.display = "none";
+    });
+     const bookingRoomNo = document.getElementById("bookingRoomNo");
+const bookingRoomType = document.getElementById("bookingRoomType");
+const bookingAmount = document.getElementById("bookingAmount");
+
+const roomDetails = {};
+
+for (let roomNo = 101; roomNo <= 350; roomNo++) {
+
+    let type = "";
+    let amount = 0;
+
+    if (roomNo >= 101 && roomNo <= 117) {
+        type = "Luxury";
+        amount = 10000;
+    }
+    else if (roomNo >= 118 && roomNo <= 134) {
+        type = "Deluxe";
+        amount = 7000;
+    }
+    else if (roomNo >= 135 && roomNo <= 150) {
+        type = "Suite";
+        amount = 15000;
+    }
+    else if (roomNo >= 201 && roomNo <= 217) {
+        type = "Luxury";
+        amount = 11000;
+    }
+    else if (roomNo >= 218 && roomNo <= 234) {
+        type = "Deluxe";
+        amount = 8000;
+    }
+    else if (roomNo >= 235 && roomNo <= 250) {
+        type = "Suite";
+        amount = 16000;
+    }
+    else if (roomNo >= 301 && roomNo <= 316) {
+        type = "Luxury";
+        amount = 12000;
+    }
+    else if (roomNo >= 317 && roomNo <= 332) {
+        type = "Deluxe";
+        amount = 9000;
+    }
+    else if (roomNo >= 333 && roomNo <= 350) {
+        type = "Suite";
+        amount = 17000;
+    }
+
+    if (type !== "") {
+        roomDetails[roomNo] = {
+            type: type,
+            amount: amount
+        };
+    }
+}
+
+bookingRoomNo.addEventListener("input", function () {
+
+    const roomNumber = bookingRoomNo.value.trim();
+
+    if (roomDetails[roomNumber]) {
+
+        bookingRoomType.value = roomDetails[roomNumber].type;
+        bookingAmount.value = roomDetails[roomNumber].amount;
+
+    } else {
+
+        bookingRoomType.value = "";
+        bookingAmount.value = "";
+
+    }
+
+});
+    // Cancel Booking
+    cancelBookingBtn.addEventListener("click", function () {
+        newBookingModal.style.display = "none";
+        newBookingForm.reset();
+    });
+
+    // Close modal when clicking outside
+    newBookingModal.addEventListener("click", function (event) {
+        if (event.target === newBookingModal) {
+            newBookingModal.style.display = "none";
+        }
+    });
+
+     // Save New Booking
+    newBookingForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const customerName =
+            document.getElementById("customerName").value;
+
+        const roomNo =
+            document.getElementById("bookingRoomNo").value;
+
+        const roomType =
+            document.getElementById("bookingRoomType").value;
+
+        const guests =
+            document.getElementById("bookingGuests").value;
+
+        const checkIn =
+            document.getElementById("checkInDate").value;
+
+        const checkOut =
+            document.getElementById("checkOutDate").value;
+
+        const amount =
+            document.getElementById("bookingAmount").value;
+
+        const paymentStatus =
+            document.getElementById("bookingPaymentStatus").value;
+
+        const bookingStatus =
+            document.getElementById("newBookingStatus").value;
+
+        // Generate Booking ID
+        const bookingId =
+            "BK" + Date.now().toString().slice(-6);
+
+        // Create table row
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td>${bookingId}</td>
+            <td>${customerName}</td>
+            <td>${roomNo}</td>
+            <td>${roomType}</td>
+            <td>${checkIn}</td>
+            <td>${checkOut}</td>
+            <td>${guests}</td>
+            <td>₹${amount}</td>
+            <td>${bookingStatus}</td>
+            <td>${paymentStatus}</td>
+            <td>
+                <button type="button" class="edit-booking-btn">
+                    Edit
+                </button>
+
+                <button type="button" class="delete-booking-btn">
+                    Delete
+                </button>
+            </td>
+        `;
+
+        bookingsTableBody.insertBefore(row,bookingsTableBody.firstChild);
+        // Close modal
+        newBookingModal.style.display = "none";
+
+        // Clear form
+        newBookingForm.reset();
+
+        // Show success message
+        alert("Booking added successfully!");
+    });
+
+});
+</script>
 </body>
 </html>

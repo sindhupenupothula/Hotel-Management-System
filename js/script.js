@@ -359,8 +359,8 @@ function generateBookingData() {
         row.innerHTML = `
             <td>B${String(i).padStart(3, "0")}</td>
             <td>${name}</td>
-            <td>${roomType}</td>
             <td>${roomNo}</td>
+            <td>${roomType}</td>
             <td>${checkIn}</td>
             <td>${checkOut}</td>
             <td>${status}</td>
@@ -1197,3 +1197,94 @@ existingRows.forEach(function(row) {
 }
 
 loadSavedRooms();
+// ===============================
+// BOOKING ROOM AUTO FILL
+// ===============================
+
+function autoFillBookingRoomDetails() {
+
+    const roomNoInput = document.getElementById("bookingRoomNo");
+    const roomTypeInput = document.getElementById("bookingRoomType");
+    const amountInput = document.getElementById("bookingAmount");
+
+    if (!roomNoInput || !roomTypeInput || !amountInput) {
+        return;
+    }
+
+    const roomNo = Number(roomNoInput.value.trim());
+
+    if (!roomNo) {
+        roomTypeInput.value = "";
+        amountInput.value = "";
+        return;
+    }
+
+    let roomType = "";
+    let price = "";
+
+    // 1st Floor
+    if (roomNo >= 101 && roomNo <= 117) {
+        roomType = "Luxury";
+        price = 10000;
+    }
+    else if (roomNo >= 118 && roomNo <= 134) {
+        roomType = "Deluxe";
+        price = 7000;
+    }
+    else if (roomNo >= 135 && roomNo <= 150) {
+        roomType = "Suite";
+        price = 15000;
+    }
+
+    // 2nd Floor
+    else if (roomNo >= 201 && roomNo <= 217) {
+        roomType = "Luxury";
+        price = 11000;
+    }
+    else if (roomNo >= 218 && roomNo <= 234) {
+        roomType = "Deluxe";
+        price = 8000;
+    }
+    else if (roomNo >= 235 && roomNo <= 250) {
+        roomType = "Suite";
+        price = 16000;
+    }
+
+    // 3rd Floor
+    else if (roomNo >= 301 && roomNo <= 316) {
+        roomType = "Luxury";
+        price = 12000;
+    }
+    else if (roomNo >= 317 && roomNo <= 332) {
+        roomType = "Deluxe";
+        price = 9000;
+    }
+    else if (roomNo >= 333 && roomNo <= 350) {
+        roomType = "Suite";
+        price = 17000;
+    }
+
+    if (roomType) {
+        roomTypeInput.value = roomType;
+        amountInput.value = price;
+    }
+    else {
+        roomTypeInput.value = "";
+        amountInput.value = "";
+    }
+}
+
+
+// Room number type chesinappudu automatic ga fill avvali
+document.addEventListener("DOMContentLoaded", function () {
+
+    const roomNoInput = document.getElementById("bookingRoomNo");
+
+    if (roomNoInput) {
+        roomNoInput.addEventListener(
+            "input",
+            autoFillBookingRoomDetails
+        );
+    }
+
+});
