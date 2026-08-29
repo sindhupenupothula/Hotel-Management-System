@@ -1,0 +1,801 @@
+/* ===============================
+   BOOKINGS PAGE
+================================ */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #ffffff;
+    color: #222;
+}
+
+
+/* ===============================
+   HEADER
+================================ */
+
+.top-header {
+    width: 100%;
+    min-height: 72px;
+    background: #111827;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    white-space: nowrap;
+}
+
+.logo-section img {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.logo-section h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+
+/* ===============================
+   NAVIGATION
+================================ */
+
+.main-nav {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+.main-nav a {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.main-nav a:hover {
+    color: #159bd3;
+}
+
+.main-nav a.active {
+    color: #159bd3;
+    font-weight: bold;
+}
+
+
+/* ===============================
+   MAIN CONTAINER
+================================ */
+
+.bookings-container {
+    width: 100%;
+    padding: 30px 55px;
+}
+
+
+/* ===============================
+   PAGE HEADER
+================================ */
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+}
+
+.page-header h1 {
+    margin: 0 0 8px;
+    font-size: 30px;
+}
+
+.page-header p {
+    margin: 0;
+    color: #777;
+    font-size: 15px;
+}
+
+.new-booking-btn {
+    border: none;
+    background: #159bd3;
+    color: white;
+    padding: 13px 22px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.new-booking-btn:hover {
+    background: #087eaf;
+}
+
+
+/* ===============================
+   BOOKING CONTENT
+================================ */
+
+.booking-content {
+    display: grid;
+    grid-template-columns: 245px 1fr;
+    gap: 45px;
+    align-items: start;
+}
+
+
+/* ===============================
+   FILTERS
+================================ */
+
+.booking-filters {
+    padding: 5px 5px 20px;
+}
+
+.booking-filters h2 {
+    margin: 0 0 28px;
+    font-size: 20px;
+}
+
+.filter-group {
+    margin-bottom: 23px;
+}
+
+.filter-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 9px;
+}
+
+.filter-group input,
+.filter-group select {
+    width: 100%;
+    height: 42px;
+    border: 1px solid #d5d5d5;
+    border-radius: 5px;
+    padding: 0 12px;
+    font-size: 13px;
+    background: white;
+    outline: none;
+}
+
+.filter-group input:focus,
+.filter-group select:focus {
+    border-color: #159bd3;
+}
+
+
+/* ===============================
+   FILTER BUTTONS
+================================ */
+
+.filter-buttons {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-top: 30px;
+}
+
+.apply-filter-btn {
+    border: none;
+    background: #159bd3;
+    color: white;
+    padding: 11px 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.apply-filter-btn:hover {
+    background: #087eaf;
+}
+
+.reset-filter-btn {
+    border: none;
+    background: transparent;
+    color: #555;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+
+/* ===============================
+   BOOKING LIST
+================================ */
+
+.booking-list-section {
+    min-width: 0;
+}
+
+.section-title {
+    margin-bottom: 20px;
+}
+
+.section-title h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+
+/* ===============================
+   TABLE
+================================ */
+
+.booking-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.booking-table {
+    width: 100%;
+    min-width: 1050px;
+    border-collapse: collapse;
+    background: white;
+}
+
+.booking-table thead {
+    background: #159bd3;
+    color: white;
+}
+
+.booking-table th {
+    padding: 14px 10px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.booking-table td {
+    padding: 15px 10px;
+    border-bottom: 1px solid #eeeeee;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.booking-table tbody tr:hover {
+    background: #f7fbfd;
+}
+
+
+/* ===============================
+   STATUS
+================================ */
+
+.status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.status.confirmed {
+    background: #e5f7ec;
+    color: #168448;
+}
+
+.status.pending {
+    background: #fff5d9;
+    color: #a87500;
+}
+
+.status.cancelled {
+    background: #fde7e7;
+    color: #c62828;
+}
+
+
+/* ===============================
+   PAYMENT STATUS
+================================ */
+
+.payment-paid {
+    color: #168448;
+    font-weight: bold;
+}
+
+.payment-pending {
+    color: #a87500;
+    font-weight: bold;
+}
+
+.payment-refunded {
+    color: #7b4bb7;
+    font-weight: bold;
+}
+
+
+/* ===============================
+   ACTION BUTTONS
+================================ */
+
+.booking-action-btn {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 4px;
+}
+
+.booking-action-btn:hover {
+    background: #f1f8fc;
+}
+
+
+/* ===============================
+   PAGINATION
+================================ */
+
+.booking-pagination {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 5px;
+    margin-top: 20px;
+}
+
+.booking-pagination button {
+    min-width: 32px;
+    height: 32px;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.booking-pagination button:hover {
+    background: #eaf7fc;
+}
+
+.booking-pagination button.active {
+    background: #159bd3;
+    color: white;
+    border-color: #159bd3;
+}
+
+.booking-pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+/* ===============================
+   STATUS GUIDE
+================================ */
+
+.booking-status-guide {
+    margin-top: 28px;
+    padding-top: 18px;
+    border-top: 1px solid #eeeeee;
+}
+
+.booking-status-guide h3 {
+    margin: 0 0 15px;
+    font-size: 15px;
+}
+
+.status-guide-items {
+    display: flex;
+    gap: 25px;
+    align-items: center;
+}
+
+.status-guide-items span {
+    font-size: 12px;
+    color: #555;
+}
+
+.guide-dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.guide-dot.confirmed {
+    background: #168448;
+}
+
+.guide-dot.pending {
+    background: #a87500;
+}
+
+.guide-dot.cancelled {
+    background: #c62828;
+}
+
+
+/* ===============================
+   MODAL
+================================ */
+
+.booking-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.booking-modal-content {
+    width: 650px;
+    max-width: 92%;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: white;
+    border-radius: 8px;
+    padding: 25px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.close-modal-btn {
+    border: none;
+    background: transparent;
+    font-size: 28px;
+    cursor: pointer;
+    color: #555;
+}
+
+
+/* ===============================
+   FORM
+================================ */
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    height: 40px;
+    border: 1px solid #d5d5d5;
+    border-radius: 5px;
+    padding: 0 10px;
+    outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #159bd3;
+}
+
+
+/* ===============================
+   MODAL BUTTONS
+================================ */
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.cancel-booking-btn,
+.save-booking-btn {
+    border: none;
+    padding: 11px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.cancel-booking-btn {
+    background: #eeeeee;
+    color: #333;
+}
+
+.save-booking-btn {
+    background: #159bd3;
+    color: white;
+}
+
+.save-booking-btn:hover {
+    background: #087eaf;
+}
+
+
+/* ===============================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 1100px) {
+
+    .top-header {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+    }
+
+    .main-nav {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .bookings-container {
+        padding: 25px;
+    }
+
+    .booking-content {
+        grid-template-columns: 1fr;
+    }
+
+    .booking-filters {
+        width: 100%;
+    }
+}
+
+
+@media (max-width: 650px) {
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 18px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .status-guide-items {
+        flex-wrap: wrap;
+    }
+}
+/* ===============================
+   FIT BOOKING TABLE ON SCREEN
+================================ */
+
+.booking-content {
+    grid-template-columns: 210px minmax(0, 1fr);
+    gap: 25px;
+}
+
+.booking-table {
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
+}
+
+.booking-table th,
+.booking-table td {
+    padding: 11px 5px;
+    font-size: 10px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.booking-table th {
+    font-size: 10px;
+}
+
+.booking-table th:nth-child(1),
+.booking-table td:nth-child(1) {
+    width: 7%;
+}
+
+.booking-table th:nth-child(2),
+.booking-table td:nth-child(2) {
+    width: 10%;
+}
+
+.booking-table th:nth-child(3),
+.booking-table td:nth-child(3) {
+    width: 7%;
+}
+
+.booking-table th:nth-child(4),
+.booking-table td:nth-child(4) {
+    width: 8%;
+}
+
+.booking-table th:nth-child(5),
+.booking-table td:nth-child(5),
+.booking-table th:nth-child(6),
+.booking-table td:nth-child(6) {
+    width: 9%;
+}
+
+.booking-table th:nth-child(7),
+.booking-table td:nth-child(7) {
+    width: 6%;
+}
+
+.booking-table th:nth-child(8),
+.booking-table td:nth-child(8) {
+    width: 10%;
+}
+
+.booking-table th:nth-child(9),
+.booking-table td:nth-child(9) {
+    width: 9%;
+}
+
+.booking-table th:nth-child(10),
+.booking-table td:nth-child(10) {
+    width: 9%;
+}
+
+.booking-table th:nth-child(11),
+.booking-table td:nth-child(11) {
+    width: 10%;
+}
+
+.booking-table-wrapper {
+    overflow-x: hidden;
+}
+/* ===============================
+   BOOKINGS - FILTERS ON TOP
+================================ */
+
+.booking-content {
+    display: block;
+    width: 100%;
+}
+
+/* Filters full width on top */
+.booking-filters {
+    width: 100%;
+    padding: 18px 20px;
+    margin-bottom: 35px;
+    border: 1px solid #eeeeee;
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.booking-filters h2 {
+    margin: 0 0 20px;
+    font-size: 20px;
+}
+
+/* Put all filter fields in one horizontal row */
+.booking-filters .filter-group {
+    display: inline-block;
+    vertical-align: top;
+    width: 18%;
+    margin-right: 1.5%;
+    margin-bottom: 10px;
+}
+
+.booking-filters .filter-group:last-of-type {
+    margin-right: 0;
+}
+
+.booking-filters .filter-group label {
+    margin-bottom: 8px;
+}
+
+.booking-filters .filter-group input,
+.booking-filters .filter-group select {
+    width: 100%;
+}
+
+/* Filter buttons below */
+.booking-filters .filter-buttons {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 12px;
+}
+
+/* Booking list full width */
+.booking-list-section {
+    width: 100%;
+    min-width: 0;
+}
+
+.booking-list-section .section-title {
+    margin-bottom: 18px;
+}
+
+.booking-list-section .section-title h2 {
+    font-size: 21px;
+}
+
+/* Make table larger and readable */
+.booking-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.booking-table {
+    width: 100%;
+    min-width: 1100px;
+    table-layout: auto;
+}
+
+.booking-table th {
+    padding: 14px 10px;
+    font-size: 12px;
+    text-align: center;
+}
+
+.booking-table td {
+    padding: 14px 10px;
+    font-size: 12px;
+    text-align: center;
+}
+
+/* Keep Payment and Actions visible */
+.booking-table th:nth-child(10),
+.booking-table td:nth-child(10) {
+    min-width: 90px;
+}
+
+.booking-table th:nth-child(11),
+.booking-table td:nth-child(11) {
+    min-width: 100px;
+}
+
+/* Action buttons */
+.booking-action-btn {
+    width: 32px;
+    height: 32px;
+    margin-right: 5px;
+}
+
+
+/* ===============================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 1000px) {
+
+    .booking-filters .filter-group {
+        width: 31%;
+        margin-right: 2%;
+    }
+
+}
+
+@media (max-width: 650px) {
+
+    .booking-filters .filter-group {
+        width: 100%;
+        margin-right: 0;
+    }
+
+}

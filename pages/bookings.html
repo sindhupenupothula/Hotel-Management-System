@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Manage Bookings - Sayora Hotels</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/bookings.css">
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+
+<header class="top-header">
+
+    <div class="logo-section">
+        <img src="../images/logo.jpg" alt="Sayora Hotels Logo">
+        <h2>SAYORA HOTELS</h2>
+    </div>
+
+    <nav class="main-nav">
+        <a href="home.html">Home</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="rooms.html">Manage Rooms</a>
+        <a href="bookings.html" class="active">Bookings</a>
+        <a href="customers.html">Customers</a>
+        <a href="#">Check-In</a>
+        <a href="#">Check-Out</a>
+        <a href="#">Staff</a>
+        <a href="#">Payments</a>
+        <a href="#">Reviews</a>
+        <a href="index.html">Logout</a>
+    </nav>
+
+</header>
+
+
+<!-- ================= MAIN CONTENT ================= -->
+
+<main class="bookings-container">
+
+    <!-- Page Heading -->
+
+    <div class="page-header">
+
+        <div>
+            <h1>📋 Manage Bookings</h1>
+
+            <p>
+                Create, update and manage hotel booking details
+            </p>
+        </div>
+
+        <button id="addNewBookingBtn" class="new-booking-btn">
+            + Add New Booking
+        </button>
+
+    </div>
+
+
+    <!-- ================= CONTENT ================= -->
+
+    <div class="booking-content">
+
+
+        <!-- ================= FILTERS ================= -->
+
+        <aside class="booking-filters">
+
+            <h2>Filters</h2>
+
+
+            <!-- Search Booking -->
+
+            <div class="filter-group">
+
+                <label for="searchBooking">
+                    Search Booking
+                </label>
+
+                <input
+                    type="text"
+                    id="searchBooking"
+                    placeholder="Search by booking ID..."
+                >
+
+            </div>
+
+
+            <!-- Booking Date -->
+
+            <div class="filter-group">
+
+                <label for="bookingDate">
+                    Booking Date
+                </label>
+
+                <input
+                    type="date"
+                    id="bookingDate"
+                >
+
+            </div>
+
+
+            <!-- Status -->
+
+            <div class="filter-group">
+
+                <label for="bookingStatusFilter">
+                    Status
+                </label>
+
+                <select id="bookingStatusFilter">
+
+                    <option value="">
+                        All Status
+                    </option>
+
+                    <option value="Confirmed">
+                        Confirmed
+                    </option>
+
+                    <option value="Pending">
+                        Pending
+                    </option>
+
+                    <option value="Cancelled">
+                        Cancelled
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- Payment Status -->
+
+            <div class="filter-group">
+
+                <label for="paymentStatusFilter">
+                    Payment Status
+                </label>
+
+                <select id="paymentStatusFilter">
+
+                    <option value="">
+                        All Payments
+                    </option>
+
+                    <option value="Paid">
+                        Paid
+                    </option>
+
+                    <option value="Pending">
+                        Pending
+                    </option>
+
+                    <option value="Refunded">
+                        Refunded
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- Guests -->
+
+            <div class="filter-group">
+
+                <label for="guestFilter">
+                    Guests
+                </label>
+
+                <select id="guestFilter">
+
+                    <option value="">
+                        All Guests
+                    </option>
+
+                    <option value="1">
+                        1 Guest
+                    </option>
+
+                    <option value="2">
+                        2 Guests
+                    </option>
+
+                    <option value="3">
+                        3 Guests
+                    </option>
+
+                    <option value="4">
+                        4+ Guests
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- Filter Buttons -->
+
+            <div class="filter-buttons">
+
+                <button
+                    type="button"
+                    class="apply-filter-btn"
+                >
+                    Apply Filters
+                </button>
+
+                <button
+                    type="button"
+                    class="reset-filter-btn"
+                >
+                    Reset
+                </button>
+
+            </div>
+
+        </aside>
+
+
+
+        <!-- ================= BOOKING LIST ================= -->
+
+        <section class="booking-list-section">
+
+            <div class="section-title">
+
+                <h2>
+                    ☷ Booking List
+                </h2>
+
+            </div>
+
+
+            <div class="booking-table-wrapper">
+
+                <table class="booking-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Booking ID</th>
+
+                            <th>Customer</th>
+
+                            <th>Room No.</th>
+
+                            <th>Room Type</th>
+
+                            <th>Check-In</th>
+
+                            <th>Check-Out</th>
+
+                            <th>Guests</th>
+
+                            <th>Total Amount</th>
+
+                            <th>Status</th>
+
+                            <th>Payment</th>
+
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="bookingsTableBody">
+
+                        <!-- Booking rows will be generated using JavaScript -->
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <!-- ================= PAGINATION ================= -->
+
+            <div
+                id="bookingPagination"
+                class="booking-pagination"
+            >
+
+            </div>
+
+
+            <!-- ================= STATUS GUIDE ================= -->
+
+            <div class="booking-status-guide">
+
+                <h3>Booking Status Guide</h3>
+
+                <div class="status-guide-items">
+
+                    <span>
+                        <span class="guide-dot confirmed"></span>
+                        Confirmed
+                    </span>
+
+                    <span>
+                        <span class="guide-dot pending"></span>
+                        Pending
+                    </span>
+
+                    <span>
+                        <span class="guide-dot cancelled"></span>
+                        Cancelled
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</main>
+
+
+<!-- ================= NEW BOOKING MODAL ================= -->
+
+<div
+    id="newBookingModal"
+    class="booking-modal"
+>
+
+    <div class="booking-modal-content">
+
+        <div class="modal-header">
+
+            <h2>➕ New Booking</h2>
+
+            <button
+                type="button"
+                class="close-modal-btn"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form id="newBookingForm">
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label>
+                        Customer Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="customerName"
+                        placeholder="Enter customer name"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Room Number
+                    </label>
+
+                    <input
+                        type="number"
+                        id="bookingRoomNo"
+                        placeholder="Enter room number"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label>
+                        Room Type
+                    </label>
+
+                    <select id="bookingRoomType" required>
+
+                        <option value="">
+                            Select Room Type
+                        </option>
+
+                        <option value="Luxury">
+                            Luxury
+                        </option>
+
+                        <option value="Deluxe">
+                            Deluxe
+                        </option>
+
+                        <option value="Suite">
+                            Suite
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Number of Guests
+                    </label>
+
+                    <input
+                        type="number"
+                        id="bookingGuests"
+                        min="1"
+                        value="1"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label>
+                        Check-In
+                    </label>
+
+                    <input
+                        type="date"
+                        id="checkInDate"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Check-Out
+                    </label>
+
+                    <input
+                        type="date"
+                        id="checkOutDate"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label>
+                        Total Amount
+                    </label>
+
+                    <input
+                        type="number"
+                        id="bookingAmount"
+                        placeholder="₹ Enter amount"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Payment Status
+                    </label>
+
+                    <select id="bookingPaymentStatus">
+
+                        <option value="Paid">
+                            Paid
+                        </option>
+
+                        <option value="Pending">
+                            Pending
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Booking Status
+                </label>
+
+                <select id="newBookingStatus">
+
+                    <option value="Confirmed">
+                        Confirmed
+                    </option>
+
+                    <option value="Pending">
+                        Pending
+                    </option>
+
+                    <option value="Cancelled">
+                        Cancelled
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="modal-buttons">
+
+                <button
+                    type="button"
+                    class="cancel-booking-btn"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="save-booking-btn"
+                >
+                    Save Booking
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script src="../js/script.js"></script>
+
+</body>
+</html>
