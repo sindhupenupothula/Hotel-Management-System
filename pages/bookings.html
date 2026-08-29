@@ -662,54 +662,132 @@ bookingRoomNo.addEventListener("input", function () {
     });
 
      // Save New Booking
-    newBookingForm.addEventListener("submit", function (event) {
-        event.preventDefault();
+newBookingForm.addEventListener("submit", function (event) {
+    event.preventDefault();
 
-        const customerName =
-            document.getElementById("customerName").value;
+    const customerName =
+        document.getElementById("customerName").value;
 
-        const roomNo =
-            document.getElementById("bookingRoomNo").value;
+    const roomNo =
+        document.getElementById("bookingRoomNo").value;
 
-        const roomType =
-            document.getElementById("bookingRoomType").value;
+    const roomType =
+        document.getElementById("bookingRoomType").value;
 
-        const guests =
-            document.getElementById("bookingGuests").value;
+    const guests =
+        document.getElementById("bookingGuests").value;
 
-        const checkIn =
-            document.getElementById("checkInDate").value;
+    const checkIn =
+        document.getElementById("checkInDate").value;
 
-        const checkOut =
-            document.getElementById("checkOutDate").value;
+    const checkOut =
+        document.getElementById("checkOutDate").value;
 
-        const amount =
-            document.getElementById("bookingAmount").value;
+    const amount =
+        document.getElementById("bookingAmount").value;
 
-        const paymentStatus =
-            document.getElementById("bookingPaymentStatus").value;
+    const paymentStatus =
+        document.getElementById("bookingPaymentStatus").value;
 
-        const bookingStatus =
-            document.getElementById("newBookingStatus").value;
+    const bookingStatus =
+        document.getElementById("newBookingStatus").value;
 
-        // Generate Booking ID
-        const bookingId =
-            "BK" + Date.now().toString().slice(-6);
+    // Generate Booking ID
+    const bookingId =
+        "BK" + Date.now().toString().slice(-6);
 
-        // Create table row
+    // Create table row
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+        <td>${bookingId}</td>
+        <td>${customerName}</td>
+        <td>${roomNo}</td>
+        <td>${roomType}</td>
+        <td>${checkIn}</td>
+        <td>${checkOut}</td>
+        <td>${guests}</td>
+        <td>₹${Number(amount).toLocaleString("en-IN")}</td>
+        <td>${bookingStatus}</td>
+        <td>${paymentStatus}</td>
+        <td>
+            <button type="button" class="edit-booking-btn">
+                Edit
+            </button>
+
+            <button type="button" class="delete-booking-btn">
+                Delete
+            </button>
+        </td>
+    `;
+
+    // Add latest booking at TOP
+    bookingsTableBody.insertBefore(
+        row,
+        bookingsTableBody.firstChild
+    );
+
+    // ===============================
+    // SAVE BOOKING TO LOCAL STORAGE
+    // ===============================
+
+    const savedBookings =
+        JSON.parse(localStorage.getItem("sayoraBookings")) || [];
+
+    savedBookings.unshift({
+        bookingId: bookingId,
+        customerName: customerName,
+        roomNo: roomNo,
+        roomType: roomType,
+        guests: guests,
+        checkIn: checkIn,
+        checkOut: checkOut,
+        amount: amount,
+        bookingStatus: bookingStatus,
+        paymentStatus: paymentStatus
+    });
+
+    localStorage.setItem(
+        "sayoraBookings",
+        JSON.stringify(savedBookings)
+    );
+
+    // Close modal
+    newBookingModal.style.display = "none";
+
+    // Clear form
+    newBookingForm.reset();
+
+    // Show success message
+    alert("Booking added successfully!");
+});
+
+});
+function loadSavedBookings() {
+
+    const savedBookings =
+        JSON.parse(localStorage.getItem("sayoraBookings")) || [];
+
+    const tbody =
+        document.getElementById("bookingsTableBody");
+
+    if (!tbody) return;
+
+    savedBookings.forEach(function (booking) {
+
         const row = document.createElement("tr");
 
         row.innerHTML = `
-            <td>${bookingId}</td>
-            <td>${customerName}</td>
-            <td>${roomNo}</td>
-            <td>${roomType}</td>
-            <td>${checkIn}</td>
-            <td>${checkOut}</td>
-            <td>${guests}</td>
-            <td>₹${amount}</td>
-            <td>${bookingStatus}</td>
-            <td>${paymentStatus}</td>
+            <td>${booking.bookingId}</td>
+            <td>${booking.customerName}</td>
+            <td>${booking.roomNo}</td>
+            <td>${booking.roomType}</td>
+            <td>${booking.checkIn}</td>
+            <td>${booking.checkOut}</td>
+            <td>${booking.guests}</td>
+            <td>₹${Number(booking.amount).toLocaleString("en-IN")}</td>
+            <td>${booking.bookingStatus}</td>
+            <td>${booking.paymentStatus}</td>
             <td>
                 <button type="button" class="edit-booking-btn">
                     Edit
@@ -721,18 +799,12 @@ bookingRoomNo.addEventListener("input", function () {
             </td>
         `;
 
-        bookingsTableBody.insertBefore(row,bookingsTableBody.firstChild);
-        // Close modal
-        newBookingModal.style.display = "none";
-
-        // Clear form
-        newBookingForm.reset();
-
-        // Show success message
-        alert("Booking added successfully!");
+        // Latest saved booking goes to TOP
+        tbody.insertBefore(row, tbody.firstChild);
     });
+}
 
-});
+loadSavedBookings();
 </script>
 </body>
 </html>
