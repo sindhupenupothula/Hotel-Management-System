@@ -134,6 +134,18 @@ function removeSharedBookingData(bookingId) {
     return updatedData;
 }
 
+function refreshAllDashboardDataAndViews() {
+    renderSharedDashboardSummary();
+    renderSharedBookingsTable();
+    renderSharedCheckInsTable();
+    renderSharedCheckedOutTable();
+    renderSharedRevenueTable();
+    renderSharedPendingPaymentsTable();
+    renderSharedReviewsTable();
+    renderSharedCustomersTable();
+    renderRecentTablesOnDashboardHome();
+}
+
 function renderSharedBookingsTable() {
     const tbody = document.getElementById("bookingsTableBody");
     if (!tbody) return;
@@ -153,11 +165,11 @@ function renderSharedBookingsTable() {
             <td>${booking.checkOut || "-"}</td>
             <td>${booking.guests || 1}</td>
             <td>₹${Number(booking.amount || 0).toLocaleString("en-IN")}</td>
-            <td>${booking.bookingStatus || "Confirmed"}</td>
-            <td>${booking.paymentStatus || "Paid"}</td>
+            <td><span class="status-pill ${booking.bookingStatus === 'Cancelled' ? 'status-red' : 'status-green'}">${booking.bookingStatus || "Confirmed"}</span></td>
+            <td><span class="status-pill ${booking.paymentStatus === 'Pending' ? 'status-orange' : 'status-green'}">${booking.paymentStatus || "Paid"}</span></td>
             <td>
-                <button type="button" class="edit-booking-btn">Edit</button>
-                <button type="button" class="delete-booking-btn">Delete</button>
+                <button type="button" class="edit-booking-btn" onclick="openEditModal('${booking.bookingId}')">Edit</button>
+                <button type="button" class="delete-booking-btn" onclick="deleteBooking('${booking.bookingId}')">Delete</button>
             </td>
         `;
         tbody.appendChild(row);
@@ -357,14 +369,28 @@ function initializeSharedDataViews() {
     renderSharedDashboardSummary();
 }
 
+function hideAllDashboardSections() {
+    const ids = [
+        "dashboardHome",
+        "totalRoomsSection",
+        "availableRoomsSection",
+        "occupiedRoomsSection",
+        "totalBookingsSection",
+        "totalCustomersSection",
+        "totalRevenueSection",
+        "checkedOutSection",
+        "pendingPaymentsSection",
+        "totalReviewsSection"
+    ];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = "none";
+    });
+}
+
 function showDashboardHome() {
+    hideAllDashboardSections();
     if (document.getElementById("dashboardHome")) document.getElementById("dashboardHome").style.display = "block";
-    if (document.getElementById("totalRoomsSection")) document.getElementById("totalRoomsSection").style.display = "none";
-    if (document.getElementById("availableRoomsSection")) document.getElementById("availableRoomsSection").style.display = "none";
-    if (document.getElementById("occupiedRoomsSection")) document.getElementById("occupiedRoomsSection").style.display = "none";
-    if (document.getElementById("totalBookingsSection")) document.getElementById("totalBookingsSection").style.display = "none";
-    if (document.getElementById("totalCustomersSection")) document.getElementById("totalCustomersSection").style.display = "none";
-    if (document.getElementById("totalRevenueSection")) document.getElementById("totalRevenueSection").style.display = "none";
 }
 
 function showTotalRooms() {
@@ -377,12 +403,269 @@ function showAvailableRooms() {
     document.getElementById("totalRoomsSection").style.display = "none";
     document.getElementById("availableRoomsSection").style.display = "block";
 }
+function renderRecentTablesOnDashboardHome() {
+    const appData = readAppData();
+    const bookings = appData.bookings || [];
+
+    const recentBookingsBody = document.getElementById("recentBookingsBody");
+    if (recentBookingsBody) {
+        recentBookingsBody.innerHTML = "";
+        const top3Bookings = bookings.slice(0, 3);
+        top3Bookings.forEach(b => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${b.bookingId}</td>
+                <td>${b.customerName || "Guest"}</td>
+                <td>${b.roomNo || "-"}</td>
+                <td>${b.checkIn || "-"}</td>
+                <td><span class="status-pill status-green">${b.bookingStatus || "Confirmed"}</span></td>
+            `;
+            recentBookingsBody.appendChild(tr);
+        });
+    }
+
+    const recentCheckInsBody = document.getElementById("recentCheckInsBody");
+    if (recentCheckInsBody) {
+        recentCheckInsBody.innerHTML = "";
+        const top3CheckIns = bookings.filter(b => (b.bookingStatus || "Confirmed") !== "Checked Out" && (b.bookingStatus || "Confirmed") !== "Cancelled").slice(0, 3);
+        top3CheckIns.forEach((c, idx) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${c.checkInId || 'CI' + String(idx + 1).padStart(3, '0')}</td>
+                <td>${c.customerName || "Guest"}</td>
+                <td>${c.roomNo || "-"}</td>
+                <td>${c.checkIn || "-"}</td>
+                <td><span class="status-pill status-green">Checked In</span></td>
+            `;
+            recentCheckInsBody.appendChild(tr);
+        });
+    }
+}
+
+function renderSharedCheckInsTable() {
+    const tbody = document.getElementById("checkInsTableBody");
+    if (!tbody) return;
+
+    const appData = readAppData();
+    const checkIns = (appData.bookings || []).filter(b => (b.bookingStatus || "Confirmed") !== "Checked Out" && (b.bookingStatus || "Confirmed") !== "Cancelled");
+    tbody.innerHTML = "";
+
+    checkIns.forEach((item, index) => {
+        const checkInId = item.checkInId || `CI${String(index + 1).padStart(3, "0")}`;
+        const row = document.createElement("tr");
+        row.dataset.bookingId = item.bookingId;
+        row.innerHTML = `
+            <td>${checkInId}</td>
+            <td>${item.customerName || "Guest"}</td>
+            <td>${item.roomNo || "101"}</td>
+            <td>${item.roomType || "Luxury"}</td>
+            <td>${item.checkIn || "29-Aug-2026"}</td>
+            <td>${item.checkOut || "31-Aug-2026"}</td>
+            <td>${item.guests || 1}</td>
+            <td>₹${Number(item.amount || 0).toLocaleString("en-IN")}</td>
+            <td><span class="status-pill status-green">Checked In</span></td>
+            <td><span class="status-pill ${item.paymentStatus === 'Pending' ? 'status-orange' : 'status-green'}">${item.paymentStatus || "Paid"}</span></td>
+            <td>
+                <button type="button" class="edit-booking-btn" onclick="openEditModal('${item.bookingId}')">Edit</button>
+                <button type="button" class="delete-booking-btn" onclick="checkoutBooking('${item.bookingId}')">Checkout</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function renderSharedCheckedOutTable() {
+    const tbody = document.getElementById("checkedOutTableBody");
+    if (!tbody) return;
+
+    const appData = readAppData();
+    const checkedOutList = (appData.bookings || []).filter(b => b.bookingStatus === "Checked Out");
+    tbody.innerHTML = "";
+
+    if (checkedOutList.length === 0) {
+        const defaultCheckedOut = [
+            { bookingId: "CO001", customerName: "Anjali", roomNo: "108", roomType: "Deluxe", checkIn: "25-Aug-2026", checkOut: "28-Aug-2026", guests: 2, amount: 24000, bookingStatus: "Checked Out", paymentStatus: "Paid" },
+            { bookingId: "CO002", customerName: "Suresh", roomNo: "112", roomType: "Luxury", checkIn: "26-Aug-2026", checkOut: "29-Aug-2026", guests: 1, amount: 36000, bookingStatus: "Checked Out", paymentStatus: "Paid" },
+            { bookingId: "CO003", customerName: "Vikram", roomNo: "204", roomType: "Suite", checkIn: "27-Aug-2026", checkOut: "30-Aug-2026", guests: 3, amount: 48000, bookingStatus: "Checked Out", paymentStatus: "Paid" }
+        ];
+        defaultCheckedOut.forEach(item => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${item.bookingId}</td>
+                <td>${item.customerName}</td>
+                <td>${item.roomNo}</td>
+                <td>${item.roomType}</td>
+                <td>${item.checkIn}</td>
+                <td>${item.checkOut}</td>
+                <td>${item.guests}</td>
+                <td>₹${Number(item.amount).toLocaleString("en-IN")}</td>
+                <td><span class="status-pill" style="background:#fee2e2; color:#b91c1c;">Checked Out</span></td>
+                <td><span class="status-pill status-green">${item.paymentStatus}</span></td>
+                <td><button type="button" class="edit-booking-btn" onclick="openViewModal('${item.bookingId}')">View Details</button></td>
+            `;
+            tbody.appendChild(row);
+        });
+        return;
+    }
+
+    checkedOutList.forEach((item, index) => {
+        const coId = `CO${String(index + 1).padStart(3, "0")}`;
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${coId}</td>
+            <td>${item.customerName || "Guest"}</td>
+            <td>${item.roomNo || "-"}</td>
+            <td>${item.roomType || "-"}</td>
+            <td>${item.checkIn || "-"}</td>
+            <td>${item.checkOut || "-"}</td>
+            <td>${item.guests || 1}</td>
+            <td>₹${Number(item.amount || 0).toLocaleString("en-IN")}</td>
+            <td><span class="status-pill" style="background:#fee2e2; color:#b91c1c;">Checked Out</span></td>
+            <td><span class="status-pill status-green">${item.paymentStatus || "Paid"}</span></td>
+            <td><button type="button" class="edit-booking-btn" onclick="openViewModal('${item.bookingId}')">View Details</button></td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function renderSharedRevenueTable() {
+    const tbody = document.getElementById("revenueTableBody");
+    if (!tbody) return;
+
+    const appData = readAppData();
+    const paidBookings = (appData.bookings || []).filter(b => (b.paymentStatus || "Paid") === "Paid");
+    tbody.innerHTML = "";
+
+    paidBookings.forEach((item) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${item.bookingId}</td>
+            <td>${item.customerName || "Guest"}</td>
+            <td>${item.roomNo || "-"}</td>
+            <td>${item.roomType || "-"}</td>
+            <td>${item.checkIn || "-"}</td>
+            <td>${item.checkOut || "-"}</td>
+            <td>₹${Number(item.amount || 0).toLocaleString("en-IN")}</td>
+            <td><span class="status-pill status-green">Paid</span></td>
+            <td><button type="button" class="edit-booking-btn" onclick="openInvoiceModal('${item.bookingId}')">Invoice</button></td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function renderSharedPendingPaymentsTable() {
+    const tbody = document.getElementById("pendingPaymentsTableBody");
+    if (!tbody) return;
+
+    const appData = readAppData();
+    const pendingList = (appData.bookings || []).filter(b => b.paymentStatus === "Pending");
+    tbody.innerHTML = "";
+
+    if (pendingList.length === 0) {
+        const defaultPending = [
+            { bookingId: "BK489732", customerName: "Nagamani", roomNo: "222", roomType: "Deluxe", checkIn: "29-Aug-2026", checkOut: "31-Aug-2026", amount: 8000 },
+            { bookingId: "BK489735", customerName: "Lokesh", roomNo: "115", roomType: "Luxury", checkIn: "30-Aug-2026", checkOut: "02-Sep-2026", amount: 24000 },
+            { bookingId: "BK489740", customerName: "Keerthana", roomNo: "210", roomType: "Suite", checkIn: "31-Aug-2026", checkOut: "03-Sep-2026", amount: 32000 }
+        ];
+        defaultPending.forEach(item => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${item.bookingId}</td>
+                <td>${item.customerName}</td>
+                <td>${item.roomNo}</td>
+                <td>${item.roomType}</td>
+                <td>${item.checkIn}</td>
+                <td>${item.checkOut}</td>
+                <td>₹${Number(item.amount).toLocaleString("en-IN")}</td>
+                <td><span class="status-pill" style="background:#fef3c7; color:#d97706;">Pending</span></td>
+                <td><button type="button" class="edit-booking-btn" onclick="openCollectPaymentModal('${item.bookingId}')">Collect Payment</button></td>
+            `;
+            tbody.appendChild(row);
+        });
+        return;
+    }
+
+    pendingList.forEach(item => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${item.bookingId}</td>
+            <td>${item.customerName || "Guest"}</td>
+            <td>${item.roomNo || "-"}</td>
+            <td>${item.roomType || "-"}</td>
+            <td>${item.checkIn || "-"}</td>
+            <td>${item.checkOut || "-"}</td>
+            <td>₹${Number(item.amount || 0).toLocaleString("en-IN")}</td>
+            <td><span class="status-pill" style="background:#fef3c7; color:#d97706;">Pending</span></td>
+            <td><button type="button" class="edit-booking-btn" onclick="openCollectPaymentModal('${item.bookingId}')">Collect Payment</button></td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function getStoredReviews() {
+    try {
+        const saved = JSON.parse(localStorage.getItem("sayoraReviews")) || [];
+        if (Array.isArray(saved) && saved.length > 0) return saved;
+    } catch(e){}
+    const defaultReviews = [
+        { id: "REV001", name: "Sindhu Priya", roomType: "Luxury", rating: "★★★★★ (5.0)", comment: "Excellent stay! Clean rooms and friendly staff.", date: "31-Aug-2026", reply: "" },
+        { id: "REV002", name: "Ravi Kumar", roomType: "Deluxe", rating: "★★★★★ (5.0)", comment: "Very good service and delicious food.", date: "31-Aug-2026", reply: "" },
+        { id: "REV003", name: "Priya Sharma", roomType: "Suite", rating: "★★★★★ (5.0)", comment: "Clean rooms and great ambience!", date: "31-Aug-2026", reply: "" }
+    ];
+    localStorage.setItem("sayoraReviews", JSON.stringify(defaultReviews));
+    return defaultReviews;
+}
+
+function renderSharedReviewsTable() {
+    const tbody = document.getElementById("reviewsTableBody");
+    if (!tbody) return;
+
+    const reviews = getStoredReviews();
+    tbody.innerHTML = "";
+
+    reviews.forEach(review => {
+        const row = document.createElement("tr");
+        let replyHtml = review.reply ? `<div style="margin-top:4px; font-size:12px; color:#2563eb;"><strong>Reply:</strong> ${review.reply}</div>` : '';
+        row.innerHTML = `
+            <td>${review.id}</td>
+            <td>${review.name}</td>
+            <td>${review.roomType}</td>
+            <td><span style="color:#f59e0b;">${review.rating}</span></td>
+            <td>${review.comment}${replyHtml}</td>
+            <td>${review.date}</td>
+            <td><button type="button" class="edit-booking-btn" onclick="openReplyModal('${review.id}')">${review.reply ? 'Edit Reply' : 'Reply'}</button></td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
 function showOccupiedRooms() {
-    document.getElementById("dashboardHome").style.display = "none";
-    document.getElementById("totalRoomsSection").style.display = "none";
-    document.getElementById("availableRoomsSection").style.display = "none";
-    document.getElementById("occupiedRoomsSection").style.display = "block";
-    document.getElementById("totalBookingsSection").style.display = "none";
+    renderSharedCheckInsTable();
+    hideAllDashboardSections();
+    if (document.getElementById("occupiedRoomsSection")) document.getElementById("occupiedRoomsSection").style.display = "block";
+    const header = document.querySelector("#occupiedRoomsSection .overview-header h2");
+    if (header) header.innerText = "🔑 Total Checked-In List";
+}
+
+function showCheckedOutRooms() {
+    hideAllDashboardSections();
+    if (document.getElementById("checkedOutSection")) document.getElementById("checkedOutSection").style.display = "block";
+    const header = document.querySelector("#checkedOutSection .overview-header h2");
+    if (header) header.innerText = "🚪 Total Checked-Out List";
+}
+
+function showPendingPayments() {
+    hideAllDashboardSections();
+    if (document.getElementById("pendingPaymentsSection")) document.getElementById("pendingPaymentsSection").style.display = "block";
+    const header = document.querySelector("#pendingPaymentsSection .overview-header h2");
+    if (header) header.innerText = "💳 Pending Payments List";
+}
+
+function showTotalReviews() {
+    hideAllDashboardSections();
+    if (document.getElementById("totalReviewsSection")) document.getElementById("totalReviewsSection").style.display = "block";
+    const header = document.querySelector("#totalReviewsSection .overview-header h2");
+    if (header) header.innerText = "⭐ Total Reviews List";
 }
 function showTotalCustomers() {
     renderSharedCustomersTable();
@@ -524,12 +807,10 @@ function showVIPCustomers() {
 function showTotalBookings() {
     renderSharedBookingsTable();
     renderSharedDashboardSummary();
-    document.getElementById("dashboardHome").style.display = "none";
-    document.getElementById("totalRoomsSection").style.display = "none";
-    document.getElementById("availableRoomsSection").style.display = "none";
-    document.getElementById("occupiedRoomsSection").style.display = "none";
-    document.getElementById("totalBookingsSection").style.display = "block";
-    document.querySelector("#totalBookingsSection .overview-header h2").innerText = "📋 Recent Bookings List";
+    hideAllDashboardSections();
+    if (document.getElementById("totalBookingsSection")) document.getElementById("totalBookingsSection").style.display = "block";
+    const header = document.querySelector("#totalBookingsSection .overview-header h2");
+    if (header) header.innerText = "📋 Total Bookings List";
 }
 function showTodaysBookings() {
 
@@ -844,15 +1125,10 @@ createOccupiedRoomNumbers("occupiedSuiteThird", [346,347,348,349,350,351,352,353
 
 function showTotalRevenue() {
     renderSharedDashboardSummary();
-    document.getElementById("dashboardHome").style.display = "none";
-    document.getElementById("totalRoomsSection").style.display = "none";
-    document.getElementById("availableRoomsSection").style.display = "none";
-    document.getElementById("occupiedRoomsSection").style.display = "none";
-    document.getElementById("totalBookingsSection").style.display = "none";
-    document.getElementById("totalCustomersSection").style.display = "none";
-
-    document.getElementById("totalRevenueSection").style.display = "block";
-    document.querySelector("#totalRevenueSection .overview-header h2").innerText = "💰 Revenue Overview";
+    hideAllDashboardSections();
+    if (document.getElementById("totalRevenueSection")) document.getElementById("totalRevenueSection").style.display = "block";
+    const header = document.querySelector("#totalRevenueSection .overview-header h2");
+    if (header) header.innerText = "💰 Total Revenue List";
 }
 function showTodaysRevenue() {
 
@@ -1822,3 +2098,323 @@ function resetBookingFilters() {
         row.style.display = "table-row";
     });
 }
+
+/* ===== Modal Interactive Handlers ===== */
+function openEditModal(bookingId) {
+    const appData = readAppData();
+    const booking = (appData.bookings || []).find(b => b.bookingId === bookingId) || {
+        bookingId: bookingId,
+        customerName: "Guest",
+        roomNo: "101",
+        roomType: "Luxury",
+        checkIn: "29-Aug-2026",
+        checkOut: "31-Aug-2026",
+        amount: 10000,
+        bookingStatus: "Confirmed",
+        paymentStatus: "Paid"
+    };
+
+    document.getElementById("editItemKey").value = bookingId;
+    document.getElementById("editBookingId").value = booking.bookingId;
+    document.getElementById("editGuestName").value = booking.customerName || "Guest";
+    document.getElementById("editRoomNo").value = booking.roomNo || "101";
+    document.getElementById("editRoomType").value = booking.roomType || "Luxury";
+    document.getElementById("editCheckIn").value = booking.checkIn || "29-Aug-2026";
+    document.getElementById("editCheckOut").value = booking.checkOut || "31-Aug-2026";
+    document.getElementById("editAmount").value = booking.amount || 10000;
+    document.getElementById("editBookingStatus").value = booking.bookingStatus || "Confirmed";
+    document.getElementById("editPaymentStatus").value = booking.paymentStatus || "Paid";
+
+    document.getElementById("editModalOverlay").style.display = "flex";
+}
+
+function closeEditModal() {
+    const el = document.getElementById("editModalOverlay");
+    if (el) el.style.display = "none";
+}
+
+function saveEditBooking() {
+    const bookingId = document.getElementById("editBookingId").value;
+    const appData = readAppData();
+    let index = appData.bookings.findIndex(b => b.bookingId === bookingId);
+
+    const updatedBooking = {
+        bookingId: bookingId,
+        customerName: document.getElementById("editGuestName").value.trim(),
+        roomNo: document.getElementById("editRoomNo").value.trim(),
+        roomType: document.getElementById("editRoomType").value,
+        checkIn: document.getElementById("editCheckIn").value.trim(),
+        checkOut: document.getElementById("editCheckOut").value.trim(),
+        amount: Number(document.getElementById("editAmount").value),
+        bookingStatus: document.getElementById("editBookingStatus").value,
+        paymentStatus: document.getElementById("editPaymentStatus").value,
+        guests: 2
+    };
+
+    if (index !== -1) {
+        appData.bookings[index] = updatedBooking;
+    } else {
+        appData.bookings.push(updatedBooking);
+    }
+
+    writeAppData(appData);
+    refreshAllDashboardDataAndViews();
+    closeEditModal();
+    alert("Booking " + bookingId + " saved successfully!");
+}
+
+function deleteBooking(bookingId) {
+    if (confirm("Are you sure you want to delete booking " + bookingId + "?")) {
+        removeSharedBookingData(bookingId);
+        refreshAllDashboardDataAndViews();
+        alert("Booking " + bookingId + " deleted successfully!");
+    }
+}
+
+function checkoutBooking(bookingId) {
+    if (confirm("Check out guest for booking " + bookingId + "?")) {
+        const appData = readAppData();
+        const booking = appData.bookings.find(b => b.bookingId === bookingId);
+        if (booking) {
+            booking.bookingStatus = "Checked Out";
+            writeAppData(appData);
+
+            const rooms = getRoomList();
+            const targetRoom = rooms.find(r => String(r.roomNo) === String(booking.roomNo));
+            if (targetRoom) {
+                targetRoom.status = "Available";
+                localStorage.setItem("sayoraRooms", JSON.stringify(rooms));
+            }
+
+            refreshAllDashboardDataAndViews();
+            alert("Guest checked out successfully! Room " + booking.roomNo + " is now available.");
+        }
+    }
+}
+
+function openViewModal(bookingId) {
+    const appData = readAppData();
+    const booking = appData.bookings.find(b => b.bookingId === bookingId) || {
+        bookingId: bookingId || "BK557860",
+        customerName: "Sindhu Priya",
+        roomNo: "105",
+        roomType: "Luxury",
+        checkIn: "29-Aug-2026",
+        checkOut: "31-Aug-2026",
+        guests: 2,
+        amount: 24000,
+        bookingStatus: "Checked Out",
+        paymentStatus: "Paid"
+    };
+
+    const container = document.getElementById("viewDetailsBody");
+    if (container) {
+        container.innerHTML = `
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; font-size:14px; text-align:left;">
+                <p><strong>Booking ID:</strong> ${booking.bookingId}</p>
+                <p><strong>Customer Name:</strong> ${booking.customerName || "Guest"}</p>
+                <p><strong>Room No:</strong> ${booking.roomNo || "-"}</p>
+                <p><strong>Room Type:</strong> ${booking.roomType || "-"}</p>
+                <p><strong>Check-In Date:</strong> ${booking.checkIn || "-"}</p>
+                <p><strong>Check-Out Date:</strong> ${booking.checkOut || "-"}</p>
+                <p><strong>Guests Count:</strong> ${booking.guests || 1}</p>
+                <p><strong>Total Amount:</strong> ₹${Number(booking.amount || 0).toLocaleString("en-IN")}</p>
+                <p><strong>Stay Status:</strong> <span class="status-pill status-green">${booking.bookingStatus || "Confirmed"}</span></p>
+                <p><strong>Payment Status:</strong> <span class="status-pill status-green">${booking.paymentStatus || "Paid"}</span></p>
+            </div>
+        `;
+    }
+    const modal = document.getElementById("viewModalOverlay");
+    if (modal) modal.style.display = "flex";
+}
+
+function closeViewModal() {
+    const modal = document.getElementById("viewModalOverlay");
+    if (modal) modal.style.display = "none";
+}
+
+function openInvoiceModal(bookingId) {
+    const appData = readAppData();
+    const booking = appData.bookings.find(b => b.bookingId === bookingId) || {
+        bookingId: bookingId || "B001",
+        customerName: "Ravi Kumar",
+        roomNo: "105",
+        roomType: "Luxury",
+        checkIn: "29-Aug-2026",
+        checkOut: "31-Aug-2026",
+        amount: 25000,
+        paymentStatus: "Paid"
+    };
+
+    const tax = Math.round(Number(booking.amount || 0) * 0.12);
+    const grandTotal = Number(booking.amount || 0) + tax;
+
+    const container = document.getElementById("printableInvoiceContent");
+    if (container) {
+        container.innerHTML = `
+            <div style="font-family: Arial, sans-serif; color: #1e293b;">
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #2563eb; padding-bottom:12px; margin-bottom:16px;">
+                    <div>
+                        <h2 style="margin:0; color:#2563eb;">SAYORA HOTELS</h2>
+                        <p style="margin:2px 0 0 0; font-size:12px; color:#64748b;">Official Tax Invoice</p>
+                    </div>
+                    <div style="text-align:right;">
+                        <p style="margin:0; font-weight:bold;">Invoice #: INV-${booking.bookingId}</p>
+                        <p style="margin:2px 0 0 0; font-size:12px;">Date: ${new Date().toLocaleDateString()}</p>
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; font-size:13px; text-align:left;">
+                    <div>
+                        <p style="margin:0 0 4px 0;"><strong>Billed To:</strong> ${booking.customerName || 'Guest'}</p>
+                        <p style="margin:0 0 4px 0;"><strong>Room No:</strong> ${booking.roomNo || '-'}</p>
+                        <p style="margin:0;"><strong>Room Type:</strong> ${booking.roomType || '-'}</p>
+                    </div>
+                    <div>
+                        <p style="margin:0 0 4px 0;"><strong>Check-In:</strong> ${booking.checkIn || '-'}</p>
+                        <p style="margin:0 0 4px 0;"><strong>Check-Out:</strong> ${booking.checkOut || '-'}</p>
+                        <p style="margin:0;"><strong>Payment Status:</strong> <span style="color:#16a34a; font-weight:bold;">${booking.paymentStatus || 'Paid'}</span></p>
+                    </div>
+                </div>
+                <table style="width:100%; border-collapse:collapse; margin-bottom:16px; font-size:13px;">
+                    <thead>
+                        <tr style="background:#f1f5f9;">
+                            <th style="padding:8px; border:1px solid #cbd5e1; text-align:left;">Description</th>
+                            <th style="padding:8px; border:1px solid #cbd5e1; text-align:right;">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding:8px; border:1px solid #cbd5e1;">Room Accommodation Charges</td>
+                            <td style="padding:8px; border:1px solid #cbd5e1; text-align:right;">₹${Number(booking.amount || 0).toLocaleString('en-IN')}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:8px; border:1px solid #cbd5e1;">GST / Taxes (12%)</td>
+                            <td style="padding:8px; border:1px solid #cbd5e1; text-align:right;">₹${tax.toLocaleString('en-IN')}</td>
+                        </tr>
+                        <tr style="font-weight:bold; background:#e2e8f0;">
+                            <td style="padding:8px; border:1px solid #cbd5e1;">Total Payable</td>
+                            <td style="padding:8px; border:1px solid #cbd5e1; text-align:right; color:#2563eb;">₹${grandTotal.toLocaleString('en-IN')}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        `;
+    }
+    const modal = document.getElementById("invoiceModalOverlay");
+    if (modal) modal.style.display = "flex";
+}
+
+function closeInvoiceModal() {
+    const modal = document.getElementById("invoiceModalOverlay");
+    if (modal) modal.style.display = "none";
+}
+
+function openCollectPaymentModal(bookingId) {
+    const appData = readAppData();
+    const booking = appData.bookings.find(b => b.bookingId === bookingId) || {
+        bookingId: bookingId || "BK489732",
+        customerName: "Nagamani",
+        amount: 8000
+    };
+
+    document.getElementById("collectBookingId").value = booking.bookingId;
+    document.getElementById("collectGuestName").value = booking.customerName || "Guest";
+    document.getElementById("collectAmountDue").value = `₹${Number(booking.amount || 8000).toLocaleString("en-IN")}`;
+    document.getElementById("collectPaymentModalOverlay").style.display = "flex";
+}
+
+function closeCollectPaymentModal() {
+    const modal = document.getElementById("collectPaymentModalOverlay");
+    if (modal) modal.style.display = "none";
+}
+
+function confirmCollectPayment() {
+    const bookingId = document.getElementById("collectBookingId").value;
+    const mode = document.getElementById("collectPaymentMode").value;
+    const appData = readAppData();
+    const booking = appData.bookings.find(b => b.bookingId === bookingId);
+
+    if (booking) {
+        booking.paymentStatus = "Paid";
+        writeAppData(appData);
+    }
+
+    refreshAllDashboardDataAndViews();
+    closeCollectPaymentModal();
+    alert(`Payment collected successfully via ${mode}!`);
+}
+
+function openReplyModal(reviewId) {
+    const reviews = getStoredReviews();
+    const review = reviews.find(r => r.id === reviewId) || { id: reviewId, name: "Guest", comment: "Good service", reply: "" };
+
+    document.getElementById("replyReviewId").value = review.id;
+    document.getElementById("replyReviewerName").value = review.name;
+    document.getElementById("replyReviewComment").value = review.comment;
+    document.getElementById("replyText").value = review.reply || "";
+    document.getElementById("replyModalOverlay").style.display = "flex";
+}
+
+function closeReplyModal() {
+    const modal = document.getElementById("replyModalOverlay");
+    if (modal) modal.style.display = "none";
+}
+
+function confirmReplyReview() {
+    const reviewId = document.getElementById("replyReviewId").value;
+    const replyMsg = document.getElementById("replyText").value.trim();
+
+    const reviews = getStoredReviews();
+    const target = reviews.find(r => r.id === reviewId);
+
+    if (target) {
+        target.reply = replyMsg;
+        localStorage.setItem("sayoraReviews", JSON.stringify(reviews));
+        renderSharedReviewsTable();
+        closeReplyModal();
+        alert("Reply posted successfully!");
+    }
+}
+
+/* Revenue Chart Dropdown Selector Listener */
+document.addEventListener("change", function(e) {
+    if (e.target && e.target.classList.contains("widget-select-dropdown")) {
+        const value = e.target.value;
+        const bars = document.querySelectorAll(".chart-bars-area .bar-column");
+        if (bars.length >= 4) {
+            if (value === "This Week") {
+                bars[0].querySelector(".bar-fill").style.height = "60%";
+                bars[0].querySelector(".bar-label").innerText = "Mon";
+                bars[1].querySelector(".bar-fill").style.height = "85%";
+                bars[1].querySelector(".bar-label").innerText = "Wed";
+                bars[2].querySelector(".bar-fill").style.height = "70%";
+                bars[2].querySelector(".bar-label").innerText = "Fri";
+                bars[3].querySelector(".bar-fill").style.height = "95%";
+                bars[3].querySelector(".bar-label").innerText = "Sun";
+            } else if (value === "This Year") {
+                bars[0].querySelector(".bar-fill").style.height = "50%";
+                bars[0].querySelector(".bar-label").innerText = "Q1";
+                bars[1].querySelector(".bar-fill").style.height = "70%";
+                bars[1].querySelector(".bar-label").innerText = "Q2";
+                bars[2].querySelector(".bar-fill").style.height = "85%";
+                bars[2].querySelector(".bar-label").innerText = "Q3";
+                bars[3].querySelector(".bar-fill").style.height = "100%";
+                bars[3].querySelector(".bar-label").innerText = "Q4";
+            } else {
+                bars[0].querySelector(".bar-fill").style.height = "35%";
+                bars[0].querySelector(".bar-label").innerText = "Week 1";
+                bars[1].querySelector(".bar-fill").style.height = "55%";
+                bars[1].querySelector(".bar-label").innerText = "Week 2";
+                bars[2].querySelector(".bar-fill").style.height = "70%";
+                bars[2].querySelector(".bar-label").innerText = "Week 3";
+                bars[3].querySelector(".bar-fill").style.height = "90%";
+                bars[3].querySelector(".bar-label").innerText = "Week 4";
+            }
+        }
+    }
+});
+
+/* Master Initialization */
+document.addEventListener("DOMContentLoaded", function() {
+    refreshAllDashboardDataAndViews();
+});

@@ -12,36 +12,36 @@
 
 <body class="dashboard-body">
 
-<header>
-    <nav class="navbar">
-        <div class="logo">
-            <img src="../images/logo.jpg" alt="Sayora Hotels Logo">
-            <h2>SAYORA HOTELS</h2>
-        </div>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <img src="../images/logo.jpg" alt="Sayora Hotels Logo">
+                <h2>SAYORA HOTELS</h2>
+            </div>
 
-        <ul class="nav-links">
-            <li><a href="../home.html">Home</a></li>
-            <li><a href="dashboard.html" class="active">Dashboard</a></li>
-            <li><a href="rooms.html">Manage Rooms</a></li>
-            <li><a href="bookings.html">Bookings</a></li>
-            <li><a href="customers.html">Customers</a></li>
-            <li><a href="#">Check-In</a></li>
-            <li><a href="#">Check-Out</a></li>
-            <li><a href="#">Staff</a></li>
-            <li><a href="#">Payments</a></li>
-            <li><a href="#">Reviews</a></li>
-            <li><a href="#">Logout</a></li>
-        </ul>
-        
-        <div class="profile-icon">
-            <i class="fa-solid fa-circle-user"></i>
-        </div>
-    </nav>
-</header>
+            <ul class="nav-links">
+                <li><a href="../home.html">Home</a></li>
+                <li><a href="dashboard.html" class="active">Dashboard</a></li>
+                <li><a href="rooms.html">Manage Rooms</a></li>
+                <li><a href="bookings.html">Bookings</a></li>
+                <li><a href="customers.html">Customers</a></li>
+                <li><a href="#">Check-In</a></li>
+                <li><a href="#">Check-Out</a></li>
+                <li><a href="#">Staff</a></li>
+                <li><a href="#">Payments</a></li>
+                <li><a href="#">Reviews</a></li>
+                <li><a href="#">Logout</a></li>
+            </ul>
 
-<div class="dashboard-container">
-    <div class="main-content">
-        <div id="dashboardHome">
+            <div class="profile-icon">
+                <i class="fa-solid fa-circle-user"></i>
+            </div>
+        </nav>
+    </header>
+
+    <div class="dashboard-container">
+        <div class="main-content">
+            <div id="dashboardHome">
                 <div class="dashboard-card-wrapper">
                     <!-- Dashboard Section Title -->
                     <div class="dashboard-title-block">
@@ -69,12 +69,13 @@
                                 Details &rarr;</a>
                         </div>
 
-                        <div class="overview-card bg-orange" style="cursor:pointer;">
+                        <div class="overview-card bg-orange" onclick="showCheckedOutRooms()" style="cursor:pointer;">
                             <div class="card-icon-wrapper"><i class="fa-solid fa-right-from-bracket"></i></div>
                             <span class="card-title">Checked Out</span>
                             <h2 class="card-value" id="overviewCheckedOut">8</h2>
                             <a href="#" class="card-link"
-                                onclick="event.stopPropagation(); event.preventDefault();">View Details &rarr;</a>
+                                onclick="event.stopPropagation(); event.preventDefault(); showCheckedOutRooms();">View
+                                Details &rarr;</a>
                         </div>
 
                         <div class="overview-card bg-purple" onclick="showTotalRevenue()" style="cursor:pointer;">
@@ -86,20 +87,22 @@
                                 Details &rarr;</a>
                         </div>
 
-                        <div class="overview-card bg-cyan" style="cursor:pointer;">
+                        <div class="overview-card bg-cyan" onclick="showPendingPayments()" style="cursor:pointer;">
                             <div class="card-icon-wrapper"><i class="fa-solid fa-credit-card"></i></div>
                             <span class="card-title">Pending Payments</span>
                             <h2 class="card-value" id="overviewPendingPayments">5</h2>
                             <a href="#" class="card-link"
-                                onclick="event.stopPropagation(); event.preventDefault();">View Details &rarr;</a>
+                                onclick="event.stopPropagation(); event.preventDefault(); showPendingPayments();">View
+                                Details &rarr;</a>
                         </div>
 
-                        <div class="overview-card bg-pink" style="cursor:pointer;">
+                        <div class="overview-card bg-pink" onclick="showTotalReviews()" style="cursor:pointer;">
                             <div class="card-icon-wrapper"><i class="fa-solid fa-star"></i></div>
                             <span class="card-title">Total Reviews</span>
                             <h2 class="card-value" id="overviewTotalReviews">18</h2>
                             <a href="#" class="card-link"
-                                onclick="event.stopPropagation(); event.preventDefault();">View Details &rarr;</a>
+                                onclick="event.stopPropagation(); event.preventDefault(); showTotalReviews();">View
+                                Details &rarr;</a>
                         </div>
                     </div>
 
@@ -356,6 +359,11 @@
             </div>
             <div id="totalRoomsSection" style="display:none;">
 
+                <div style="margin-bottom: 16px;">
+                    <button class="back-to-dash-btn" onclick="showDashboardHome()"><i
+                            class="fa-solid fa-arrow-left"></i> Back to Dashboard</button>
+                </div>
+
                 <div class="room-summary">
                     <div class="total-card">
                         <div class="card-icon">🛏️</div>
@@ -427,6 +435,11 @@
 
             </div>
             <div id="availableRoomsSection" style="display:none;">
+
+                <div style="margin-bottom: 16px;">
+                    <button class="back-to-dash-btn" onclick="showDashboardHome()"><i
+                            class="fa-solid fa-arrow-left"></i> Back to Dashboard</button>
+                </div>
 
                 <div class="room-summary available-summary">
                     <div class="total-card">
@@ -518,102 +531,84 @@
             </div>
             <div id="occupiedRoomsSection" style="display:none;">
 
-                <div class="room-summary available-summary">
-
-                    <div class="total-card">
-                        <div class="card-icon red">🛏️</div>
-                        <div>
-                            <h3>Total Occupied Rooms</h3>
-                            <h2>35</h2>
-                        </div>
-                    </div>
-
-                    <div class="room-card">
-                        <div class="card-icon red">👑</div>
-                        <div>
-                            <h3>Luxury Rooms</h3>
-                            <h2>10</h2>
-                        </div>
-                    </div>
-
-                    <div class="room-card">
-                        <div class="card-icon red">🛎️</div>
-                        <div>
-                            <h3>Deluxe Rooms</h3>
-                            <h2>17</h2>
-                        </div>
-                    </div>
-
-                    <div class="room-card">
-                        <div class="card-icon red">🛋️</div>
-                        <div>
-                            <h3>Suite Rooms</h3>
-                            <h2>8</h2>
-                        </div>
-                    </div>
-
-                </div>
-
-
                 <div class="available-overview">
 
-                    <div class="overview-header">
-                        <h2>🛏 Occupied Rooms Overview</h2>
-
-                        <div class="status-legend">
-                            <span>
-                                <span class="red-dot"></span>
-                                Occupied
-                            </span>
+                    <div class="overview-header"
+                        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <button class="back-to-dash-btn" onclick="showDashboardHome()"><i
+                                    class="fa-solid fa-arrow-left"></i> Back to Dashboard</button>
+                            <h2 style="margin: 0; font-size: 20px; font-weight: 700;">🔑 Total Checked-In List</h2>
                         </div>
                     </div>
-
 
                     <table class="overview-table">
 
                         <thead>
                             <tr>
+                                <th>Check-In ID</th>
+                                <th>Customer Name</th>
+                                <th>Room No</th>
                                 <th>Room Type</th>
-                                <th>First Floor</th>
-                                <th>Second Floor</th>
-                                <th>Third Floor</th>
+                                <th>Check-In</th>
+                                <th>Check-Out</th>
+                                <th>Guests</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Payment Status</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
 
-                        <tbody>
-
+                        <tbody id="checkInsTableBody">
                             <tr>
-                                <td><b>Luxury Rooms</b></td>
-
-                                <td class="floor-rooms" id="occupiedLuxuryFirst"></td>
-
-                                <td class="floor-rooms" id="occupiedLuxurySecond"></td>
-
-                                <td class="floor-rooms" id="occupiedLuxuryThird"></td>
+                                <td>CI001</td>
+                                <td>Sindhu Priya</td>
+                                <td>105</td>
+                                <td>Luxury</td>
+                                <td>29-Aug-2026</td>
+                                <td>31-Aug-2026</td>
+                                <td>2</td>
+                                <td>₹24,000</td>
+                                <td><span class="status-pill status-green">Checked In</span></td>
+                                <td>Paid</td>
+                                <td>
+                                    <button type="button" class="edit-booking-btn">Edit</button>
+                                    <button type="button" class="delete-booking-btn">Checkout</button>
+                                </td>
                             </tr>
-
-
                             <tr>
-                                <td><b>Deluxe Rooms</b></td>
-
-                                <td class="floor-rooms" id="occupiedDeluxeFirst"></td>
-
-                                <td class="floor-rooms" id="occupiedDeluxeSecond"></td>
-
-                                <td class="floor-rooms" id="occupiedDeluxeThird"></td>
+                                <td>CI002</td>
+                                <td>Ravi Kumar</td>
+                                <td>101</td>
+                                <td>Deluxe</td>
+                                <td>29-Aug-2026</td>
+                                <td>31-Aug-2026</td>
+                                <td>1</td>
+                                <td>₹8,000</td>
+                                <td><span class="status-pill status-green">Checked In</span></td>
+                                <td>Paid</td>
+                                <td>
+                                    <button type="button" class="edit-booking-btn">Edit</button>
+                                    <button type="button" class="delete-booking-btn">Checkout</button>
+                                </td>
                             </tr>
-
-
                             <tr>
-                                <td><b>Suite Rooms</b></td>
-
-                                <td class="floor-rooms" id="occupiedSuiteFirst"></td>
-
-                                <td class="floor-rooms" id="occupiedSuiteSecond"></td>
-
-                                <td class="floor-rooms" id="occupiedSuiteThird"></td>
+                                <td>CI003</td>
+                                <td>Priya Sharma</td>
+                                <td>102</td>
+                                <td>Suite</td>
+                                <td>29-Aug-2026</td>
+                                <td>01-Sep-2026</td>
+                                <td>2</td>
+                                <td>₹32,000</td>
+                                <td><span class="status-pill status-green">Checked In</span></td>
+                                <td>Paid</td>
+                                <td>
+                                    <button type="button" class="edit-booking-btn">Edit</button>
+                                    <button type="button" class="delete-booking-btn">Checkout</button>
+                                </td>
                             </tr>
-
                         </tbody>
 
                     </table>
@@ -625,8 +620,13 @@
 
                 <div class="available-overview">
 
-                    <div class="overview-header">
-                        <h2>📖 Bookings Overview</h2>
+                    <div class="overview-header"
+                        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <button class="back-to-dash-btn" onclick="showDashboardHome()"><i
+                                    class="fa-solid fa-arrow-left"></i> Back to Dashboard</button>
+                            <h2 style="margin: 0; font-size: 20px; font-weight: 700;">📋 Total Bookings List</h2>
+                        </div>
                     </div>
 
                     <table class="overview-table">
@@ -686,6 +686,11 @@
 
             </div>
             <div id="totalCustomersSection" style="display:none;">
+
+                <div style="margin-bottom: 16px;">
+                    <button class="back-to-dash-btn" onclick="showDashboardHome()"><i
+                            class="fa-solid fa-arrow-left"></i> Back to Dashboard</button>
+                </div>
 
                 <div class="room-summary">
 
@@ -932,38 +937,15 @@
             </div>
             <div id="totalRevenueSection" style="display:none;">
 
-                <div class="room-summary">
-
-                    <div class="total-card" onclick="showTotalRevenue()" style="cursor: pointer;">
-                        <div class="card-icon">💰</div>
-                        <h3>Total Revenue</h3>
-                        <h2>₹8,50,000</h2>
-                    </div>
-
-                    <div class="room-card" onclick="showTodaysRevenue()" style="cursor: pointer;">
-                        <div class="card-icon">📅</div>
-                        <h3>Today's Revenue</h3>
-                        <h2>₹25,000</h2>
-                    </div>
-
-                    <div class="room-card" onclick="showThisMonthRevenue()" style="cursor: pointer;">
-                        <div class="card-icon">📆</div>
-                        <h3>This Month</h3>
-                        <h2>₹2,50,000</h2>
-                    </div>
-
-                    <div class="room-card" onclick="showAverageRevenue()" style="cursor: pointer;">
-                        <div class="card-icon">📈</div>
-                        <h3>Average Revenue</h3>
-                        <h2>₹10,000</h2>
-                    </div>
-
-                </div>
-
                 <div class="available-overview">
 
-                    <div class="overview-header">
-                        <h2>💰 Revenue Overview</h2>
+                    <div class="overview-header"
+                        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <button class="back-to-dash-btn" onclick="showDashboardHome()"><i
+                                    class="fa-solid fa-arrow-left"></i> Back to Dashboard</button>
+                            <h2 style="margin: 0; font-size: 20px; font-weight: 700;">💰 Total Revenue List</h2>
+                        </div>
                     </div>
 
                     <table class="overview-table">
@@ -972,344 +954,49 @@
                             <tr>
                                 <th>Booking ID</th>
                                 <th>Customer Name</th>
-                                <th>Room Type</th>
                                 <th>Room No</th>
+                                <th>Room Type</th>
+                                <th>Check-In</th>
+                                <th>Check-Out</th>
                                 <th>Amount</th>
-                                <th>Status</th>
+                                <th>Payment Status</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
 
-                        <tbody>
-
+                        <tbody id="revenueTableBody">
                             <tr>
                                 <td>B001</td>
                                 <td>Ravi Kumar</td>
-                                <td>Luxury</td>
                                 <td>105</td>
-                                <td>₹15,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B002</td>
-                                <td>Priya</td>
-                                <td>Deluxe</td>
-                                <td>125</td>
-                                <td>₹10,000</td>
-                                <td>Paid</td>
-                            </tr>
-                            <tr>
-                                <td>B001</td>
-                                <td>Ravi Kumar</td>
                                 <td>Luxury</td>
-                                <td>105</td>
+                                <td>29-Aug-2026</td>
+                                <td>31-Aug-2026</td>
                                 <td>₹25,000</td>
-                                <td>Paid</td>
+                                <td><span class="status-pill status-green">Paid</span></td>
+                                <td><button type="button" class="edit-booking-btn">Invoice</button></td>
                             </tr>
-
                             <tr>
                                 <td>B002</td>
                                 <td>Priya</td>
-                                <td>Deluxe</td>
                                 <td>125</td>
+                                <td>Deluxe</td>
+                                <td>29-Aug-2026</td>
+                                <td>31-Aug-2026</td>
                                 <td>₹20,000</td>
-                                <td>Paid</td>
+                                <td><span class="status-pill status-green">Paid</span></td>
+                                <td><button type="button" class="edit-booking-btn">Invoice</button></td>
                             </tr>
-
                             <tr>
                                 <td>B003</td>
                                 <td>Ramesh</td>
-                                <td>Suite</td>
                                 <td>205</td>
+                                <td>Suite</td>
+                                <td>29-Aug-2026</td>
+                                <td>01-Sep-2026</td>
                                 <td>₹30,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B004</td>
-                                <td>Suresh</td>
-                                <td>Luxury</td>
-                                <td>110</td>
-                                <td>₹15,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B005</td>
-                                <td>Anjali</td>
-                                <td>Deluxe</td>
-                                <td>130</td>
-                                <td>₹28,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B006</td>
-                                <td>Kavya</td>
-                                <td>Suite</td>
-                                <td>210</td>
-                                <td>₹22,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B007</td>
-                                <td>Lakshmi</td>
-                                <td>Luxury</td>
-                                <td>115</td>
-                                <td>₹35,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B008</td>
-                                <td>Arjun</td>
-                                <td>Deluxe</td>
-                                <td>135</td>
-                                <td>₹18,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B009</td>
-                                <td>Swathi</td>
-                                <td>Suite</td>
-                                <td>220</td>
-                                <td>₹27,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B010</td>
-                                <td>Rahul</td>
-                                <td>Luxury</td>
-                                <td>120</td>
-                                <td>₹30,000</td>
-                                <td>Paid</td>
-                            </tr>
-                            <tr>
-                                <td>B001</td>
-                                <td>Ravi Kumar</td>
-                                <td>Luxury</td>
-                                <td>105</td>
-                                <td>₹10,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B002</td>
-                                <td>Priya</td>
-                                <td>Deluxe</td>
-                                <td>125</td>
-                                <td>₹10,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B003</td>
-                                <td>Ramesh</td>
-                                <td>Suite</td>
-                                <td>205</td>
-                                <td>₹10,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B004</td>
-                                <td>Suresh</td>
-                                <td>Luxury</td>
-                                <td>110</td>
-                                <td>₹10,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B005</td>
-                                <td>Anjali</td>
-                                <td>Deluxe</td>
-                                <td>130</td>
-                                <td>₹10,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B006</td>
-                                <td>Kavya</td>
-                                <td>Suite</td>
-                                <td>210</td>
-                                <td>₹10,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B007</td>
-                                <td>Lakshmi</td>
-                                <td>Luxury</td>
-                                <td>115</td>
-                                <td>₹10,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B008</td>
-                                <td>Arjun</td>
-                                <td>Deluxe</td>
-                                <td>135</td>
-                                <td>₹10,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B009</td>
-                                <td>Swathi</td>
-                                <td>Suite</td>
-                                <td>215</td>
-                                <td>₹10,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B010</td>
-                                <td>Rahul</td>
-                                <td>Luxury</td>
-                                <td>120</td>
-                                <td>₹10,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B011</td>
-                                <td>Neha</td>
-                                <td>Deluxe</td>
-                                <td>140</td>
-                                <td>₹10,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B012</td>
-                                <td>Vijay</td>
-                                <td>Suite</td>
-                                <td>220</td>
-                                <td>₹10,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B013</td>
-                                <td>Pooja</td>
-                                <td>Luxury</td>
-                                <td>121</td>
-                                <td>₹10,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B014</td>
-                                <td>Manoj</td>
-                                <td>Deluxe</td>
-                                <td>141</td>
-                                <td>₹10,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B015</td>
-                                <td>Divya</td>
-                                <td>Suite</td>
-                                <td>221</td>
-                                <td>₹10,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B016</td>
-                                <td>Rohit</td>
-                                <td>Luxury</td>
-                                <td>122</td>
-                                <td>₹10,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B017</td>
-                                <td>Meena</td>
-                                <td>Deluxe</td>
-                                <td>142</td>
-                                <td>₹10,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B018</td>
-                                <td>Akash</td>
-                                <td>Suite</td>
-                                <td>222</td>
-                                <td>₹10,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B019</td>
-                                <td>Sneha</td>
-                                <td>Luxury</td>
-                                <td>123</td>
-                                <td>₹10,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B020</td>
-                                <td>Kiran</td>
-                                <td>Deluxe</td>
-                                <td>143</td>
-                                <td>₹10,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B021</td>
-                                <td>Sanjay</td>
-                                <td>Suite</td>
-                                <td>223</td>
-                                <td>₹10,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B022</td>
-                                <td>Deepika</td>
-                                <td>Luxury</td>
-                                <td>124</td>
-                                <td>₹10,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B023</td>
-                                <td>Varun</td>
-                                <td>Deluxe</td>
-                                <td>144</td>
-                                <td>₹10,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B024</td>
-                                <td>Harsha</td>
-                                <td>Suite</td>
-                                <td>224</td>
-                                <td>₹10,000</td>
-                                <td>Paid</td>
-                            </tr>
-
-                            <tr>
-                                <td>B025</td>
-                                <td>Keerthi</td>
-                                <td>Luxury</td>
-                                <td>126</td>
-                                <td>₹10,000</td>
-                                <td>Paid</td>
+                                <td><span class="status-pill status-green">Paid</span></td>
+                                <td><button type="button" class="edit-booking-btn">Invoice</button></td>
                             </tr>
                         </tbody>
 
@@ -1318,11 +1005,378 @@
                 </div>
 
             </div>
+
+            <!-- Checked Out Section -->
+            <div id="checkedOutSection" style="display:none;">
+                <div class="available-overview">
+                    <div class="overview-header"
+                        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <button class="back-to-dash-btn" onclick="showDashboardHome()"><i
+                                    class="fa-solid fa-arrow-left"></i> Back to Dashboard</button>
+                            <h2 style="margin: 0; font-size: 20px; font-weight: 700;">🚪 Total Checked-Out List</h2>
+                        </div>
+                    </div>
+
+                    <table class="overview-table">
+                        <thead>
+                            <tr>
+                                <th>Check-Out ID</th>
+                                <th>Customer Name</th>
+                                <th>Room No</th>
+                                <th>Room Type</th>
+                                <th>Check-In</th>
+                                <th>Check-Out</th>
+                                <th>Guests</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Payment Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="checkedOutTableBody">
+                            <tr>
+                                <td>CO001</td>
+                                <td>Anjali</td>
+                                <td>108</td>
+                                <td>Deluxe</td>
+                                <td>25-Aug-2026</td>
+                                <td>28-Aug-2026</td>
+                                <td>2</td>
+                                <td>₹24,000</td>
+                                <td><span class="status-pill" style="background:#fee2e2; color:#b91c1c;">Checked
+                                        Out</span></td>
+                                <td>Paid</td>
+                                <td><button type="button" class="edit-booking-btn">View Details</button></td>
+                            </tr>
+                            <tr>
+                                <td>CO002</td>
+                                <td>Suresh</td>
+                                <td>112</td>
+                                <td>Luxury</td>
+                                <td>26-Aug-2026</td>
+                                <td>29-Aug-2026</td>
+                                <td>1</td>
+                                <td>₹36,000</td>
+                                <td><span class="status-pill" style="background:#fee2e2; color:#b91c1c;">Checked
+                                        Out</span></td>
+                                <td>Paid</td>
+                                <td><button type="button" class="edit-booking-btn">View Details</button></td>
+                            </tr>
+                            <tr>
+                                <td>CO003</td>
+                                <td>Vikram</td>
+                                <td>204</td>
+                                <td>Suite</td>
+                                <td>27-Aug-2026</td>
+                                <td>30-Aug-2026</td>
+                                <td>3</td>
+                                <td>₹48,000</td>
+                                <td><span class="status-pill" style="background:#fee2e2; color:#b91c1c;">Checked
+                                        Out</span></td>
+                                <td>Paid</td>
+                                <td><button type="button" class="edit-booking-btn">View Details</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pending Payments Section -->
+            <div id="pendingPaymentsSection" style="display:none;">
+                <div class="available-overview">
+                    <div class="overview-header"
+                        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <button class="back-to-dash-btn" onclick="showDashboardHome()"><i
+                                    class="fa-solid fa-arrow-left"></i> Back to Dashboard</button>
+                            <h2 style="margin: 0; font-size: 20px; font-weight: 700;">💳 Pending Payments List</h2>
+                        </div>
+                    </div>
+
+                    <table class="overview-table">
+                        <thead>
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>Customer Name</th>
+                                <th>Room No</th>
+                                <th>Room Type</th>
+                                <th>Check-In</th>
+                                <th>Check-Out</th>
+                                <th>Amount</th>
+                                <th>Payment Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pendingPaymentsTableBody">
+                            <tr>
+                                <td>BK489732</td>
+                                <td>Nagamani</td>
+                                <td>222</td>
+                                <td>Deluxe</td>
+                                <td>29-Aug-2026</td>
+                                <td>31-Aug-2026</td>
+                                <td>₹8,000</td>
+                                <td><span class="status-pill" style="background:#fef3c7; color:#d97706;">Pending</span>
+                                </td>
+                                <td><button type="button" class="edit-booking-btn">Collect Payment</button></td>
+                            </tr>
+                            <tr>
+                                <td>BK489735</td>
+                                <td>Lokesh</td>
+                                <td>115</td>
+                                <td>Luxury</td>
+                                <td>30-Aug-2026</td>
+                                <td>02-Sep-2026</td>
+                                <td>₹24,000</td>
+                                <td><span class="status-pill" style="background:#fef3c7; color:#d97706;">Pending</span>
+                                </td>
+                                <td><button type="button" class="edit-booking-btn">Collect Payment</button></td>
+                            </tr>
+                            <tr>
+                                <td>BK489740</td>
+                                <td>Keerthana</td>
+                                <td>210</td>
+                                <td>Suite</td>
+                                <td>31-Aug-2026</td>
+                                <td>03-Sep-2026</td>
+                                <td>₹32,000</td>
+                                <td><span class="status-pill" style="background:#fef3c7; color:#d97706;">Pending</span>
+                                </td>
+                                <td><button type="button" class="edit-booking-btn">Collect Payment</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Total Reviews Section -->
+            <div id="totalReviewsSection" style="display:none;">
+                <div class="available-overview">
+                    <div class="overview-header"
+                        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <button class="back-to-dash-btn" onclick="showDashboardHome()"><i
+                                    class="fa-solid fa-arrow-left"></i> Back to Dashboard</button>
+                            <h2 style="margin: 0; font-size: 20px; font-weight: 700;">⭐ Total Reviews List</h2>
+                        </div>
+                    </div>
+
+                    <table class="overview-table">
+                        <thead>
+                            <tr>
+                                <th>Review ID</th>
+                                <th>Customer Name</th>
+                                <th>Room Type</th>
+                                <th>Rating</th>
+                                <th>Comment</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reviewsTableBody">
+                            <tr>
+                                <td>REV001</td>
+                                <td>Sindhu Priya</td>
+                                <td>Luxury</td>
+                                <td><span style="color:#f59e0b;">★★★★★</span> (5.0)</td>
+                                <td>Excellent stay! Clean rooms and friendly staff.</td>
+                                <td>31-Aug-2026</td>
+                                <td><button type="button" class="edit-booking-btn">Reply</button></td>
+                            </tr>
+                            <tr>
+                                <td>REV002</td>
+                                <td>Ravi Kumar</td>
+                                <td>Deluxe</td>
+                                <td><span style="color:#f59e0b;">★★★★★</span> (5.0)</td>
+                                <td>Very good service and delicious food.</td>
+                                <td>31-Aug-2026</td>
+                                <td><button type="button" class="edit-booking-btn">Reply</button></td>
+                            </tr>
+                            <tr>
+                                <td>REV003</td>
+                                <td>Priya Sharma</td>
+                                <td>Suite</td>
+                                <td><span style="color:#f59e0b;">★★★★★</span> (5.0)</td>
+                                <td>Clean rooms and great ambience!</td>
+                                <td>31-Aug-2026</td>
+                                <td><button type="button" class="edit-booking-btn">Reply</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
+    <!-- EDIT BOOKING MODAL -->
+    <div id="editModalOverlay" class="app-modal-overlay">
+        <div class="app-modal-card">
+            <div class="app-modal-header">
+                <h3><i class="fa-solid fa-pen-to-square"></i> Edit Details</h3>
+                <button class="app-modal-close-btn" onclick="closeEditModal()">&times;</button>
+            </div>
+            <form class="app-modal-form" id="editBookingForm" onsubmit="event.preventDefault(); saveEditBooking();">
+                <input type="hidden" id="editItemKey">
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>ID</label>
+                        <input type="text" id="editBookingId" readonly style="background:#f1f5f9;">
+                    </div>
+                    <div class="form-group">
+                        <label>Guest / Customer Name</label>
+                        <input type="text" id="editGuestName" required>
+                    </div>
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Room No.</label>
+                        <input type="text" id="editRoomNo" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Room Type</label>
+                        <select id="editRoomType">
+                            <option value="Luxury">Luxury</option>
+                            <option value="Deluxe">Deluxe</option>
+                            <option value="Suite">Suite</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Check-In Date</label>
+                        <input type="text" id="editCheckIn" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Check-Out Date</label>
+                        <input type="text" id="editCheckOut" required>
+                    </div>
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Amount (₹)</label>
+                        <input type="number" id="editAmount" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Booking / Stay Status</label>
+                        <select id="editBookingStatus">
+                            <option value="Confirmed">Confirmed</option>
+                            <option value="Checked In">Checked In</option>
+                            <option value="Checked Out">Checked Out</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Payment Status</label>
+                    <select id="editPaymentStatus">
+                        <option value="Paid">Paid</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Refunded">Refunded</option>
+                    </select>
+                </div>
+                <div class="app-modal-footer">
+                    <button type="button" class="btn-secondary-action" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="btn-primary-action">Save Changes</button>
+                </div>
+            </form>
+        </div>
     </div>
 
+    <!-- VIEW DETAILS MODAL -->
+    <div id="viewModalOverlay" class="app-modal-overlay">
+        <div class="app-modal-card">
+            <div class="app-modal-header">
+                <h3><i class="fa-solid fa-circle-info"></i> Booking & Stay Details</h3>
+                <button class="app-modal-close-btn" onclick="closeViewModal()">&times;</button>
+            </div>
+            <div class="app-modal-form" id="viewDetailsBody">
+                <!-- Dynamically populated -->
+            </div>
+            <div class="app-modal-footer">
+                <button type="button" class="btn-primary-action" onclick="closeViewModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- INVOICE MODAL -->
+    <div id="invoiceModalOverlay" class="app-modal-overlay">
+        <div class="app-modal-card" style="max-width: 650px;">
+            <div class="app-modal-header">
+                <h3><i class="fa-solid fa-file-invoice-dollar"></i> Tax Invoice</h3>
+                <button class="app-modal-close-btn" onclick="closeInvoiceModal()">&times;</button>
+            </div>
+            <div id="printableInvoiceContent" style="padding: 10px;">
+                <!-- Dynamically populated -->
+            </div>
+            <div class="app-modal-footer">
+                <button type="button" class="btn-secondary-action" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Invoice</button>
+                <button type="button" class="btn-primary-action" onclick="closeInvoiceModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- COLLECT PAYMENT MODAL -->
+    <div id="collectPaymentModalOverlay" class="app-modal-overlay">
+        <div class="app-modal-card">
+            <div class="app-modal-header">
+                <h3><i class="fa-solid fa-credit-card"></i> Collect Payment</h3>
+                <button class="app-modal-close-btn" onclick="closeCollectPaymentModal()">&times;</button>
+            </div>
+            <form class="app-modal-form" onsubmit="event.preventDefault(); confirmCollectPayment();">
+                <input type="hidden" id="collectBookingId">
+                <div class="form-group">
+                    <label>Guest Name</label>
+                    <input type="text" id="collectGuestName" readonly style="background:#f1f5f9;">
+                </div>
+                <div class="form-group">
+                    <label>Amount Due</label>
+                    <input type="text" id="collectAmountDue" readonly style="background:#f1f5f9; font-weight: bold; color: #16a34a;">
+                </div>
+                <div class="form-group">
+                    <label>Payment Method</label>
+                    <select id="collectPaymentMode" required>
+                        <option value="UPI / QR Code">UPI / QR Code</option>
+                        <option value="Credit/Debit Card">Credit / Debit Card</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Net Banking">Net Banking</option>
+                    </select>
+                </div>
+                <div class="app-modal-footer">
+                    <button type="button" class="btn-secondary-action" onclick="closeCollectPaymentModal()">Cancel</button>
+                    <button type="submit" class="btn-primary-action">Confirm & Mark as Paid</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- REPLY TO REVIEW MODAL -->
+    <div id="replyModalOverlay" class="app-modal-overlay">
+        <div class="app-modal-card">
+            <div class="app-modal-header">
+                <h3><i class="fa-solid fa-reply"></i> Reply to Guest Review</h3>
+                <button class="app-modal-close-btn" onclick="closeReplyModal()">&times;</button>
+            </div>
+            <form class="app-modal-form" onsubmit="event.preventDefault(); confirmReplyReview();">
+                <input type="hidden" id="replyReviewId">
+                <div class="form-group">
+                    <label>Review From</label>
+                    <input type="text" id="replyReviewerName" readonly style="background:#f1f5f9;">
+                </div>
+                <div class="form-group">
+                    <label>Guest Comment</label>
+                    <textarea id="replyReviewComment" readonly style="background:#f1f5f9; height: 70px;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Management Reply</label>
+                    <textarea id="replyText" placeholder="Type your response here..." required style="height: 100px;"></textarea>
+                </div>
+                <div class="app-modal-footer">
+                    <button type="button" class="btn-secondary-action" onclick="closeReplyModal()">Cancel</button>
+                    <button type="submit" class="btn-primary-action">Post Reply</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script src="../js/script.js"></script>
