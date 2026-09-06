@@ -204,10 +204,16 @@ body {
 
 .reset-filter-btn {
     border: none;
-    background: transparent;
-    color: #555;
+    background: #159bd3;
+    color: white;
+    padding: 11px 18px;
+    border-radius: 5px;
     cursor: pointer;
     font-size: 13px;
+}
+
+.reset-filter-btn:hover {
+    background: #087eaf;
 }
 
 

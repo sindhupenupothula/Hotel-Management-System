@@ -1,1078 +1,1331 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Dashboard - Sayora Hotels</title>
+    <link rel="stylesheet" href="../css/home.css">
     <link rel="stylesheet" href="../css/dashboard.css">
-    <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
+
 <body class="dashboard-body">
-<div class="dashboard-container">
-    <div class="sidebar">
-        <h3><a href="../home.html">🏨 SAYORA HOTELS</a></h3>
 
-        <ul>
-            <li onclick="showTotalRooms()">Total Rooms</li>
-            <li onclick="showAvailableRooms()">Available Rooms</li>
-            <li onclick="showOccupiedRooms()">Occupied Rooms</li>
-            <li onclick="showTotalBookings()">Total Bookings</li>
-            <li onclick="showTotalCustomers()">Total Customers</li>
-            <li onclick="showTotalRevenue()">Total Revenue</li>
+<header>
+    <nav class="navbar">
+        <div class="logo">
+            <img src="../images/logo.jpg" alt="Sayora Hotels Logo">
+            <h2>SAYORA HOTELS</h2>
+        </div>
+
+        <ul class="nav-links">
+            <li><a href="../home.html">Home</a></li>
+            <li><a href="dashboard.html" class="active">Dashboard</a></li>
+            <li><a href="rooms.html">Manage Rooms</a></li>
+            <li><a href="bookings.html">Bookings</a></li>
+            <li><a href="customers.html">Customers</a></li>
+            <li><a href="#">Check-In</a></li>
+            <li><a href="#">Check-Out</a></li>
+            <li><a href="#">Staff</a></li>
+            <li><a href="#">Payments</a></li>
+            <li><a href="#">Reviews</a></li>
+            <li><a href="#">Logout</a></li>
         </ul>
-    </div>
-       <div class="main-content">
-        <div class="dashboard-top">
-</div>
+        
+        <div class="profile-icon">
+            <i class="fa-solid fa-circle-user"></i>
+        </div>
+    </nav>
+</header>
+
+<div class="dashboard-container">
+    <div class="main-content">
         <div id="dashboardHome">
-<h1 class="dashboard-title">Admin Dashboard</h1>
+                <div class="dashboard-card-wrapper">
+                    <!-- Dashboard Section Title -->
+                    <div class="dashboard-title-block">
+                        <h1>Dashboard Overview</h1>
+                        <p>Overview of hotel operations</p>
+                    </div>
 
-<div class="dashboard-top">
+                    <!-- 6 Overview Cards with Icons -->
+                    <div class="overview-cards-grid">
+                        <div class="overview-card bg-blue" onclick="showTotalBookings()" style="cursor:pointer;">
+                            <div class="card-icon-wrapper"><i class="fa-regular fa-calendar-check"></i></div>
+                            <span class="card-title">Total Bookings</span>
+                            <h2 class="card-value" id="overviewTotalBookings">25</h2>
+                            <a href="#" class="card-link"
+                                onclick="event.stopPropagation(); event.preventDefault(); showTotalBookings();">View
+                                Details &rarr;</a>
+                        </div>
 
-    <div class="date-box">
-        📅 <span id="currentDate"></span>
-    </div>
+                        <div class="overview-card bg-green" onclick="showOccupiedRooms()" style="cursor:pointer;">
+                            <div class="card-icon-wrapper"><i class="fa-solid fa-user-check"></i></div>
+                            <span class="card-title">Checked In</span>
+                            <h2 class="card-value" id="overviewCheckedIn">12</h2>
+                            <a href="#" class="card-link"
+                                onclick="event.stopPropagation(); event.preventDefault(); showOccupiedRooms();">View
+                                Details &rarr;</a>
+                        </div>
 
-    <div class="time-box">
-        🕒 <span id="currentTime"></span>
-    </div>
+                        <div class="overview-card bg-orange" style="cursor:pointer;">
+                            <div class="card-icon-wrapper"><i class="fa-solid fa-right-from-bracket"></i></div>
+                            <span class="card-title">Checked Out</span>
+                            <h2 class="card-value" id="overviewCheckedOut">8</h2>
+                            <a href="#" class="card-link"
+                                onclick="event.stopPropagation(); event.preventDefault();">View Details &rarr;</a>
+                        </div>
 
-    <div class="weather-box">
-       ☀️ 30°C | Rajahmundry
-    </div>
-    </div>
+                        <div class="overview-card bg-purple" onclick="showTotalRevenue()" style="cursor:pointer;">
+                            <div class="card-icon-wrapper"><i class="fa-solid fa-coins"></i></div>
+                            <span class="card-title">Total Revenue</span>
+                            <h2 class="card-value" id="overviewTotalRevenue">₹2,45,000</h2>
+                            <a href="#" class="card-link"
+                                onclick="event.stopPropagation(); event.preventDefault(); showTotalRevenue();">View
+                                Details &rarr;</a>
+                        </div>
 
-<p>Welcome to Sayora Hotel Management System</p>
-    <div class="info-card">
-        <h2>Welcome to Sayora Hotels</h2>
-        <div class="info-grid">
-            <!--Left Column-->
-<div>
-        <p>🕐<strong>Check-In:</strong>12:00 PM</p>
-        <p>🍽<strong>Breakfast:</strong> 7:00 AM - 10:00 AM</p>
-        <p>📶<strong>Free Wi-Fi:</strong>Available</p>
-        <p>🔔<strong>Reception:</strong> 24/7</p>
-        </div>
-        <!--Right Column-->
-        <div>
-        <p>🕐<strong>Check-Out:</strong>11:00 AM</p>
-        <p>🍴<strong>Restuarant:</strong> 7:00 AM - 11:00 PM</p>
-        <p>🚗<strong>Parking:</strong>Free Parking</p>
-        <p>🧹<strong>Housekeeping:</strong>Daily Service</p>
-        </div>
-</div>
-        <h3>Luxury Meets Comfort</h3>
-    </div>
+                        <div class="overview-card bg-cyan" style="cursor:pointer;">
+                            <div class="card-icon-wrapper"><i class="fa-solid fa-credit-card"></i></div>
+                            <span class="card-title">Pending Payments</span>
+                            <h2 class="card-value" id="overviewPendingPayments">5</h2>
+                            <a href="#" class="card-link"
+                                onclick="event.stopPropagation(); event.preventDefault();">View Details &rarr;</a>
+                        </div>
 
-</div>
-        <div id="totalRoomsSection"style="display:none;">
+                        <div class="overview-card bg-pink" style="cursor:pointer;">
+                            <div class="card-icon-wrapper"><i class="fa-solid fa-star"></i></div>
+                            <span class="card-title">Total Reviews</span>
+                            <h2 class="card-value" id="overviewTotalReviews">18</h2>
+                            <a href="#" class="card-link"
+                                onclick="event.stopPropagation(); event.preventDefault();">View Details &rarr;</a>
+                        </div>
+                    </div>
 
-    <div class="room-summary">
-        <div class="total-card">
-            <div class="card-icon">🛏️</div>
-            <h3>Total Rooms</h3>
-            <h2>150</h2>
-        </div>
+                    <!-- Side-by-Side Tables -->
+                    <div class="overview-tables-grid">
+                        <!-- Recent Bookings Table Box -->
+                        <div class="overview-table-card">
+                            <div class="table-card-header">
+                                <h3>Recent Bookings</h3>
+                                <a href="#" class="header-action-link"
+                                    onclick="event.preventDefault(); showTotalBookings();">View All Bookings &rarr;</a>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="dash-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Booking ID</th>
+                                            <th>Guest Name</th>
+                                            <th>Room No.</th>
+                                            <th>Check-In</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recentBookingsBody">
+                                        <tr>
+                                            <td>BK557860</td>
+                                            <td>Sindhu Priya</td>
+                                            <td>105</td>
+                                            <td>29-Aug-2026</td>
+                                            <td><span class="status-pill status-green">Confirmed</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>BK557879</td>
+                                            <td>Ravi Kumar</td>
+                                            <td>101</td>
+                                            <td>29-Aug-2026</td>
+                                            <td><span class="status-pill status-green">Confirmed</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>BK557878</td>
+                                            <td>Priya Sharma</td>
+                                            <td>102</td>
+                                            <td>29-Aug-2026</td>
+                                            <td><span class="status-pill status-green">Confirmed</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
 
-        <div class="room-card">
-            <div class="card-icon">👑</div>
-            <h3>Luxury Rooms</h3>
-            <h2>50</h2>
-        </div>
+                        <!-- Recent Check-Ins Table Box -->
+                        <div class="overview-table-card">
+                            <div class="table-card-header">
+                                <h3>Recent Check-Ins</h3>
+                                <a href="#" class="header-action-link"
+                                    onclick="event.preventDefault(); showOccupiedRooms();">View All Check-Ins &rarr;</a>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="dash-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Check-In ID</th>
+                                            <th>Guest Name</th>
+                                            <th>Room No.</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recentCheckInsBody">
+                                        <tr>
+                                            <td>CI001</td>
+                                            <td>Sindhu Priya</td>
+                                            <td>105</td>
+                                            <td>29-Aug-2026</td>
+                                            <td><span class="status-pill status-green">Checked In</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>CI002</td>
+                                            <td>Ravi Kumar</td>
+                                            <td>101</td>
+                                            <td>29-Aug-2026</td>
+                                            <td><span class="status-pill status-green">Checked In</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>CI003</td>
+                                            <td>Priya Sharma</td>
+                                            <td>102</td>
+                                            <td>29-Aug-2026</td>
+                                            <td><span class="status-pill status-green">Checked In</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
 
-        <div class="room-card">
-            <div class="card-icon">🛎️</div>
-            <h3>Deluxe Rooms</h3>
-            <h2>50</h2>
-        </div>
+                    <!-- Bottom 3 Analytics Widgets Grid -->
+                    <div class="bottom-widgets-grid">
+                        <!-- Widget 1: Occupied vs Available Rooms -->
+                        <div class="bottom-widget">
+                            <div class="widget-card-header">
+                                <h3>Occupied vs Available Rooms</h3>
+                            </div>
+                            <div class="widget-body donut-body-layout">
+                                <div class="donut-chart-box">
+                                    <svg class="donut-svg" viewBox="0 0 36 36">
+                                        <path class="donut-ring-bg"
+                                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                            fill="none" stroke="#e2e8f0" stroke-width="4" />
+                                        <!-- Occupied 80/120 = 66.6% -->
+                                        <path class="donut-segment-blue" stroke-dasharray="66.6 100"
+                                            stroke-dashoffset="0"
+                                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                            fill="none" stroke="#2563eb" stroke-width="4" />
+                                        <!-- Available 35/120 = 29.1% -->
+                                        <path class="donut-segment-green" stroke-dasharray="29.1 100"
+                                            stroke-dashoffset="-66.6"
+                                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                            fill="none" stroke="#22c55e" stroke-width="4" />
+                                        <!-- Maintenance 5/120 = 4.3% -->
+                                        <path class="donut-segment-gray" stroke-dasharray="4.3 100"
+                                            stroke-dashoffset="-95.7"
+                                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                            fill="none" stroke="#cbd5e1" stroke-width="4" />
+                                    </svg>
+                                    <div class="donut-center-info">
+                                        <span class="total-rooms-num">120</span>
+                                        <span class="total-rooms-label">Total Rooms</span>
+                                    </div>
+                                </div>
+                                <div class="legend-list">
+                                    <div class="legend-row">
+                                        <span class="legend-dot dot-blue"></span>
+                                        <span class="legend-name">Occupied Rooms</span>
+                                        <strong class="legend-value">80</strong>
+                                    </div>
+                                    <div class="legend-row">
+                                        <span class="legend-dot dot-green"></span>
+                                        <span class="legend-name">Available Rooms</span>
+                                        <strong class="legend-value">35</strong>
+                                    </div>
+                                    <div class="legend-row">
+                                        <span class="legend-dot dot-gray"></span>
+                                        <span class="legend-name">Maintenance</span>
+                                        <strong class="legend-value">5</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-        <div class="room-card">
-            <div class="card-icon">🛋️</div>
-            <h3>Suite Rooms</h3>
-            <h2>50</h2>
-        </div>
+                        <!-- Widget 2: Revenue Overview Bar Chart -->
+                        <div class="bottom-widget">
+                            <div class="widget-card-header">
+                                <h3>Revenue Overview</h3>
+                                <select class="widget-select-dropdown">
+                                    <option>This Month</option>
+                                    <option>This Week</option>
+                                    <option>This Year</option>
+                                </select>
+                            </div>
+                            <div class="widget-body bar-chart-body-layout">
+                                <div class="bar-chart-flex">
+                                    <div class="chart-y-axis">
+                                        <span>100K</span>
+                                        <span>75K</span>
+                                        <span>50K</span>
+                                        <span>25K</span>
+                                        <span>0</span>
+                                    </div>
+                                    <div class="chart-bars-area">
+                                        <div class="grid-line-layer">
+                                            <div class="grid-line"></div>
+                                            <div class="grid-line"></div>
+                                            <div class="grid-line"></div>
+                                            <div class="grid-line"></div>
+                                            <div class="grid-line"></div>
+                                        </div>
+                                        <div class="bars-container">
+                                            <div class="bar-column">
+                                                <div class="bar-fill" style="height: 35%;"></div>
+                                                <span class="bar-label">Week 1</span>
+                                            </div>
+                                            <div class="bar-column">
+                                                <div class="bar-fill" style="height: 55%;"></div>
+                                                <span class="bar-label">Week 2</span>
+                                            </div>
+                                            <div class="bar-column">
+                                                <div class="bar-fill" style="height: 70%;"></div>
+                                                <span class="bar-label">Week 3</span>
+                                            </div>
+                                            <div class="bar-column">
+                                                <div class="bar-fill" style="height: 90%;"></div>
+                                                <span class="bar-label">Week 4</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-    </div>
+                        <!-- Widget 3: Guest Reviews -->
+                        <div class="bottom-widget">
+                            <div class="widget-card-header">
+                                <h3>Guest Reviews</h3>
+                                <a href="#" class="header-action-link" onclick="event.preventDefault();">View All
+                                    Reviews &rarr;</a>
+                            </div>
+                            <div class="widget-body reviews-body-layout">
+                                <div class="review-row">
+                                    <div class="review-avatar avatar-blue">SP</div>
+                                    <div class="review-content-block">
+                                        <div class="review-header-line">
+                                            <span class="reviewer-name">Sindhu Priya</span>
+                                            <span class="review-date-text">31-Aug-2026</span>
+                                        </div>
+                                        <div class="star-rating">★★★★★</div>
+                                        <p class="review-text-quote">Excellent stay!</p>
+                                    </div>
+                                </div>
 
-    <table class="room-table">
+                                <div class="review-row">
+                                    <div class="review-avatar avatar-green">RK</div>
+                                    <div class="review-content-block">
+                                        <div class="review-header-line">
+                                            <span class="reviewer-name">Ravi Kumar</span>
+                                            <span class="review-date-text">31-Aug-2026</span>
+                                        </div>
+                                        <div class="star-rating">★★★★★</div>
+                                        <p class="review-text-quote">Very good service</p>
+                                    </div>
+                                </div>
 
-        <thead>
-            <tr>
-                <th>S.No</th>
-                <th>Room Type</th>
-                <th>First Floor</th>
-                <th>Second Floor</th>
-                <th>Third Floor</th>
-            </tr>
-        </thead>
+                                <div class="review-row">
+                                    <div class="review-avatar avatar-purple">PS</div>
+                                    <div class="review-content-block">
+                                        <div class="review-header-line">
+                                            <span class="reviewer-name">Priya Sharma</span>
+                                            <span class="review-date-text">31-Aug-2026</span>
+                                        </div>
+                                        <div class="star-rating">★★★★★</div>
+                                        <p class="review-text-quote">Clean rooms</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-        <tbody>
+                    <!-- Footer Section -->
+                    <div class="dashboard-bottom-footer">
+                        <span>© 2026 Sayora Hotels. All rights reserved.</span>
+                        <span>Hotel Management System | Version 1.0</span>
+                    </div>
+                </div>
+            </div>
+            <div id="totalRoomsSection" style="display:none;">
 
-            <tr>
-                <td>1</td>
-                <td>Luxury Rooms</td>
-                <td>101 - 117</td>
-                <td>201 - 217</td>
-                <td>301 - 316</td>
-            </tr>
+                <div class="room-summary">
+                    <div class="total-card">
+                        <div class="card-icon">🛏️</div>
+                        <h3>Total Rooms</h3>
+                        <h2>150</h2>
+                    </div>
 
-            <tr>
-                <td>2</td>
-                <td>Deluxe Rooms</td>
-                <td>118 - 134</td>
-                <td>218 - 234</td>
-                <td>317 - 332</td>
-            </tr>
+                    <div class="room-card">
+                        <div class="card-icon">👑</div>
+                        <h3>Luxury Rooms</h3>
+                        <h2>50</h2>
+                    </div>
 
-            <tr>
-                <td>3</td>
-                <td>Suite Rooms</td>
-                <td>135 - 150</td>
-                <td>235 - 250</td>
-                <td>333 - 350</td>
-            </tr>
+                    <div class="room-card">
+                        <div class="card-icon">🛎️</div>
+                        <h3>Deluxe Rooms</h3>
+                        <h2>50</h2>
+                    </div>
 
-        </tbody>
+                    <div class="room-card">
+                        <div class="card-icon">🛋️</div>
+                        <h3>Suite Rooms</h3>
+                        <h2>50</h2>
+                    </div>
 
-    </table>
+                </div>
 
-</div>
-<div id="availableRoomsSection" style="display:none;">
+                <table class="room-table">
 
-    <div class="room-summary available-summary">
-      <div class="total-card">
-    <div class="card-icon blue">🛏️</div>
-    <div>
-        <h3>Total Available Rooms</h3>
-        <h2>115</h2>
-    </div>
-</div>
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Room Type</th>
+                            <th>First Floor</th>
+                            <th>Second Floor</th>
+                            <th>Third Floor</th>
+                        </tr>
+                    </thead>
 
-<div class="room-card">
-    <div class="card-icon green">👑</div>
-    <div>
-        <h3>Luxury Rooms</h3>
-        <h2>42</h2>
-    </div>
-</div>
+                    <tbody>
 
-<div class="room-card">
-    <div class="card-icon orange">🛎️</div>
-    <div>
-        <h3>Deluxe Rooms</h3>
-        <h2>38</h2>
-    </div>
-</div>
+                        <tr>
+                            <td>1</td>
+                            <td>Luxury Rooms</td>
+                            <td>101 - 117</td>
+                            <td>201 - 217</td>
+                            <td>301 - 316</td>
+                        </tr>
 
-<div class="room-card">
-    <div class="card-icon purple">🛋️</div>
-    <div>
-        <h3>Suite Rooms</h3>
-        <h2>35</h2>
-    </div>
-</div>
-</div>
-    <div class="available-overview">
+                        <tr>
+                            <td>2</td>
+                            <td>Deluxe Rooms</td>
+                            <td>118 - 134</td>
+                            <td>218 - 234</td>
+                            <td>317 - 332</td>
+                        </tr>
 
-    <div class="overview-header">
-        <h2>🛏 Available Rooms Overview</h2>
+                        <tr>
+                            <td>3</td>
+                            <td>Suite Rooms</td>
+                            <td>135 - 150</td>
+                            <td>235 - 250</td>
+                            <td>333 - 350</td>
+                        </tr>
 
-        <div class="status-legend">
-            <span><span class="green-dot"></span> Available</span>
-        </div>
-    </div>
+                    </tbody>
 
-    <table class="overview-table">
-        <thead>
+                </table>
 
-        <tr>
-            <th>Room Type</th>
-            <th>First Floor</th>
-            <th>Second Floor</th>
-            <th>Third Floor</th>
-        </tr>
-        </thead>
-<tbody>
-        <tr>
-            <td><b>Luxury Rooms</b></td>
+            </div>
+            <div id="availableRoomsSection" style="display:none;">
 
-            <td class="floor-rooms" id="luxuryFirst"></td>
+                <div class="room-summary available-summary">
+                    <div class="total-card">
+                        <div class="card-icon blue">🛏️</div>
+                        <div>
+                            <h3>Total Available Rooms</h3>
+                            <h2>115</h2>
+                        </div>
+                    </div>
 
-            <td class="floor-rooms" id="luxurySecond"></td>
+                    <div class="room-card">
+                        <div class="card-icon green">👑</div>
+                        <div>
+                            <h3>Luxury Rooms</h3>
+                            <h2>42</h2>
+                        </div>
+                    </div>
 
-            <td class="floor-rooms" id="luxuryThird"></td>
-        </tr>
+                    <div class="room-card">
+                        <div class="card-icon orange">🛎️</div>
+                        <div>
+                            <h3>Deluxe Rooms</h3>
+                            <h2>38</h2>
+                        </div>
+                    </div>
 
-        <tr>
-            <td><b>Deluxe Rooms</b></td>
+                    <div class="room-card">
+                        <div class="card-icon purple">🛋️</div>
+                        <div>
+                            <h3>Suite Rooms</h3>
+                            <h2>35</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="available-overview">
 
-            <td class="floor-rooms" id="deluxeFirst"></td>
+                    <div class="overview-header">
+                        <h2>🛏 Available Rooms Overview</h2>
 
-            <td class="floor-rooms" id="deluxeSecond"></td>
+                        <div class="status-legend">
+                            <span><span class="green-dot"></span> Available</span>
+                        </div>
+                    </div>
 
-            <td class="floor-rooms" id="deluxeThird"></td>
-        </tr>
+                    <table class="overview-table">
+                        <thead>
 
-        <tr>
-            <td><b>Suite Rooms</b></td>
+                            <tr>
+                                <th>Room Type</th>
+                                <th>First Floor</th>
+                                <th>Second Floor</th>
+                                <th>Third Floor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><b>Luxury Rooms</b></td>
 
-            <td class="floor-rooms" id="suiteFirst"></td>
+                                <td class="floor-rooms" id="luxuryFirst"></td>
 
-            <td class="floor-rooms" id="suiteSecond"></td>
+                                <td class="floor-rooms" id="luxurySecond"></td>
 
-            <td class="floor-rooms" id="suiteThird"></td>
-        </tr>
-</tbody>
-    </table>
+                                <td class="floor-rooms" id="luxuryThird"></td>
+                            </tr>
 
-</div>
-</div>
-<div id="occupiedRoomsSection" style="display:none;">
+                            <tr>
+                                <td><b>Deluxe Rooms</b></td>
 
-    <div class="room-summary available-summary">
+                                <td class="floor-rooms" id="deluxeFirst"></td>
 
-        <div class="total-card">
-            <div class="card-icon red">🛏️</div>
-            <div>
-                <h3>Total Occupied Rooms</h3>
-                <h2>35</h2>
+                                <td class="floor-rooms" id="deluxeSecond"></td>
+
+                                <td class="floor-rooms" id="deluxeThird"></td>
+                            </tr>
+
+                            <tr>
+                                <td><b>Suite Rooms</b></td>
+
+                                <td class="floor-rooms" id="suiteFirst"></td>
+
+                                <td class="floor-rooms" id="suiteSecond"></td>
+
+                                <td class="floor-rooms" id="suiteThird"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+            <div id="occupiedRoomsSection" style="display:none;">
+
+                <div class="room-summary available-summary">
+
+                    <div class="total-card">
+                        <div class="card-icon red">🛏️</div>
+                        <div>
+                            <h3>Total Occupied Rooms</h3>
+                            <h2>35</h2>
+                        </div>
+                    </div>
+
+                    <div class="room-card">
+                        <div class="card-icon red">👑</div>
+                        <div>
+                            <h3>Luxury Rooms</h3>
+                            <h2>10</h2>
+                        </div>
+                    </div>
+
+                    <div class="room-card">
+                        <div class="card-icon red">🛎️</div>
+                        <div>
+                            <h3>Deluxe Rooms</h3>
+                            <h2>17</h2>
+                        </div>
+                    </div>
+
+                    <div class="room-card">
+                        <div class="card-icon red">🛋️</div>
+                        <div>
+                            <h3>Suite Rooms</h3>
+                            <h2>8</h2>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="available-overview">
+
+                    <div class="overview-header">
+                        <h2>🛏 Occupied Rooms Overview</h2>
+
+                        <div class="status-legend">
+                            <span>
+                                <span class="red-dot"></span>
+                                Occupied
+                            </span>
+                        </div>
+                    </div>
+
+
+                    <table class="overview-table">
+
+                        <thead>
+                            <tr>
+                                <th>Room Type</th>
+                                <th>First Floor</th>
+                                <th>Second Floor</th>
+                                <th>Third Floor</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <tr>
+                                <td><b>Luxury Rooms</b></td>
+
+                                <td class="floor-rooms" id="occupiedLuxuryFirst"></td>
+
+                                <td class="floor-rooms" id="occupiedLuxurySecond"></td>
+
+                                <td class="floor-rooms" id="occupiedLuxuryThird"></td>
+                            </tr>
+
+
+                            <tr>
+                                <td><b>Deluxe Rooms</b></td>
+
+                                <td class="floor-rooms" id="occupiedDeluxeFirst"></td>
+
+                                <td class="floor-rooms" id="occupiedDeluxeSecond"></td>
+
+                                <td class="floor-rooms" id="occupiedDeluxeThird"></td>
+                            </tr>
+
+
+                            <tr>
+                                <td><b>Suite Rooms</b></td>
+
+                                <td class="floor-rooms" id="occupiedSuiteFirst"></td>
+
+                                <td class="floor-rooms" id="occupiedSuiteSecond"></td>
+
+                                <td class="floor-rooms" id="occupiedSuiteThird"></td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+            <div id="totalBookingsSection" style="display:none;">
+
+                <div class="available-overview">
+
+                    <div class="overview-header">
+                        <h2>📖 Bookings Overview</h2>
+                    </div>
+
+                    <table class="overview-table">
+
+                        <thead>
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>Customer Name</th>
+                                <th>Room No</th>
+                                <th>Room Type</th>
+                                <th>Check-In</th>
+                                <th>Check-Out</th>
+                                <th>Guests</th>
+                                <th>Amount</th>
+                                <th>Booking Status</th>
+                                <th>Payment Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="bookingsTableBody">
+
+                            <tr>
+                                <td>B001</td>
+                                <td>Ravi Kumar</td>
+                                <td>Luxury</td>
+                                <td>105</td>
+                                <td>09-Aug-2026</td>
+                                <td>11-Aug-2026</td>
+                                <td>Confirmed</td>
+                            </tr>
+
+                            <tr>
+                                <td>B002</td>
+                                <td>Priya</td>
+                                <td>Deluxe</td>
+                                <td>125</td>
+                                <td>09-Aug-2026</td>
+                                <td>12-Aug-2026</td>
+                                <td>Confirmed</td>
+                            </tr>
+                            <tr>
+                                <td>B003</td>
+                                <td>Ramesh</td>
+                                <td>Suite</td>
+                                <td>205</td>
+                                <td>08-Aug-2026</td>
+                                <td>10-Aug-2026</td>
+                                <td>Cancelled</td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+            <div id="totalCustomersSection" style="display:none;">
+
+                <div class="room-summary">
+
+                    <div class="total-card" onclick="showTotalCustomers();return false;" style="cursor:pointer;">
+                        <div class="card-icon">👥</div>
+                        <h3>Total Customers</h3>
+                        <h2>85</h2>
+                    </div>
+
+                    <div class="room-card" onclick="showNewCustomers()" style="cursor:pointer;">
+                        <div class="card-icon">🆕</div>
+                        <h3>New Customers</h3>
+                        <h2>20</h2>
+                    </div>
+
+                    <div class="room-card" onclick="showReturningCustomers()" style="cursor:pointer;">
+                        <div class="card-icon">🔄</div>
+                        <h3>Returning Customers</h3>
+                        <h2>50</h2>
+                    </div>
+
+                    <div class="room-card" onclick="showVIPCustomers()" style="cursor:pointer;">
+                        <div class="card-icon">⭐</div>
+                        <h3>VIP Customers</h3>
+                        <h2>15</h2>
+                    </div>
+
+                </div>
+
+                <div class="available-overview">
+
+                    <div class="overview-header">
+                        <h2>👥 Customers Overview</h2>
+                    </div>
+
+                    <table class="overview-table">
+
+                        <thead>
+                            <tr>
+                                <th>Customer ID</th>
+                                <th>Customer Name</th>
+                                <th>Phone</th>
+                                <th>Room Type</th>
+                                <th>Room No</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <tr>
+                                <td>C001</td>
+                                <td>Ravi Kumar</td>
+                                <td>9876543210</td>
+                                <td>Luxury</td>
+                                <td>101</td>
+                                <td>Active</td>
+                            </tr>
+
+                            <tr>
+                                <td>C002</td>
+                                <td>Priya</td>
+                                <td>9876543211</td>
+                                <td>Deluxe</td>
+                                <td>102</td>
+                                <td>Active</td>
+                            </tr>
+
+                            <tr>
+                                <td>C003</td>
+                                <td>Ramesh</td>
+                                <td>9876543212</td>
+                                <td>Suite</td>
+                                <td>103</td>
+                                <td>Active</td>
+                            </tr>
+
+                            <tr>
+                                <td>C004</td>
+                                <td>Suresh</td>
+                                <td>9876543213</td>
+                                <td>Luxury</td>
+                                <td>104</td>
+                                <td>Active</td>
+                            </tr>
+
+                            <tr>
+                                <td>C005</td>
+                                <td>Anjali</td>
+                                <td>9876543214</td>
+                                <td>Deluxe</td>
+                                <td>105</td>
+                                <td>Active</td>
+                            </tr>
+                            <tr>
+                                <td>C006</td>
+                                <td>Kavya</td>
+                                <td>9876543215</td>
+                                <td>Suite</td>
+                                <td>106</td>
+                                <td>Active</td>
+                            </tr>
+
+                            <tr>
+                                <td>C007</td>
+                                <td>Lakshmi</td>
+                                <td>9876543216</td>
+                                <td>Luxury</td>
+                                <td>107</td>
+                                <td>Active</td>
+                            </tr>
+
+                            <tr>
+                                <td>C008</td>
+                                <td>Arjun</td>
+                                <td>9876543217</td>
+                                <td>Deluxe</td>
+                                <td>108</td>
+                                <td>Active</td>
+                            </tr>
+
+                            <tr>
+                                <td>C009</td>
+                                <td>Swathi</td>
+                                <td>9876543218</td>
+                                <td>Suite</td>
+                                <td>109</td>
+                                <td>Active</td>
+                            </tr>
+
+                            <tr>
+                                <td>C010</td>
+                                <td>Rahul</td>
+                                <td>9876543219</td>
+                                <td>Luxury</td>
+                                <td>110</td>
+                                <td>Active</td>
+                            </tr>
+
+                            <tr>
+                                <td>C011</td>
+                                <td>Neha</td>
+                                <td>9876543220</td>
+                                <td>Deluxe</td>
+                                <td>111</td>
+                                <td>Active</td>
+                            </tr>
+
+                            <tr>
+                                <td>C012</td>
+                                <td>Vijay</td>
+                                <td>9876543221</td>
+                                <td>Suite</td>
+                                <td>112</td>
+                                <td>Active</td>
+                            </tr>
+
+                            <tr>
+                                <td>C013</td>
+                                <td>Pooja</td>
+                                <td>9876543222</td>
+                                <td>Luxury</td>
+                                <td>113</td>
+                                <td>Active</td>
+                            </tr>
+
+                            <tr>
+                                <td>C014</td>
+                                <td>Manoj</td>
+                                <td>9876543223</td>
+                                <td>Deluxe</td>
+                                <td>114</td>
+                                <td>Active</td>
+                            </tr>
+
+                            <tr>
+                                <td>C015</td>
+                                <td>Divya</td>
+                                <td>9876543224</td>
+                                <td>Suite</td>
+                                <td>115</td>
+                                <td>Active</td>
+                            </tr>
+
+                            <tr>
+                                <td>C016</td>
+                                <td>Rohit</td>
+                                <td>9876543225</td>
+                                <td>Luxury</td>
+                                <td>116</td>
+                                <td>Active</td>
+                            </tr>
+
+                            <tr>
+                                <td>C017</td>
+                                <td>Meena</td>
+                                <td>9876543226</td>
+                                <td>Deluxe</td>
+                                <td>117</td>
+                                <td>Active</td>
+                            </tr>
+
+                            <tr>
+                                <td>C018</td>
+                                <td>Akash</td>
+                                <td>9876543227</td>
+                                <td>Suite</td>
+                                <td>118</td>
+                                <td>Active</td>
+                            </tr>
+
+                            <tr>
+                                <td>C019</td>
+                                <td>Sneha</td>
+                                <td>9876543228</td>
+                                <td>Luxury</td>
+                                <td>119</td>
+                                <td>Active</td>
+                            </tr>
+
+                            <tr>
+                                <td>C020</td>
+                                <td>Kiran</td>
+                                <td>9876543229</td>
+                                <td>Deluxe</td>
+                                <td>120</td>
+                                <td>Active</td>
+                            </tr>
+                            <tr>
+                                <td>C021</td>
+                                <td>Sanjay</td>
+                                <td>9876543230</td>
+                                <td>Luxury</td>
+                                <td>121</td>
+                                <td>Active</td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+            <div id="totalRevenueSection" style="display:none;">
+
+                <div class="room-summary">
+
+                    <div class="total-card" onclick="showTotalRevenue()" style="cursor: pointer;">
+                        <div class="card-icon">💰</div>
+                        <h3>Total Revenue</h3>
+                        <h2>₹8,50,000</h2>
+                    </div>
+
+                    <div class="room-card" onclick="showTodaysRevenue()" style="cursor: pointer;">
+                        <div class="card-icon">📅</div>
+                        <h3>Today's Revenue</h3>
+                        <h2>₹25,000</h2>
+                    </div>
+
+                    <div class="room-card" onclick="showThisMonthRevenue()" style="cursor: pointer;">
+                        <div class="card-icon">📆</div>
+                        <h3>This Month</h3>
+                        <h2>₹2,50,000</h2>
+                    </div>
+
+                    <div class="room-card" onclick="showAverageRevenue()" style="cursor: pointer;">
+                        <div class="card-icon">📈</div>
+                        <h3>Average Revenue</h3>
+                        <h2>₹10,000</h2>
+                    </div>
+
+                </div>
+
+                <div class="available-overview">
+
+                    <div class="overview-header">
+                        <h2>💰 Revenue Overview</h2>
+                    </div>
+
+                    <table class="overview-table">
+
+                        <thead>
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>Customer Name</th>
+                                <th>Room Type</th>
+                                <th>Room No</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <tr>
+                                <td>B001</td>
+                                <td>Ravi Kumar</td>
+                                <td>Luxury</td>
+                                <td>105</td>
+                                <td>₹15,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B002</td>
+                                <td>Priya</td>
+                                <td>Deluxe</td>
+                                <td>125</td>
+                                <td>₹10,000</td>
+                                <td>Paid</td>
+                            </tr>
+                            <tr>
+                                <td>B001</td>
+                                <td>Ravi Kumar</td>
+                                <td>Luxury</td>
+                                <td>105</td>
+                                <td>₹25,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B002</td>
+                                <td>Priya</td>
+                                <td>Deluxe</td>
+                                <td>125</td>
+                                <td>₹20,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B003</td>
+                                <td>Ramesh</td>
+                                <td>Suite</td>
+                                <td>205</td>
+                                <td>₹30,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B004</td>
+                                <td>Suresh</td>
+                                <td>Luxury</td>
+                                <td>110</td>
+                                <td>₹15,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B005</td>
+                                <td>Anjali</td>
+                                <td>Deluxe</td>
+                                <td>130</td>
+                                <td>₹28,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B006</td>
+                                <td>Kavya</td>
+                                <td>Suite</td>
+                                <td>210</td>
+                                <td>₹22,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B007</td>
+                                <td>Lakshmi</td>
+                                <td>Luxury</td>
+                                <td>115</td>
+                                <td>₹35,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B008</td>
+                                <td>Arjun</td>
+                                <td>Deluxe</td>
+                                <td>135</td>
+                                <td>₹18,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B009</td>
+                                <td>Swathi</td>
+                                <td>Suite</td>
+                                <td>220</td>
+                                <td>₹27,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B010</td>
+                                <td>Rahul</td>
+                                <td>Luxury</td>
+                                <td>120</td>
+                                <td>₹30,000</td>
+                                <td>Paid</td>
+                            </tr>
+                            <tr>
+                                <td>B001</td>
+                                <td>Ravi Kumar</td>
+                                <td>Luxury</td>
+                                <td>105</td>
+                                <td>₹10,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B002</td>
+                                <td>Priya</td>
+                                <td>Deluxe</td>
+                                <td>125</td>
+                                <td>₹10,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B003</td>
+                                <td>Ramesh</td>
+                                <td>Suite</td>
+                                <td>205</td>
+                                <td>₹10,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B004</td>
+                                <td>Suresh</td>
+                                <td>Luxury</td>
+                                <td>110</td>
+                                <td>₹10,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B005</td>
+                                <td>Anjali</td>
+                                <td>Deluxe</td>
+                                <td>130</td>
+                                <td>₹10,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B006</td>
+                                <td>Kavya</td>
+                                <td>Suite</td>
+                                <td>210</td>
+                                <td>₹10,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B007</td>
+                                <td>Lakshmi</td>
+                                <td>Luxury</td>
+                                <td>115</td>
+                                <td>₹10,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B008</td>
+                                <td>Arjun</td>
+                                <td>Deluxe</td>
+                                <td>135</td>
+                                <td>₹10,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B009</td>
+                                <td>Swathi</td>
+                                <td>Suite</td>
+                                <td>215</td>
+                                <td>₹10,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B010</td>
+                                <td>Rahul</td>
+                                <td>Luxury</td>
+                                <td>120</td>
+                                <td>₹10,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B011</td>
+                                <td>Neha</td>
+                                <td>Deluxe</td>
+                                <td>140</td>
+                                <td>₹10,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B012</td>
+                                <td>Vijay</td>
+                                <td>Suite</td>
+                                <td>220</td>
+                                <td>₹10,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B013</td>
+                                <td>Pooja</td>
+                                <td>Luxury</td>
+                                <td>121</td>
+                                <td>₹10,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B014</td>
+                                <td>Manoj</td>
+                                <td>Deluxe</td>
+                                <td>141</td>
+                                <td>₹10,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B015</td>
+                                <td>Divya</td>
+                                <td>Suite</td>
+                                <td>221</td>
+                                <td>₹10,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B016</td>
+                                <td>Rohit</td>
+                                <td>Luxury</td>
+                                <td>122</td>
+                                <td>₹10,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B017</td>
+                                <td>Meena</td>
+                                <td>Deluxe</td>
+                                <td>142</td>
+                                <td>₹10,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B018</td>
+                                <td>Akash</td>
+                                <td>Suite</td>
+                                <td>222</td>
+                                <td>₹10,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B019</td>
+                                <td>Sneha</td>
+                                <td>Luxury</td>
+                                <td>123</td>
+                                <td>₹10,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B020</td>
+                                <td>Kiran</td>
+                                <td>Deluxe</td>
+                                <td>143</td>
+                                <td>₹10,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B021</td>
+                                <td>Sanjay</td>
+                                <td>Suite</td>
+                                <td>223</td>
+                                <td>₹10,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B022</td>
+                                <td>Deepika</td>
+                                <td>Luxury</td>
+                                <td>124</td>
+                                <td>₹10,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B023</td>
+                                <td>Varun</td>
+                                <td>Deluxe</td>
+                                <td>144</td>
+                                <td>₹10,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B024</td>
+                                <td>Harsha</td>
+                                <td>Suite</td>
+                                <td>224</td>
+                                <td>₹10,000</td>
+                                <td>Paid</td>
+                            </tr>
+
+                            <tr>
+                                <td>B025</td>
+                                <td>Keerthi</td>
+                                <td>Luxury</td>
+                                <td>126</td>
+                                <td>₹10,000</td>
+                                <td>Paid</td>
+                            </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+
             </div>
         </div>
-
-        <div class="room-card">
-            <div class="card-icon red">👑</div>
-            <div>
-                <h3>Luxury Rooms</h3>
-                <h2>10</h2>
-            </div>
-        </div>
-
-        <div class="room-card">
-            <div class="card-icon red">🛎️</div>
-            <div>
-                <h3>Deluxe Rooms</h3>
-                <h2>17</h2>
-            </div>
-        </div>
-
-        <div class="room-card">
-            <div class="card-icon red">🛋️</div>
-            <div>
-                <h3>Suite Rooms</h3>
-                <h2>8</h2>
-            </div>
-        </div>
+    </div>
 
     </div>
 
-
-    <div class="available-overview">
-
-        <div class="overview-header">
-            <h2>🛏 Occupied Rooms Overview</h2>
-
-            <div class="status-legend">
-                <span>
-                    <span class="red-dot"></span>
-                    Occupied
-                </span>
-            </div>
-        </div>
-
-
-        <table class="overview-table">
-
-            <thead>
-                <tr>
-                    <th>Room Type</th>
-                    <th>First Floor</th>
-                    <th>Second Floor</th>
-                    <th>Third Floor</th>
-                </tr>
-            </thead>
-
-            <tbody>
-
-                <tr>
-                    <td><b>Luxury Rooms</b></td>
-
-                    <td class="floor-rooms" id="occupiedLuxuryFirst"></td>
-
-                    <td class="floor-rooms" id="occupiedLuxurySecond"></td>
-
-                    <td class="floor-rooms" id="occupiedLuxuryThird"></td>
-                </tr>
-
-
-                <tr>
-                    <td><b>Deluxe Rooms</b></td>
-
-                    <td class="floor-rooms" id="occupiedDeluxeFirst"></td>
-
-                    <td class="floor-rooms" id="occupiedDeluxeSecond"></td>
-
-                    <td class="floor-rooms" id="occupiedDeluxeThird"></td>
-                </tr>
-
-
-                <tr>
-                    <td><b>Suite Rooms</b></td>
-
-                    <td class="floor-rooms" id="occupiedSuiteFirst"></td>
-
-                    <td class="floor-rooms" id="occupiedSuiteSecond"></td>
-
-                    <td class="floor-rooms" id="occupiedSuiteThird"></td>
-                </tr>
-
-            </tbody>
-
-        </table>
-
     </div>
 
-</div>
-<div id="totalBookingsSection" style="display:none;">
-
-    <div class="room-summary">
-
-        <div class="total-card" onclick="showTotalBookings()"
-         style="cursor:pointer;">
-            <div class="card-icon">📖</div>
-            <h3>Total Bookings</h3>
-            <h2>85</h2>
-        </div>
-
-        <div class="room-card" onclick="showTodaysBookings()"
-        style="cursor:pointer;">
-            <div class="card-icon">📅</div>
-            <h3>Today's Bookings</h3>
-            <h2>12</h2>
-        </div>
-
-        <div class="room-card" onclick="showConfirmedBookings()"
-             style="cursor:pointer;">
-            <div class="card-icon">✅</div>
-            <h3>Confirmed Bookings</h3>
-            <h2>65</h2>
-        </div>
-
-        <div class="room-card" onclick="showCancelledBookings()"
-            style="cursor:pointer;">
-            <div class="card-icon">❌</div>
-            <h3>Cancelled Bookings</h3>
-            <h2>8</h2>
-        </div>
-
-    </div>
-
-    <div class="available-overview">
-
-        <div class="overview-header">
-            <h2>📖 Bookings Overview</h2>
-        </div>
-
-        <table class="overview-table">
-
-            <thead>
-                <tr>
-                    <th>Booking ID</th>
-                    <th>Customer Name</th>
-                    <th>Room Type</th>
-                    <th>Room No</th>
-                    <th>Check-In</th>
-                    <th>Check-Out</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-
-            <tbody id="bookingsTableBody">
-
-                <tr>
-                    <td>B001</td>
-                    <td>Ravi Kumar</td>
-                    <td>Luxury</td>
-                    <td>105</td>
-                    <td>09-Aug-2026</td>
-                    <td>11-Aug-2026</td>
-                    <td>Confirmed</td>
-                </tr>
-
-                <tr>
-                    <td>B002</td>
-                    <td>Priya</td>
-                    <td>Deluxe</td>
-                    <td>125</td>
-                    <td>09-Aug-2026</td>
-                    <td>12-Aug-2026</td>
-                    <td>Confirmed</td>
-                </tr>
-                <tr>
-                    <td>B003</td>
-                    <td>Ramesh</td>
-                    <td>Suite</td>
-                    <td>205</td>
-                    <td>08-Aug-2026</td>
-                    <td>10-Aug-2026</td>
-                    <td>Cancelled</td>
-                </tr>
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</div>
-<div id="totalCustomersSection" style="display:none;">
-
-    <div class="room-summary">
-
-        <div class="total-card" onclick="showTotalCustomers();return false;"
-        style="cursor:pointer;">
-            <div class="card-icon">👥</div>
-            <h3>Total Customers</h3>
-            <h2>85</h2>
-        </div>
-
-        <div class="room-card" onclick="showNewCustomers()"
-        style="cursor:pointer;">
-            <div class="card-icon">🆕</div>
-            <h3>New Customers</h3>
-            <h2>20</h2>
-        </div>
-
-        <div class="room-card" onclick="showReturningCustomers()"
-        style="cursor:pointer;">
-            <div class="card-icon">🔄</div>
-            <h3>Returning Customers</h3>
-            <h2>50</h2>
-        </div>
-
-        <div class="room-card" onclick="showVIPCustomers()"
-        style="cursor:pointer;">
-            <div class="card-icon">⭐</div>
-            <h3>VIP Customers</h3>
-            <h2>15</h2>
-        </div>
-
-    </div>
-
-    <div class="available-overview">
-
-        <div class="overview-header">
-            <h2>👥 Customers Overview</h2>
-        </div>
-
-        <table class="overview-table">
-
-            <thead>
-                <tr>
-                    <th>Customer ID</th>
-                    <th>Customer Name</th>
-                    <th>Phone</th>
-                    <th>Room Type</th>
-                    <th>Room No</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-
-            <tbody>
-
-                <tr>
-                    <td>C001</td>
-                    <td>Ravi Kumar</td>
-                    <td>9876543210</td>
-                    <td>Luxury</td>
-                    <td>101</td>
-                    <td>Active</td>
-                </tr>
-
-                <tr>
-                    <td>C002</td>
-                    <td>Priya</td>
-                    <td>9876543211</td>
-                    <td>Deluxe</td>
-                    <td>102</td>
-                    <td>Active</td>
-                </tr>
-
-                <tr>
-                    <td>C003</td>
-                    <td>Ramesh</td>
-                    <td>9876543212</td>
-                    <td>Suite</td>
-                    <td>103</td>
-                    <td>Active</td>
-                </tr>
-
-                <tr>
-                    <td>C004</td>
-                    <td>Suresh</td>
-                    <td>9876543213</td>
-                    <td>Luxury</td>
-                    <td>104</td>
-                    <td>Active</td>
-                </tr>
-
-                <tr>
-                    <td>C005</td>
-                    <td>Anjali</td>
-                    <td>9876543214</td>
-                    <td>Deluxe</td>
-                    <td>105</td>
-                    <td>Active</td>
-                </tr>
-                <tr>
-    <td>C006</td>
-    <td>Kavya</td>
-    <td>9876543215</td>
-    <td>Suite</td>
-    <td>106</td>
-    <td>Active</td>
-</tr>
-
-<tr>
-    <td>C007</td>
-    <td>Lakshmi</td>
-    <td>9876543216</td>
-    <td>Luxury</td>
-    <td>107</td>
-    <td>Active</td>
-</tr>
-
-<tr>
-    <td>C008</td>
-    <td>Arjun</td>
-    <td>9876543217</td>
-    <td>Deluxe</td>
-    <td>108</td>
-    <td>Active</td>
-</tr>
-
-<tr>
-    <td>C009</td>
-    <td>Swathi</td>
-    <td>9876543218</td>
-    <td>Suite</td>
-    <td>109</td>
-    <td>Active</td>
-</tr>
-
-<tr>
-    <td>C010</td>
-    <td>Rahul</td>
-    <td>9876543219</td>
-    <td>Luxury</td>
-    <td>110</td>
-    <td>Active</td>
-</tr>
-
-<tr>
-    <td>C011</td>
-    <td>Neha</td>
-    <td>9876543220</td>
-    <td>Deluxe</td>
-    <td>111</td>
-    <td>Active</td>
-</tr>
-
-<tr>
-    <td>C012</td>
-    <td>Vijay</td>
-    <td>9876543221</td>
-    <td>Suite</td>
-    <td>112</td>
-    <td>Active</td>
-</tr>
-
-<tr>
-    <td>C013</td>
-    <td>Pooja</td>
-    <td>9876543222</td>
-    <td>Luxury</td>
-    <td>113</td>
-    <td>Active</td>
-</tr>
-
-<tr>
-    <td>C014</td>
-    <td>Manoj</td>
-    <td>9876543223</td>
-    <td>Deluxe</td>
-    <td>114</td>
-    <td>Active</td>
-</tr>
-
-<tr>
-    <td>C015</td>
-    <td>Divya</td>
-    <td>9876543224</td>
-    <td>Suite</td>
-    <td>115</td>
-    <td>Active</td>
-</tr>
-
-<tr>
-    <td>C016</td>
-    <td>Rohit</td>
-    <td>9876543225</td>
-    <td>Luxury</td>
-    <td>116</td>
-    <td>Active</td>
-</tr>
-
-<tr>
-    <td>C017</td>
-    <td>Meena</td>
-    <td>9876543226</td>
-    <td>Deluxe</td>
-    <td>117</td>
-    <td>Active</td>
-</tr>
-
-<tr>
-    <td>C018</td>
-    <td>Akash</td>
-    <td>9876543227</td>
-    <td>Suite</td>
-    <td>118</td>
-    <td>Active</td>
-</tr>
-
-<tr>
-    <td>C019</td>
-    <td>Sneha</td>
-    <td>9876543228</td>
-    <td>Luxury</td>
-    <td>119</td>
-    <td>Active</td>
-</tr>
-
-<tr>
-    <td>C020</td>
-    <td>Kiran</td>
-    <td>9876543229</td>
-    <td>Deluxe</td>
-    <td>120</td>
-    <td>Active</td>
-</tr>
-<tr>
-    <td>C021</td>
-    <td>Sanjay</td>
-    <td>9876543230</td>
-    <td>Luxury</td>
-    <td>121</td>
-    <td>Active</td>
-</tr>
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</div>
-<div id="totalRevenueSection" style="display:none;">
-
-    <div class="room-summary">
-
-        <div class="total-card" onclick="showTotalRevenue()"
-        style="cursor: pointer;">
-            <div class="card-icon">💰</div>
-            <h3>Total Revenue</h3>
-            <h2>₹8,50,000</h2>
-        </div>
-
-        <div class="room-card" onclick="showTodaysRevenue()"
-        style="cursor: pointer;">
-            <div class="card-icon">📅</div>
-            <h3>Today's Revenue</h3>
-            <h2>₹25,000</h2>
-        </div>
-
-        <div class="room-card" onclick="showThisMonthRevenue()"
-        style="cursor: pointer;">
-            <div class="card-icon">📆</div>
-            <h3>This Month</h3>
-            <h2>₹2,50,000</h2>
-        </div>
-
-        <div class="room-card" onclick="showAverageRevenue()"
-        style="cursor: pointer;">
-            <div class="card-icon">📈</div>
-            <h3>Average Revenue</h3>
-            <h2>₹10,000</h2>
-        </div>
-
-    </div>
-
-    <div class="available-overview">
-
-        <div class="overview-header">
-            <h2>💰 Revenue Overview</h2>
-        </div>
-
-        <table class="overview-table">
-
-            <thead>
-                <tr>
-                    <th>Booking ID</th>
-                    <th>Customer Name</th>
-                    <th>Room Type</th>
-                    <th>Room No</th>
-                    <th>Amount</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-
-            <tbody>
-
-                <tr>
-                    <td>B001</td>
-                    <td>Ravi Kumar</td>
-                    <td>Luxury</td>
-                    <td>105</td>
-                    <td>₹15,000</td>
-                    <td>Paid</td>
-                </tr>
-
-                <tr>
-                    <td>B002</td>
-                    <td>Priya</td>
-                    <td>Deluxe</td>
-                    <td>125</td>
-                    <td>₹10,000</td>
-                    <td>Paid</td>
-                </tr>
-                <tr>
-    <td>B001</td>
-    <td>Ravi Kumar</td>
-    <td>Luxury</td>
-    <td>105</td>
-    <td>₹25,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B002</td>
-    <td>Priya</td>
-    <td>Deluxe</td>
-    <td>125</td>
-    <td>₹20,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B003</td>
-    <td>Ramesh</td>
-    <td>Suite</td>
-    <td>205</td>
-    <td>₹30,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B004</td>
-    <td>Suresh</td>
-    <td>Luxury</td>
-    <td>110</td>
-    <td>₹15,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B005</td>
-    <td>Anjali</td>
-    <td>Deluxe</td>
-    <td>130</td>
-    <td>₹28,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B006</td>
-    <td>Kavya</td>
-    <td>Suite</td>
-    <td>210</td>
-    <td>₹22,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B007</td>
-    <td>Lakshmi</td>
-    <td>Luxury</td>
-    <td>115</td>
-    <td>₹35,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B008</td>
-    <td>Arjun</td>
-    <td>Deluxe</td>
-    <td>135</td>
-    <td>₹18,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B009</td>
-    <td>Swathi</td>
-    <td>Suite</td>
-    <td>220</td>
-    <td>₹27,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B010</td>
-    <td>Rahul</td>
-    <td>Luxury</td>
-    <td>120</td>
-    <td>₹30,000</td>
-    <td>Paid</td>
-</tr>
-<tr>
-    <td>B001</td>
-    <td>Ravi Kumar</td>
-    <td>Luxury</td>
-    <td>105</td>
-    <td>₹10,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B002</td>
-    <td>Priya</td>
-    <td>Deluxe</td>
-    <td>125</td>
-    <td>₹10,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B003</td>
-    <td>Ramesh</td>
-    <td>Suite</td>
-    <td>205</td>
-    <td>₹10,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B004</td>
-    <td>Suresh</td>
-    <td>Luxury</td>
-    <td>110</td>
-    <td>₹10,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B005</td>
-    <td>Anjali</td>
-    <td>Deluxe</td>
-    <td>130</td>
-    <td>₹10,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B006</td>
-    <td>Kavya</td>
-    <td>Suite</td>
-    <td>210</td>
-    <td>₹10,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B007</td>
-    <td>Lakshmi</td>
-    <td>Luxury</td>
-    <td>115</td>
-    <td>₹10,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B008</td>
-    <td>Arjun</td>
-    <td>Deluxe</td>
-    <td>135</td>
-    <td>₹10,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B009</td>
-    <td>Swathi</td>
-    <td>Suite</td>
-    <td>215</td>
-    <td>₹10,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B010</td>
-    <td>Rahul</td>
-    <td>Luxury</td>
-    <td>120</td>
-    <td>₹10,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B011</td>
-    <td>Neha</td>
-    <td>Deluxe</td>
-    <td>140</td>
-    <td>₹10,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B012</td>
-    <td>Vijay</td>
-    <td>Suite</td>
-    <td>220</td>
-    <td>₹10,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B013</td>
-    <td>Pooja</td>
-    <td>Luxury</td>
-    <td>121</td>
-    <td>₹10,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B014</td>
-    <td>Manoj</td>
-    <td>Deluxe</td>
-    <td>141</td>
-    <td>₹10,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B015</td>
-    <td>Divya</td>
-    <td>Suite</td>
-    <td>221</td>
-    <td>₹10,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B016</td>
-    <td>Rohit</td>
-    <td>Luxury</td>
-    <td>122</td>
-    <td>₹10,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B017</td>
-    <td>Meena</td>
-    <td>Deluxe</td>
-    <td>142</td>
-    <td>₹10,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B018</td>
-    <td>Akash</td>
-    <td>Suite</td>
-    <td>222</td>
-    <td>₹10,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B019</td>
-    <td>Sneha</td>
-    <td>Luxury</td>
-    <td>123</td>
-    <td>₹10,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B020</td>
-    <td>Kiran</td>
-    <td>Deluxe</td>
-    <td>143</td>
-    <td>₹10,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B021</td>
-    <td>Sanjay</td>
-    <td>Suite</td>
-    <td>223</td>
-    <td>₹10,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B022</td>
-    <td>Deepika</td>
-    <td>Luxury</td>
-    <td>124</td>
-    <td>₹10,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B023</td>
-    <td>Varun</td>
-    <td>Deluxe</td>
-    <td>144</td>
-    <td>₹10,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B024</td>
-    <td>Harsha</td>
-    <td>Suite</td>
-    <td>224</td>
-    <td>₹10,000</td>
-    <td>Paid</td>
-</tr>
-
-<tr>
-    <td>B025</td>
-    <td>Keerthi</td>
-    <td>Luxury</td>
-    <td>126</td>
-    <td>₹10,000</td>
-    <td>Paid</td>
-</tr>
-            </tbody>
-
-        </table>
-
-    </div>
-
-</div>
-</div>
-</div>
-
-</div>  
-
-</div>   
-
-<script src="../js/script.js"></script>
+    <script src="../js/script.js"></script>
 </body>
+
 </html>

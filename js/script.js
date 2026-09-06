@@ -8,6 +8,365 @@ function login() {
         alert("Invalid Username or Password");
     }
 }
+
+function readAppData() {
+    try {
+        const saved = JSON.parse(localStorage.getItem("sayoraAppData")) || {};
+        const bookings = Array.isArray(saved.bookings)
+            ? saved.bookings
+            : JSON.parse(localStorage.getItem("sayoraBookings") || "[]");
+        const customers = Array.isArray(saved.customers)
+            ? saved.customers
+            : JSON.parse(localStorage.getItem("sayoraCustomers") || "[]");
+
+        const normalized = {
+            bookings: Array.isArray(bookings) ? bookings : [],
+            customers: Array.isArray(customers) ? customers : [],
+            dashboard: saved.dashboard || {
+                totalBookings: Array.isArray(bookings) ? bookings.length : 0,
+                totalCustomers: Array.isArray(customers) ? customers.length : 0,
+                totalRevenue: Array.isArray(bookings)
+                    ? bookings.reduce((sum, item) => sum + Number(item.amount || 0), 0)
+                    : 0
+            }
+        };
+
+        localStorage.setItem("sayoraAppData", JSON.stringify(normalized));
+        return normalized;
+    } catch (error) {
+        const fallback = { bookings: [], customers: [], dashboard: { totalBookings: 0, totalCustomers: 0, totalRevenue: 0 } };
+        localStorage.setItem("sayoraAppData", JSON.stringify(fallback));
+        return fallback;
+    }
+}
+
+function writeAppData(appData) {
+    const normalized = {
+        bookings: Array.isArray(appData?.bookings) ? appData.bookings : [],
+        customers: Array.isArray(appData?.customers) ? appData.customers : [],
+        dashboard: appData?.dashboard || {
+            totalBookings: 0,
+            totalCustomers: 0,
+            totalRevenue: 0
+        }
+    };
+
+    localStorage.setItem("sayoraAppData", JSON.stringify(normalized));
+    localStorage.setItem("sayoraBookings", JSON.stringify(normalized.bookings));
+    localStorage.setItem("sayoraCustomers", JSON.stringify(normalized.customers));
+    return normalized;
+}
+
+function createBookingIdFromSeed(seedValue) {
+    const numericSeed = Number(seedValue || Date.now()) || Date.now();
+    return `BK${String(numericSeed).slice(-6).padStart(6, "0")}`;
+}
+
+function syncSharedBookingData(bookingEntry) {
+    const appData = readAppData();
+    const normalizedBooking = { ...bookingEntry };
+
+    if (!normalizedBooking.bookingId) {
+        normalizedBooking.bookingId = createBookingIdFromSeed(Date.now());
+    }
+
+    const guestSeed = normalizedBooking.customerName || normalizedBooking.phone || "Guest";
+    const customerId = normalizedBooking.customerId || `C${String(guestSeed).toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${String(Date.now()).slice(-4)}`;
+    normalizedBooking.customerId = customerId;
+
+    const mergedBookings = appData.bookings.filter(item => item.bookingId !== normalizedBooking.bookingId);
+    mergedBookings.unshift(normalizedBooking);
+
+    const customerRecord = {
+        customerId,
+        customerName: normalizedBooking.customerName,
+        phone: normalizedBooking.phone || "9876543210",
+        roomNo: normalizedBooking.roomNo,
+        roomType: normalizedBooking.roomType,
+        guests: normalizedBooking.guests,
+        status: normalizedBooking.bookingStatus || "Confirmed",
+        paymentStatus: normalizedBooking.paymentStatus || "Paid",
+        bookingId: normalizedBooking.bookingId,
+        checkIn: normalizedBooking.checkIn,
+        checkOut: normalizedBooking.checkOut,
+        amount: normalizedBooking.amount
+    };
+
+    const mergedCustomers = appData.customers.filter(item => item.bookingId !== normalizedBooking.bookingId && item.customerId !== customerId && item.customerName !== normalizedBooking.customerName);
+    mergedCustomers.unshift(customerRecord);
+
+    const dashboard = {
+        totalBookings: mergedBookings.length,
+        totalCustomers: mergedCustomers.length,
+        totalRevenue: mergedBookings.reduce((sum, item) => sum + Number(item.amount || 0), 0)
+    };
+
+    const sharedData = {
+        bookings: mergedBookings,
+        customers: mergedCustomers,
+        dashboard
+    };
+
+    writeAppData(sharedData);
+    renderSharedBookingsTable();
+    renderSharedCustomersTable();
+    return sharedData;
+}
+
+function removeSharedBookingData(bookingId) {
+    const appData = readAppData();
+    const remainingBookings = appData.bookings.filter(item => item.bookingId !== bookingId);
+    const remainingCustomers = appData.customers.filter(item => item.bookingId !== bookingId);
+
+    const updatedData = {
+        bookings: remainingBookings,
+        customers: remainingCustomers,
+        dashboard: {
+            totalBookings: remainingBookings.length,
+            totalCustomers: remainingCustomers.length,
+            totalRevenue: remainingBookings.reduce((sum, item) => sum + Number(item.amount || 0), 0)
+        }
+    };
+
+    writeAppData(updatedData);
+    renderSharedBookingsTable();
+    renderSharedCustomersTable();
+    return updatedData;
+}
+
+function renderSharedBookingsTable() {
+    const tbody = document.getElementById("bookingsTableBody");
+    if (!tbody) return;
+
+    const appData = readAppData();
+    tbody.innerHTML = "";
+
+    appData.bookings.forEach((booking) => {
+        const row = document.createElement("tr");
+        row.dataset.bookingId = booking.bookingId;
+        row.innerHTML = `
+            <td>${booking.bookingId}</td>
+            <td>${booking.customerName || "Guest"}</td>
+            <td>${booking.roomNo || "-"}</td>
+            <td>${booking.roomType || "-"}</td>
+            <td>${booking.checkIn || "-"}</td>
+            <td>${booking.checkOut || "-"}</td>
+            <td>${booking.guests || 1}</td>
+            <td>₹${Number(booking.amount || 0).toLocaleString("en-IN")}</td>
+            <td>${booking.bookingStatus || "Confirmed"}</td>
+            <td>${booking.paymentStatus || "Paid"}</td>
+            <td>
+                <button type="button" class="edit-booking-btn">Edit</button>
+                <button type="button" class="delete-booking-btn">Delete</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function renderSharedCustomersTable() {
+    const tbody = document.querySelector("#totalCustomersSection tbody");
+    if (!tbody) return;
+
+    const appData = readAppData();
+    tbody.innerHTML = "";
+
+    appData.customers.forEach((customer) => {
+        const row = document.createElement("tr");
+        row.id = customer.customerId || `C${customer.customerName?.replace(/\s+/g, "") || "guest"}`;
+        row.innerHTML = `
+            <td>${customer.customerId || "-"}</td>
+            <td>${customer.customerName || "Guest"}</td>
+            <td>${customer.phone || "9876543210"}</td>
+            <td>${customer.roomType || "-"}</td>
+            <td>${customer.roomNo || "-"}</td>
+            <td>${customer.status || "Active"}</td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function getDefaultRoomCatalog() {
+    const roomCatalog = [];
+    const ranges = [
+        { type: "Luxury", floor: "1st Floor", start: 101, end: 117 },
+        { type: "Deluxe", floor: "1st Floor", start: 118, end: 134 },
+        { type: "Suite", floor: "1st Floor", start: 135, end: 150 },
+        { type: "Luxury", floor: "2nd Floor", start: 201, end: 217 },
+        { type: "Deluxe", floor: "2nd Floor", start: 218, end: 234 },
+        { type: "Suite", floor: "2nd Floor", start: 235, end: 250 },
+        { type: "Luxury", floor: "3rd Floor", start: 301, end: 316 },
+        { type: "Deluxe", floor: "3rd Floor", start: 317, end: 332 },
+        { type: "Suite", floor: "3rd Floor", start: 333, end: 350 }
+    ];
+
+    ranges.forEach(({ type, floor, start, end }) => {
+        for (let roomNo = start; roomNo <= end; roomNo++) {
+            roomCatalog.push({
+                roomNo,
+                roomType: type,
+                floor,
+                price: type === "Luxury" ? 10000 : type === "Deluxe" ? 7000 : 15000,
+                status: "Available"
+            });
+        }
+    });
+
+    return roomCatalog;
+}
+
+function getRoomList() {
+    try {
+        const savedRooms = JSON.parse(localStorage.getItem("sayoraRooms")) || [];
+        if (!Array.isArray(savedRooms) || savedRooms.length === 0) {
+            const seededRooms = getDefaultRoomCatalog();
+            localStorage.setItem("sayoraRooms", JSON.stringify(seededRooms));
+            return seededRooms;
+        }
+        return savedRooms;
+    } catch (error) {
+        const seededRooms = getDefaultRoomCatalog();
+        localStorage.setItem("sayoraRooms", JSON.stringify(seededRooms));
+        return seededRooms;
+    }
+}
+
+function syncRoomOccupancyWithBookings() {
+    const rooms = getRoomList();
+    const bookings = JSON.parse(localStorage.getItem("sayoraBookings") || "[]");
+    const bookedRoomNumbers = new Set(
+        bookings
+            .filter(booking => booking && booking.roomNo && String(booking.bookingStatus || "Confirmed").toLowerCase() !== "cancelled")
+            .map(booking => String(booking.roomNo))
+    );
+
+    const updatedRooms = rooms.map(room => {
+        const roomNo = String(room.roomNo);
+        if (room.status === "Maintenance") {
+            return room;
+        }
+        return {
+            ...room,
+            status: bookedRoomNumbers.has(roomNo) ? "Occupied" : "Available"
+        };
+    });
+
+    localStorage.setItem("sayoraRooms", JSON.stringify(updatedRooms));
+    return updatedRooms;
+}
+
+function updateRoomAvailabilitySummary() {
+    const rooms = syncRoomOccupancyWithBookings();
+
+    const totalAvailable = rooms.filter(room => room.status !== "Occupied" && room.status !== "Maintenance").length;
+    const totalOccupied = rooms.filter(room => room.status === "Occupied").length;
+
+    const availableTotal = document.querySelector("#availableRoomsSection .total-card h2");
+    if (availableTotal) availableTotal.textContent = totalAvailable;
+
+    const occupiedTotal = document.querySelector("#occupiedRoomsSection .total-card h2");
+    if (occupiedTotal) occupiedTotal.textContent = totalOccupied;
+
+    const roomTypeSummary = {
+        Luxury: rooms.filter(room => room.roomType === "Luxury"),
+        Deluxe: rooms.filter(room => room.roomType === "Deluxe"),
+        Suite: rooms.filter(room => room.roomType === "Suite")
+    };
+
+    const setTypeSummary = (selector, type, state) => {
+        const node = document.querySelector(selector);
+        if (node) {
+            node.textContent = roomTypeSummary[type].filter(room => state === "Available" ? room.status !== "Occupied" && room.status !== "Maintenance" : room.status === state).length;
+        }
+    };
+
+    setTypeSummary("#availableRoomsSection .room-card:nth-of-type(2) h2", "Luxury", "Available");
+    setTypeSummary("#availableRoomsSection .room-card:nth-of-type(3) h2", "Deluxe", "Available");
+    setTypeSummary("#availableRoomsSection .room-card:nth-of-type(4) h2", "Suite", "Available");
+    setTypeSummary("#occupiedRoomsSection .room-card:nth-of-type(2) h2", "Luxury", "Occupied");
+    setTypeSummary("#occupiedRoomsSection .room-card:nth-of-type(3) h2", "Deluxe", "Occupied");
+    setTypeSummary("#occupiedRoomsSection .room-card:nth-of-type(4) h2", "Suite", "Occupied");
+
+    const renderFloorCells = (containerId, roomType, targetStatus) => {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        const floorName = containerId.includes("First") ? "1st Floor" : containerId.includes("Second") ? "2nd Floor" : "3rd Floor";
+        const matchedRooms = rooms.filter(room => room.roomType === roomType && room.floor === floorName && (targetStatus === "Available" ? room.status !== "Occupied" && room.status !== "Maintenance" : room.status === targetStatus));
+        container.innerHTML = matchedRooms.map(room => `<span class="room-no ${targetStatus === "Available" ? "available" : "occupied"}">${room.roomNo}</span>`).join("");
+    };
+
+    ["Luxury", "Deluxe", "Suite"].forEach(type => {
+        renderFloorCells(`${type.toLowerCase()}First`, type, "Available");
+        renderFloorCells(`${type.toLowerCase()}Second`, type, "Available");
+        renderFloorCells(`${type.toLowerCase()}Third`, type, "Available");
+        renderFloorCells(`occupied${type}First`, type, "Occupied");
+        renderFloorCells(`occupied${type}Second`, type, "Occupied");
+        renderFloorCells(`occupied${type}Third`, type, "Occupied");
+    });
+}
+
+function renderSharedDashboardSummary() {
+    const appData = readAppData();
+    const bookings = Array.isArray(appData.bookings) && appData.bookings.length ? appData.bookings : JSON.parse(localStorage.getItem("sayoraBookings") || "[]");
+    const customers = Array.isArray(appData.customers) && appData.customers.length ? appData.customers : JSON.parse(localStorage.getItem("sayoraCustomers") || "[]");
+    const rooms = getRoomList();
+
+    const dashboard = {
+        totalBookings: bookings.length,
+        totalCustomers: customers.length,
+        totalRevenue: bookings.reduce((sum, item) => sum + Number(item.amount || 0), 0),
+        totalRooms: rooms.length,
+        availableRooms: rooms.filter(room => room.status !== "Occupied" && room.status !== "Maintenance").length,
+        occupiedRooms: rooms.filter(room => room.status === "Occupied").length
+    };
+
+    const totalBookingsValue = document.querySelector("#totalBookingsSection .total-card h2");
+    if (totalBookingsValue) totalBookingsValue.textContent = dashboard.totalBookings;
+
+    const totalCustomersValue = document.querySelector("#totalCustomersSection .total-card h2");
+    if (totalCustomersValue) totalCustomersValue.textContent = dashboard.totalCustomers;
+
+    const totalRevenueValue = document.querySelector("#totalRevenueSection .total-card h2");
+    if (totalRevenueValue) totalRevenueValue.textContent = `₹${Number(dashboard.totalRevenue).toLocaleString("en-IN")}`;
+
+    const totalRoomsValue = document.querySelector("#totalRoomsSection .total-card h2");
+    if (totalRoomsValue) totalRoomsValue.textContent = dashboard.totalRooms;
+
+    updateRoomAvailabilitySummary();
+    return dashboard;
+}
+
+function initializeSharedDataViews() {
+    if (typeof document === "undefined") return;
+
+    const rooms = getRoomList();
+    if (!rooms.length) {
+        localStorage.setItem("sayoraRooms", JSON.stringify(getDefaultRoomCatalog()));
+    }
+
+    if (document.getElementById("bookingsTableBody")) {
+        renderSharedBookingsTable();
+    }
+
+    if (document.querySelector("#totalCustomersSection tbody")) {
+        renderSharedCustomersTable();
+    }
+
+    updateRoomAvailabilitySummary();
+    renderSharedDashboardSummary();
+}
+
+function showDashboardHome() {
+    if (document.getElementById("dashboardHome")) document.getElementById("dashboardHome").style.display = "block";
+    if (document.getElementById("totalRoomsSection")) document.getElementById("totalRoomsSection").style.display = "none";
+    if (document.getElementById("availableRoomsSection")) document.getElementById("availableRoomsSection").style.display = "none";
+    if (document.getElementById("occupiedRoomsSection")) document.getElementById("occupiedRoomsSection").style.display = "none";
+    if (document.getElementById("totalBookingsSection")) document.getElementById("totalBookingsSection").style.display = "none";
+    if (document.getElementById("totalCustomersSection")) document.getElementById("totalCustomersSection").style.display = "none";
+    if (document.getElementById("totalRevenueSection")) document.getElementById("totalRevenueSection").style.display = "none";
+}
+
 function showTotalRooms() {
     document.getElementById("dashboardHome").style.display = "none";
     document.getElementById("totalRoomsSection").style.display = "block";
@@ -26,59 +385,57 @@ function showOccupiedRooms() {
     document.getElementById("totalBookingsSection").style.display = "none";
 }
 function showTotalCustomers() {
-addMoreCustomers();
-const rows =
-document.querySelectorAll("#totalCustomersSection tbody tr");
- rows.forEach(function(row) {
-    row.style.display = "";
- });
-    // Hide all dashboard sections
+    renderSharedCustomersTable();
+    renderSharedDashboardSummary();
+    const rows = document.querySelectorAll("#totalCustomersSection tbody tr");
+    rows.forEach(function(row) {
+        row.style.display = "";
+    });
     document.getElementById("dashboardHome").style.display = "none";
     document.getElementById("totalRoomsSection").style.display = "none";
     document.getElementById("availableRoomsSection").style.display = "none";
     document.getElementById("occupiedRoomsSection").style.display = "none";
     document.getElementById("totalBookingsSection").style.display = "none";
-
-    // Show Total Customers section
     document.getElementById("totalCustomersSection").style.display = "block";
-    document.querySelector("#totalCustomersSection .overview-header h2").innerText="👥 Customers Overview";
+    document.querySelector("#totalCustomersSection .overview-header h2").innerText = "👥 Customers Overview";
 }
 function addMoreCustomers() {
     const tbody = document.querySelector("#totalCustomersSection tbody");
-
     if (!tbody) return;
 
-    // Already added ayithe malli add cheyyakudadhu
+    const appData = readAppData();
+    if (appData.customers.length) {
+        renderSharedCustomersTable();
+        return;
+    }
+
     if (document.getElementById("C085")) return;
-     const names = [
-    "Arun", "Bhavani", "Charan", "Deepika", "Eswar",
-    "Harini", "Jeevan", "Kavya", "Lokesh", "Manisha",
-    "Naveen", "Pooja", "Rahul", "Sneha", "Tarun",
-    "Uma", "Varun", "Swathi", "Vikram", "Keerthi",
-    "Rakesh", "Anusha", "Karthik", "Divya", "Srinivas",
-    "Lavanya", "Praveen", "Meghana", "Sai", "Nandini",
-    "Rohit", "Priyanka", "Vamsi", "Aishwarya", "Surya",
-    "Tejas", "Bhavana", "Manoj", "Shravani", "Akshay",
-    "Pallavi", "Sandeep", "Ramya", "Harsha", "Deepak",
-    "Anjali", "Ravi", "Swetha", "Abhishek", "Kiran",
-    "Mounika", "Rajesh", "Sowmya", "Nikhil", "Keerthana",
-    "Ajay", "Sindhu", "Prasad", "Divya", "Sai Kumar",
-    "Varsha", "Chaitanya", "Sravani", "Ramesh"
-];
+    const names = [
+        "Arun", "Bhavani", "Charan", "Deepika", "Eswar",
+        "Harini", "Jeevan", "Kavya", "Lokesh", "Manisha",
+        "Naveen", "Pooja", "Rahul", "Sneha", "Tarun",
+        "Uma", "Varun", "Swathi", "Vikram", "Keerthi",
+        "Rakesh", "Anusha", "Karthik", "Divya", "Srinivas",
+        "Lavanya", "Praveen", "Meghana", "Sai", "Nandini",
+        "Rohit", "Priyanka", "Vamsi", "Aishwarya", "Surya",
+        "Tejas", "Bhavana", "Manoj", "Shravani", "Akshay",
+        "Pallavi", "Sandeep", "Ramya", "Harsha", "Deepak",
+        "Anjali", "Ravi", "Swetha", "Abhishek", "Kiran",
+        "Mounika", "Rajesh", "Sowmya", "Nikhil", "Keerthana",
+        "Ajay", "Sindhu", "Prasad", "Divya", "Sai Kumar",
+        "Varsha", "Chaitanya", "Sravani", "Ramesh"
+    ];
     for (let i = 22; i <= 85; i++) {
         const row = document.createElement("tr");
-
         row.id = "C" + String(i).padStart(3, "0");
-
         row.innerHTML = `
             <td>C${String(i).padStart(3, "0")}</td>
-            <td>${names[i-22]}</td>
+            <td>${names[i - 22]}</td>
             <td>9876543${String(i).padStart(3, "0")}</td>
             <td>${i % 3 === 0 ? "Suite" : i % 2 === 0 ? "Deluxe" : "Luxury"}</td>
             <td>${100 + i}</td>
             <td>Active</td>
         `;
-
         tbody.appendChild(row);
     }
 }
@@ -165,12 +522,14 @@ function showVIPCustomers() {
     ).innerText = "⭐ VIP Customers";
 }
 function showTotalBookings() {
+    renderSharedBookingsTable();
+    renderSharedDashboardSummary();
     document.getElementById("dashboardHome").style.display = "none";
     document.getElementById("totalRoomsSection").style.display = "none";
     document.getElementById("availableRoomsSection").style.display = "none";
     document.getElementById("occupiedRoomsSection").style.display = "none";
     document.getElementById("totalBookingsSection").style.display = "block";
-    document.querySelector("#totalBookingsSection .overview-header h2").innerText = "📋 Total Bookings";
+    document.querySelector("#totalBookingsSection .overview-header h2").innerText = "📋 Recent Bookings List";
 }
 function showTodaysBookings() {
 
@@ -272,9 +631,15 @@ function showCancelledBookings() {
         "❌ Cancelled Bookings";
 }
 function generateBookingData() {
-
     const tbody = document.getElementById("bookingsTableBody");
-    if (!tbody)return;
+    if (!tbody) return;
+
+    const appData = readAppData();
+    if (appData.bookings.length) {
+        renderSharedBookingsTable();
+        return;
+    }
+
     tbody.innerHTML = "";
 
     const names = [
@@ -286,7 +651,6 @@ function generateBookingData() {
 
     const roomTypes = ["Luxury", "Deluxe", "Suite"];
 
-    // Today's date
     const today = new Date();
 
     function formatDate(date) {
@@ -308,43 +672,27 @@ function generateBookingData() {
         return newDate;
     }
 
-    // Create 85 bookings
     for (let i = 1; i <= 85; i++) {
-
         let status;
         let checkIn;
         let checkOut;
 
-        // First 12 = Today's bookings + Confirmed
         if (i <= 12) {
-
             status = "Confirmed";
             checkIn = formatDate(today);
             checkOut = formatDate(addDays(today, 2));
-
-        // Next 53 = Confirmed
         } else if (i <= 65) {
-
             status = "Confirmed";
-
             const oldDate = addDays(today, -(i - 12));
             checkIn = formatDate(oldDate);
             checkOut = formatDate(addDays(oldDate, 2));
-
-        // Next 8 = Cancelled
         } else if (i <= 73) {
-
             status = "Cancelled";
-
             const oldDate = addDays(today, -(i - 20));
             checkIn = formatDate(oldDate);
             checkOut = formatDate(addDays(oldDate, 2));
-
-        // Last 12 = Pending
         } else {
-
             status = "Pending";
-
             const futureDate = addDays(today, i - 60);
             checkIn = formatDate(futureDate);
             checkOut = formatDate(addDays(futureDate, 2));
@@ -353,35 +701,79 @@ function generateBookingData() {
         const name = names[(i - 1) % names.length];
         const roomType = roomTypes[(i - 1) % roomTypes.length];
         const roomNo = 101 + ((i - 1) % 248);
+        const guests = 1 + ((i - 1) % 4);
+        const priceMap = {
+            Luxury: 12000,
+            Deluxe: 8000,
+            Suite: 16000
+        };
+        const amount = priceMap[roomType] * guests;
+        const paymentStatus = i % 2 === 0 ? "Paid" : "Pending";
+        const bookingId = `BK${String(26210 + i).padStart(6, "0")}`;
 
         const row = document.createElement("tr");
-
+        row.dataset.bookingId = bookingId;
         row.innerHTML = `
-            <td>B${String(i).padStart(3, "0")}</td>
+            <td>${bookingId}</td>
             <td>${name}</td>
             <td>${roomNo}</td>
             <td>${roomType}</td>
             <td>${checkIn}</td>
             <td>${checkOut}</td>
+            <td>${guests}</td>
+            <td>₹${Number(amount).toLocaleString("en-IN")}</td>
             <td>${status}</td>
+            <td>${paymentStatus}</td>
+            <td>
+                <button type="button" class="edit-booking-btn">Edit</button>
+                <button type="button" class="delete-booking-btn">Delete</button>
+            </td>
         `;
 
         tbody.appendChild(row);
     }
+
+    writeAppData({ bookings: [], customers: [], dashboard: { totalBookings: 0, totalCustomers: 0, totalRevenue: 0 } });
+    setTimeout(() => {
+        const fallbackBookings = Array.from(tbody.querySelectorAll("tr")).map((row) => ({
+            bookingId: row.dataset.bookingId,
+            customerName: row.cells[1]?.textContent.trim(),
+            roomNo: row.cells[2]?.textContent.trim(),
+            roomType: row.cells[3]?.textContent.trim(),
+            checkIn: row.cells[4]?.textContent.trim(),
+            checkOut: row.cells[5]?.textContent.trim(),
+            guests: row.cells[6]?.textContent.trim(),
+            amount: row.cells[7]?.textContent.replace(/[₹,]/g, "").trim(),
+            bookingStatus: row.cells[8]?.textContent.trim(),
+            paymentStatus: row.cells[9]?.textContent.trim()
+        }));
+
+        syncSharedBookingData(fallbackBookings[0]);
+        if (fallbackBookings.length > 1) {
+            fallbackBookings.slice(1).forEach((booking) => syncSharedBookingData(booking));
+        }
+    }, 0);
 }
+
 generateBookingData();
 function updateDateTime() {
     const now = new Date();
-const currentDate = document.getElementById("currentDate");
-const currentTime = document.getElementById("currentTime");
+    const currentDate = document.getElementById("currentDate");
+    const currentTime = document.getElementById("currentTime");
 
-if (currentDate) {
-    currentDate.innerHTML = now.toLocaleDateString();
-}
+    if (currentDate) {
+        const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const dayName = days[now.getDay()];
+        const day = String(now.getDate()).padStart(2, "0");
+        const month = months[now.getMonth()];
+        const year = now.getFullYear();
+        currentDate.innerHTML = `${dayName}, ${day} ${month} ${year}`;
+    }
 
-if (currentTime) {
-    currentTime.innerHTML = now.toLocaleTimeString();
-}
+    if (currentTime) {
+        currentTime.innerHTML = now.toLocaleTimeString();
+    }
 }
 
 updateDateTime();
@@ -451,6 +843,7 @@ createOccupiedRoomNumbers("occupiedSuiteSecond", [248,249,250,251,252,253,254,25
 createOccupiedRoomNumbers("occupiedSuiteThird", [346,347,348,349,350,351,352,353]);
 
 function showTotalRevenue() {
+    renderSharedDashboardSummary();
     document.getElementById("dashboardHome").style.display = "none";
     document.getElementById("totalRoomsSection").style.display = "none";
     document.getElementById("availableRoomsSection").style.display = "none";
@@ -1138,7 +1531,11 @@ function resetFilters() {
         row.style.display = "";
     });
 }
-document.getElementById("addRoomNo").addEventListener("input",autoFillRoomDetails);
+const addRoomInput = document.getElementById("addRoomNo");
+if (addRoomInput) {
+    addRoomInput.addEventListener("input", autoFillRoomDetails);
+}
+
 function loadSavedRooms() {
 
     const savedRooms =
@@ -1197,6 +1594,7 @@ existingRows.forEach(function(row) {
 }
 
 loadSavedRooms();
+initializeSharedDataViews();
 // ===============================
 // BOOKING ROOM AUTO FILL
 // ===============================
@@ -1288,3 +1686,139 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 });
+function applyBookingFilters() {
+
+    const searchBooking =
+        document.getElementById("searchBooking").value.trim().toLowerCase();
+
+    const bookingDate =
+        document.getElementById("bookingDate").value;
+
+    const status =
+        document.getElementById("bookingStatusFilter").value;
+
+    const paymentStatus =
+        document.getElementById("paymentStatusFilter").value;
+
+    const guests =
+        document.getElementById("guestFilter").value;
+
+    const rows =
+        document.querySelectorAll("#bookingsTableBody tr");
+
+    rows.forEach(function(row) {
+
+        const bookingId =
+            row.cells[0]?.innerText.trim().toLowerCase();
+
+        const rowBookingDate =
+            row.cells[4]?.innerText.trim();
+
+        const rowGuests =
+            parseInt(row.cells[6]?.innerText.trim()) || 0;
+
+        const rowStatus =
+            row.cells[8]?.innerText.trim();
+
+        const rowPayment =
+            row.cells[9]?.innerText.trim();
+
+
+        // Search Booking
+        const matchesBooking =
+            !searchBooking ||
+            bookingId.includes(searchBooking);
+
+
+        // Booking Date
+        let matchesDate = true;
+
+        if (bookingDate) {
+
+            const parts = bookingDate.split("-");
+
+            const year = parts[0];
+            const month = parts[1];
+            const day = parts[2];
+
+            const months = [
+                "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+            ];
+
+            const formattedDate =
+                `${day}-${months[parseInt(month) - 1]}-${year}`;
+
+            matchesDate =
+                rowBookingDate === formattedDate ||
+                rowBookingDate === bookingDate;
+        }
+
+
+        // Status
+        const matchesStatus =
+            !status ||
+            rowStatus === status;
+
+
+        // Payment
+        const matchesPayment =
+            !paymentStatus ||
+            rowPayment === paymentStatus;
+
+
+        // Guests
+        let matchesGuests = true;
+
+        if (guests === "1") {
+            matchesGuests = rowGuests === 1;
+        }
+        else if (guests === "2") {
+            matchesGuests = rowGuests === 2;
+        }
+        else if (guests === "3") {
+            matchesGuests = rowGuests === 3;
+        }
+        else if (guests === "4") {
+            matchesGuests = rowGuests >= 4;
+        }
+
+
+        // Show / Hide
+        if (
+            matchesBooking &&
+            matchesDate &&
+            matchesStatus &&
+            matchesPayment &&
+            matchesGuests
+        ) {
+            row.style.display = "table-row";
+        }
+        else {
+            row.style.display = "none";
+        }
+
+    });
+}
+
+
+function resetBookingFilters() {
+
+    document.getElementById("searchBooking").value = "";
+
+    document.getElementById("bookingDate").value = "";
+
+    document.getElementById("bookingStatusFilter").value = "";
+
+    document.getElementById("paymentStatusFilter").value = "";
+
+    document.getElementById("guestFilter").value = "";
+
+
+    const rows =
+        document.querySelectorAll("#bookingsTableBody tr");
+
+    rows.forEach(function(row) {
+        row.style.display = "table-row";
+    });
+}

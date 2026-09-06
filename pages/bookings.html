@@ -210,6 +210,7 @@
                 <button
                     type="button"
                     class="apply-filter-btn"
+                    onclick="applyBookingFilters()"
                 >
                     Apply Filters
                 </button>
@@ -217,6 +218,7 @@
                 <button
                     type="button"
                     class="reset-filter-btn"
+                    onclick="resetBookingFilters()"
                 >
                     Reset
                 </button>
@@ -557,254 +559,483 @@
 
 <script src="../js/script.js"></script>
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+    function formatBookingDate(dateValue) {
+        if (!dateValue) return "";
 
-    const addNewBookingBtn = document.getElementById("addNewBookingBtn");
-    const newBookingModal = document.getElementById("newBookingModal");
-    const closeModalBtn = document.querySelector(".close-modal-btn");
-    const cancelBookingBtn = document.querySelector(".cancel-booking-btn");
-    const newBookingForm = document.getElementById("newBookingForm");
-    const bookingsTableBody = document.getElementById("bookingsTableBody");
+        const parts = dateValue.split("-");
+        const year = parts[0];
+        const month = parseInt(parts[1], 10);
+        const day = parts[2];
 
-    // Open New Booking Modal
-    addNewBookingBtn.addEventListener("click", function () {
-        newBookingModal.style.display = "flex";
-    });
+        const months = [
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        ];
 
-    // Close Modal
-    closeModalBtn.addEventListener("click", function () {
-        newBookingModal.style.display = "none";
-    });
-     const bookingRoomNo = document.getElementById("bookingRoomNo");
-const bookingRoomType = document.getElementById("bookingRoomType");
-const bookingAmount = document.getElementById("bookingAmount");
-
-const roomDetails = {};
-
-for (let roomNo = 101; roomNo <= 350; roomNo++) {
-
-    let type = "";
-    let amount = 0;
-
-    if (roomNo >= 101 && roomNo <= 117) {
-        type = "Luxury";
-        amount = 10000;
-    }
-    else if (roomNo >= 118 && roomNo <= 134) {
-        type = "Deluxe";
-        amount = 7000;
-    }
-    else if (roomNo >= 135 && roomNo <= 150) {
-        type = "Suite";
-        amount = 15000;
-    }
-    else if (roomNo >= 201 && roomNo <= 217) {
-        type = "Luxury";
-        amount = 11000;
-    }
-    else if (roomNo >= 218 && roomNo <= 234) {
-        type = "Deluxe";
-        amount = 8000;
-    }
-    else if (roomNo >= 235 && roomNo <= 250) {
-        type = "Suite";
-        amount = 16000;
-    }
-    else if (roomNo >= 301 && roomNo <= 316) {
-        type = "Luxury";
-        amount = 12000;
-    }
-    else if (roomNo >= 317 && roomNo <= 332) {
-        type = "Deluxe";
-        amount = 9000;
-    }
-    else if (roomNo >= 333 && roomNo <= 350) {
-        type = "Suite";
-        amount = 17000;
+        return `${day}-${months[month - 1]}-${year}`;
     }
 
-    if (type !== "") {
-        roomDetails[roomNo] = {
-            type: type,
-            amount: amount
-        };
-    }
-}
-
-bookingRoomNo.addEventListener("input", function () {
-
-    const roomNumber = bookingRoomNo.value.trim();
-
-    if (roomDetails[roomNumber]) {
-
-        bookingRoomType.value = roomDetails[roomNumber].type;
-        bookingAmount.value = roomDetails[roomNumber].amount;
-
-    } else {
-
-        bookingRoomType.value = "";
-        bookingAmount.value = "";
-
+    function readAppData() {
+        return window.readAppData ? window.readAppData() : (() => {
+            try {
+                const saved = JSON.parse(localStorage.getItem("sayoraAppData")) || {};
+                return {
+                    bookings: Array.isArray(saved.bookings) ? saved.bookings : [],
+                    customers: Array.isArray(saved.customers) ? saved.customers : [],
+                    dashboard: saved.dashboard || {}
+                };
+            } catch (error) {
+                return { bookings: [], customers: [], dashboard: {} };
+            }
+        })();
     }
 
-});
-    // Cancel Booking
-    cancelBookingBtn.addEventListener("click", function () {
-        newBookingModal.style.display = "none";
-        newBookingForm.reset();
-    });
-
-    // Close modal when clicking outside
-    newBookingModal.addEventListener("click", function (event) {
-        if (event.target === newBookingModal) {
-            newBookingModal.style.display = "none";
+    function writeAppData(appData) {
+        if (window.writeAppData) {
+            return window.writeAppData(appData);
         }
+        localStorage.setItem("sayoraAppData", JSON.stringify(appData));
+        return appData;
+    }
+
+    function syncSharedBookingData(bookingEntry) {
+        if (window.syncSharedBookingData) {
+            return window.syncSharedBookingData(bookingEntry);
+        }
+
+        const appData = readAppData();
+        const normalizedBooking = { ...bookingEntry };
+        const customerId = normalizedBooking.customerId || `C${String(normalizedBooking.customerName || "guest").toLowerCase().replace(/\s+/g, "-")}-${Date.now().toString().slice(-4)}`;
+        normalizedBooking.customerId = customerId;
+
+        const allBookings = appData.bookings.filter(item => item.bookingId !== normalizedBooking.bookingId);
+        allBookings.unshift(normalizedBooking);
+        appData.bookings = allBookings;
+
+        const customerRecord = {
+            customerId: customerId,
+            customerName: normalizedBooking.customerName,
+            phone: normalizedBooking.phone || "9876543210",
+            roomNo: normalizedBooking.roomNo,
+            roomType: normalizedBooking.roomType,
+            guests: normalizedBooking.guests,
+            status: normalizedBooking.bookingStatus || "Confirmed",
+            paymentStatus: normalizedBooking.paymentStatus || "Paid",
+            bookingId: normalizedBooking.bookingId,
+            checkIn: normalizedBooking.checkIn,
+            checkOut: normalizedBooking.checkOut,
+            amount: normalizedBooking.amount
+        };
+
+        const allCustomers = appData.customers.filter(item => item.customerId !== customerId && item.customerName !== normalizedBooking.customerName);
+        allCustomers.unshift(customerRecord);
+        appData.customers = allCustomers;
+
+        appData.dashboard = {
+            totalBookings: allBookings.length,
+            totalCustomers: allCustomers.length,
+            totalRevenue: allBookings.reduce((sum, item) => sum + Number(item.amount || 0), 0)
+        };
+
+        localStorage.setItem("sayoraBookings", JSON.stringify(allBookings));
+        localStorage.setItem("sayoraCustomers", JSON.stringify(allCustomers));
+        writeAppData(appData);
+        return appData;
+    }
+
+    function removeSharedBookingData(bookingId) {
+        if (window.removeSharedBookingData) {
+            return window.removeSharedBookingData(bookingId);
+        }
+
+        const appData = readAppData();
+        appData.bookings = appData.bookings.filter(item => item.bookingId !== bookingId);
+        appData.customers = appData.customers.filter(item => item.bookingId !== bookingId);
+        appData.dashboard = {
+            totalBookings: appData.bookings.length,
+            totalCustomers: appData.customers.length,
+            totalRevenue: appData.bookings.reduce((sum, item) => sum + Number(item.amount || 0), 0)
+        };
+
+        localStorage.setItem("sayoraBookings", JSON.stringify(appData.bookings));
+        localStorage.setItem("sayoraCustomers", JSON.stringify(appData.customers));
+        writeAppData(appData);
+        return appData;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const addNewBookingBtn = document.getElementById("addNewBookingBtn");
+        const newBookingModal = document.getElementById("newBookingModal");
+        const closeModalBtn = document.querySelector(".close-modal-btn");
+        const cancelBookingBtn = document.querySelector(".cancel-booking-btn");
+        const newBookingForm = document.getElementById("newBookingForm");
+        const bookingsTableBody = document.getElementById("bookingsTableBody");
+        const modalTitle = document.querySelector(".modal-header h2");
+        const saveBookingBtn = document.querySelector(".save-booking-btn");
+        let editingBookingId = null;
+
+        function resetBookingForm() {
+            newBookingForm.reset();
+            editingBookingId = null;
+            if (modalTitle) modalTitle.textContent = "➕ New Booking";
+            if (saveBookingBtn) saveBookingBtn.textContent = "Save Booking";
+        }
+
+        function parseBookingDateToISO(dateValue) {
+            if (!dateValue) return "";
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateValue)) return dateValue;
+
+            if (/^\d{2}-[A-Za-z]{3}-\d{4}$/.test(dateValue)) {
+                const [day, monthName, year] = dateValue.split("-");
+                const monthMap = {
+                    Jan: "01", Feb: "02", Mar: "03", Apr: "04", May: "05", Jun: "06",
+                    Jul: "07", Aug: "08", Sep: "09", Oct: "10", Nov: "11", Dec: "12"
+                };
+                return `${year}-${monthMap[monthName]}-${day}`;
+            }
+
+            return "";
+        }
+
+        function getSavedBookings() {
+            return JSON.parse(localStorage.getItem("sayoraBookings")) || [];
+        }
+
+        function populateBookingForm(booking) {
+            document.getElementById("customerName").value = booking.customerName || "";
+            document.getElementById("bookingRoomNo").value = booking.roomNo || "";
+            document.getElementById("bookingRoomType").value = booking.roomType || "";
+            document.getElementById("bookingGuests").value = booking.guests || "1";
+            document.getElementById("checkInDate").value = parseBookingDateToISO(booking.checkIn);
+            document.getElementById("checkOutDate").value = parseBookingDateToISO(booking.checkOut);
+            document.getElementById("bookingAmount").value = booking.amount || "";
+            document.getElementById("bookingPaymentStatus").value = booking.paymentStatus || "Paid";
+            document.getElementById("newBookingStatus").value = booking.bookingStatus || "Confirmed";
+
+            editingBookingId = booking.bookingId;
+            if (modalTitle) modalTitle.textContent = "✏️ Edit Booking";
+            if (saveBookingBtn) saveBookingBtn.textContent = "Update Booking";
+            newBookingModal.style.display = "flex";
+        }
+
+        function updateRowFromBooking(booking) {
+            const row = bookingsTableBody.querySelector(`tr[data-booking-id="${booking.bookingId}"]`);
+            if (!row) return;
+
+            row.dataset.bookingId = booking.bookingId;
+            row.innerHTML = `
+                <td>${booking.bookingId}</td>
+                <td>${booking.customerName}</td>
+                <td>${booking.roomNo}</td>
+                <td>${booking.roomType}</td>
+                <td>${booking.checkIn}</td>
+                <td>${booking.checkOut}</td>
+                <td>${booking.guests}</td>
+                <td>₹${Number(booking.amount).toLocaleString("en-IN")}</td>
+                <td>${booking.bookingStatus}</td>
+                <td>${booking.paymentStatus}</td>
+                <td>
+                    <button type="button" class="edit-booking-btn">Edit</button>
+                    <button type="button" class="delete-booking-btn">Delete</button>
+                </td>
+            `;
+        }
+
+        function extractBookingDataFromRow(row) {
+            if (!row) return null;
+
+            return {
+                bookingId: row.dataset.bookingId || row.cells[0]?.textContent.trim(),
+                customerName: row.cells[1]?.textContent.trim(),
+                roomNo: row.cells[2]?.textContent.trim(),
+                roomType: row.cells[3]?.textContent.trim(),
+                checkIn: row.cells[4]?.textContent.trim(),
+                checkOut: row.cells[5]?.textContent.trim(),
+                guests: row.cells[6]?.textContent.trim(),
+                amount: row.cells[7]?.textContent.replace(/[₹,]/g, "").trim(),
+                bookingStatus: row.cells[8]?.textContent.trim(),
+                paymentStatus: row.cells[9]?.textContent.trim()
+            };
+        }
+
+        addNewBookingBtn.addEventListener("click", function () {
+            resetBookingForm();
+            newBookingModal.style.display = "flex";
+        });
+
+        closeModalBtn.addEventListener("click", function () {
+            newBookingModal.style.display = "none";
+            resetBookingForm();
+        });
+
+        const bookingRoomNo = document.getElementById("bookingRoomNo");
+        const bookingRoomType = document.getElementById("bookingRoomType");
+        const bookingAmount = document.getElementById("bookingAmount");
+        const bookingGuests = document.getElementById("bookingGuests");
+        const roomDetails = {};
+
+        for (let roomNo = 101; roomNo <= 350; roomNo++) {
+            let type = "";
+            let amount = 0;
+
+            if (roomNo >= 101 && roomNo <= 117) {
+                type = "Luxury"; amount = 10000;
+            } else if (roomNo >= 118 && roomNo <= 134) {
+                type = "Deluxe"; amount = 7000;
+            } else if (roomNo >= 135 && roomNo <= 150) {
+                type = "Suite"; amount = 15000;
+            } else if (roomNo >= 201 && roomNo <= 217) {
+                type = "Luxury"; amount = 11000;
+            } else if (roomNo >= 218 && roomNo <= 234) {
+                type = "Deluxe"; amount = 8000;
+            } else if (roomNo >= 235 && roomNo <= 250) {
+                type = "Suite"; amount = 16000;
+            } else if (roomNo >= 301 && roomNo <= 316) {
+                type = "Luxury"; amount = 12000;
+            } else if (roomNo >= 317 && roomNo <= 332) {
+                type = "Deluxe"; amount = 9000;
+            } else if (roomNo >= 333 && roomNo <= 350) {
+                type = "Suite"; amount = 17000;
+            }
+
+            if (type !== "") {
+                roomDetails[roomNo] = { type, amount };
+            }
+        }
+
+        function calculateBookingAmount() {
+            const roomNumber = bookingRoomNo.value.trim();
+            const guests = Number(bookingGuests.value) || 1;
+
+            if (roomDetails[roomNumber]) {
+                const baseAmount = Number(roomDetails[roomNumber].amount) || 0;
+                bookingRoomType.value = roomDetails[roomNumber].type;
+                bookingAmount.value = baseAmount * guests;
+                return;
+            }
+
+            const roomType = bookingRoomType.value.trim();
+            const roomRates = {
+                Luxury: 10000,
+                Deluxe: 7000,
+                Suite: 15000
+            };
+
+            const baseAmount = roomRates[roomType] || 0;
+            if (!baseAmount) {
+                bookingAmount.value = "";
+                return;
+            }
+
+            bookingAmount.value = baseAmount * guests;
+        }
+
+        bookingRoomNo.addEventListener("input", function () {
+            const roomNumber = bookingRoomNo.value.trim();
+
+            if (roomDetails[roomNumber]) {
+                bookingRoomType.value = roomDetails[roomNumber].type;
+                calculateBookingAmount();
+            } else {
+                bookingRoomType.value = "";
+                bookingAmount.value = "";
+            }
+        });
+
+        bookingGuests.addEventListener("input", function () {
+            const guests = Number(bookingGuests.value);
+            if (!guests || guests < 1) {
+                bookingGuests.value = 1;
+            }
+            calculateBookingAmount();
+        });
+
+        cancelBookingBtn.addEventListener("click", function () {
+            newBookingModal.style.display = "none";
+            resetBookingForm();
+        });
+
+        newBookingModal.addEventListener("click", function (event) {
+            if (event.target === newBookingModal) {
+                newBookingModal.style.display = "none";
+                resetBookingForm();
+            }
+        });
+
+        bookingsTableBody.addEventListener("click", function (event) {
+            const editBtn = event.target.closest(".edit-booking-btn");
+            const deleteBtn = event.target.closest(".delete-booking-btn");
+            const row = event.target.closest("tr");
+            if (!row) return;
+
+            const bookingId = row.dataset.bookingId;
+            const savedBookings = getSavedBookings();
+            let booking = savedBookings.find(item => item.bookingId === bookingId);
+
+            if (!booking) {
+                booking = extractBookingDataFromRow(row);
+            }
+
+            if (editBtn && booking) {
+                populateBookingForm(booking);
+                return;
+            }
+
+            if (deleteBtn) {
+                const confirmDelete = confirm(`Delete booking ${bookingId || booking?.bookingId}?`);
+                if (!confirmDelete) return;
+
+                if (bookingId) {
+                    const updatedBookings = savedBookings.filter(item => item.bookingId !== bookingId);
+                    localStorage.setItem("sayoraBookings", JSON.stringify(updatedBookings));
+                    removeSharedBookingData(bookingId);
+                }
+
+                row.remove();
+            }
+        });
+
+        newBookingForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const customerName = document.getElementById("customerName").value.trim();
+            const roomNo = document.getElementById("bookingRoomNo").value.trim();
+            const roomType = document.getElementById("bookingRoomType").value.trim();
+            const guests = document.getElementById("bookingGuests").value.trim();
+            const checkInValue = document.getElementById("checkInDate").value;
+            const checkOutValue = document.getElementById("checkOutDate").value;
+            const checkIn = formatBookingDate(checkInValue);
+            const checkOut = formatBookingDate(checkOutValue);
+            const amount = document.getElementById("bookingAmount").value;
+            const paymentStatus = document.getElementById("bookingPaymentStatus").value;
+            const bookingStatus = document.getElementById("newBookingStatus").value;
+
+            if (!customerName || !roomNo || !roomType || !checkInValue || !checkOutValue || !amount) {
+                alert("Please fill all booking fields before saving.");
+                return;
+            }
+
+            const savedBookings = getSavedBookings();
+
+            if (editingBookingId) {
+                const bookingIndex = savedBookings.findIndex(item => item.bookingId === editingBookingId);
+                const updatedBooking = {
+                    bookingId: editingBookingId,
+                    customerName,
+                    roomNo,
+                    roomType,
+                    guests,
+                    checkIn,
+                    checkOut,
+                    amount,
+                    bookingStatus,
+                    paymentStatus
+                };
+
+                if (bookingIndex !== -1) {
+                    savedBookings[bookingIndex] = updatedBooking;
+                    localStorage.setItem("sayoraBookings", JSON.stringify(savedBookings));
+                    syncSharedBookingData(updatedBooking);
+                } else {
+                    const existingRow = bookingsTableBody.querySelector(`tr[data-booking-id="${editingBookingId}"]`);
+                    if (existingRow) {
+                        existingRow.dataset.bookingId = editingBookingId;
+                        updateRowFromBooking(updatedBooking);
+                    }
+                }
+
+                const existingRow = bookingsTableBody.querySelector(`tr[data-booking-id="${editingBookingId}"]`);
+                if (existingRow) {
+                    updateRowFromBooking(updatedBooking);
+                }
+
+                if (typeof renderSharedBookingsTable === "function") {
+                    renderSharedBookingsTable();
+                }
+
+                alert("Booking updated successfully!");
+            } else {
+                const bookingId = `BK${String(Date.now()).slice(-6).padStart(6, "0")}`;
+                const row = document.createElement("tr");
+                row.dataset.bookingId = bookingId;
+                row.innerHTML = `
+                    <td>${bookingId}</td>
+                    <td>${customerName}</td>
+                    <td>${roomNo}</td>
+                    <td>${roomType}</td>
+                    <td>${checkIn}</td>
+                    <td>${checkOut}</td>
+                    <td>${guests}</td>
+                    <td>₹${Number(amount).toLocaleString("en-IN")}</td>
+                    <td>${bookingStatus}</td>
+                    <td>${paymentStatus}</td>
+                    <td>
+                        <button type="button" class="edit-booking-btn">Edit</button>
+                        <button type="button" class="delete-booking-btn">Delete</button>
+                    </td>
+                `;
+
+                bookingsTableBody.insertBefore(row, bookingsTableBody.firstChild);
+
+                const newBooking = {
+                    bookingId,
+                    customerName,
+                    roomNo,
+                    roomType,
+                    guests,
+                    checkIn,
+                    checkOut,
+                    amount,
+                    bookingStatus,
+                    paymentStatus
+                };
+
+                savedBookings.unshift(newBooking);
+                localStorage.setItem("sayoraBookings", JSON.stringify(savedBookings));
+                syncSharedBookingData(newBooking);
+                if (typeof renderSharedBookingsTable === "function") {
+                    renderSharedBookingsTable();
+                }
+                alert("Booking added successfully!");
+            }
+
+            newBookingModal.style.display = "none";
+            resetBookingForm();
+        });
     });
 
-     // Save New Booking
-newBookingForm.addEventListener("submit", function (event) {
-    event.preventDefault();
+    function loadSavedBookings() {
+        const savedBookings = JSON.parse(localStorage.getItem("sayoraBookings")) || [];
+        const tbody = document.getElementById("bookingsTableBody");
 
-    const customerName =
-        document.getElementById("customerName").value;
+        if (!tbody) return;
 
-    const roomNo =
-        document.getElementById("bookingRoomNo").value;
+        savedBookings.forEach(function (booking) {
+            const row = document.createElement("tr");
+            row.dataset.bookingId = booking.bookingId;
 
-    const roomType =
-        document.getElementById("bookingRoomType").value;
+            row.innerHTML = `
+                <td>${booking.bookingId}</td>
+                <td>${booking.customerName}</td>
+                <td>${booking.roomNo}</td>
+                <td>${booking.roomType}</td>
+                <td>${booking.checkIn}</td>
+                <td>${booking.checkOut}</td>
+                <td>${booking.guests}</td>
+                <td>₹${Number(booking.amount).toLocaleString("en-IN")}</td>
+                <td>${booking.bookingStatus}</td>
+                <td>${booking.paymentStatus}</td>
+                <td>
+                    <button type="button" class="edit-booking-btn">Edit</button>
+                    <button type="button" class="delete-booking-btn">Delete</button>
+                </td>
+            `;
 
-    const guests =
-        document.getElementById("bookingGuests").value;
+            tbody.insertBefore(row, tbody.firstChild);
+        });
+    }
 
-    const checkIn =
-        document.getElementById("checkInDate").value;
-
-    const checkOut =
-        document.getElementById("checkOutDate").value;
-
-    const amount =
-        document.getElementById("bookingAmount").value;
-
-    const paymentStatus =
-        document.getElementById("bookingPaymentStatus").value;
-
-    const bookingStatus =
-        document.getElementById("newBookingStatus").value;
-
-    // Generate Booking ID
-    const bookingId =
-        "BK" + Date.now().toString().slice(-6);
-
-    // Create table row
-    const row = document.createElement("tr");
-
-    row.innerHTML = `
-        <td>${bookingId}</td>
-        <td>${customerName}</td>
-        <td>${roomNo}</td>
-        <td>${roomType}</td>
-        <td>${checkIn}</td>
-        <td>${checkOut}</td>
-        <td>${guests}</td>
-        <td>₹${Number(amount).toLocaleString("en-IN")}</td>
-        <td>${bookingStatus}</td>
-        <td>${paymentStatus}</td>
-        <td>
-            <button type="button" class="edit-booking-btn">
-                Edit
-            </button>
-
-            <button type="button" class="delete-booking-btn">
-                Delete
-            </button>
-        </td>
-    `;
-
-    // Add latest booking at TOP
-    bookingsTableBody.insertBefore(
-        row,
-        bookingsTableBody.firstChild
-    );
-
-    // ===============================
-    // SAVE BOOKING TO LOCAL STORAGE
-    // ===============================
-
-    const savedBookings =
-        JSON.parse(localStorage.getItem("sayoraBookings")) || [];
-
-    savedBookings.unshift({
-        bookingId: bookingId,
-        customerName: customerName,
-        roomNo: roomNo,
-        roomType: roomType,
-        guests: guests,
-        checkIn: checkIn,
-        checkOut: checkOut,
-        amount: amount,
-        bookingStatus: bookingStatus,
-        paymentStatus: paymentStatus
-    });
-
-    localStorage.setItem(
-        "sayoraBookings",
-        JSON.stringify(savedBookings)
-    );
-
-    // Close modal
-    newBookingModal.style.display = "none";
-
-    // Clear form
-    newBookingForm.reset();
-
-    // Show success message
-    alert("Booking added successfully!");
-});
-
-});
-function loadSavedBookings() {
-
-    const savedBookings =
-        JSON.parse(localStorage.getItem("sayoraBookings")) || [];
-
-    const tbody =
-        document.getElementById("bookingsTableBody");
-
-    if (!tbody) return;
-
-    savedBookings.forEach(function (booking) {
-
-        const row = document.createElement("tr");
-
-        row.innerHTML = `
-            <td>${booking.bookingId}</td>
-            <td>${booking.customerName}</td>
-            <td>${booking.roomNo}</td>
-            <td>${booking.roomType}</td>
-            <td>${booking.checkIn}</td>
-            <td>${booking.checkOut}</td>
-            <td>${booking.guests}</td>
-            <td>₹${Number(booking.amount).toLocaleString("en-IN")}</td>
-            <td>${booking.bookingStatus}</td>
-            <td>${booking.paymentStatus}</td>
-            <td>
-                <button type="button" class="edit-booking-btn">
-                    Edit
-                </button>
-
-                <button type="button" class="delete-booking-btn">
-                    Delete
-                </button>
-            </td>
-        `;
-
-        // Latest saved booking goes to TOP
-        tbody.insertBefore(row, tbody.firstChild);
-    });
-}
-
-loadSavedBookings();
+    loadSavedBookings();
 </script>
 </body>
 </html>
