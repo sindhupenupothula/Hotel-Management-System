@@ -329,30 +329,56 @@ function renderSharedDashboardSummary() {
     const bookings = Array.isArray(appData.bookings) && appData.bookings.length ? appData.bookings : JSON.parse(localStorage.getItem("sayoraBookings") || "[]");
     const customers = Array.isArray(appData.customers) && appData.customers.length ? appData.customers : JSON.parse(localStorage.getItem("sayoraCustomers") || "[]");
     const rooms = getRoomList();
+    const reviews = typeof getStoredReviews === "function" ? getStoredReviews() : JSON.parse(localStorage.getItem("sayoraReviews") || "[]");
 
-    const dashboard = {
-        totalBookings: bookings.length,
+    const totalBookingsCount = bookings.length;
+    const checkedInCount = bookings.filter(b => (b.bookingStatus || "Confirmed") !== "Checked Out" && (b.bookingStatus || "Confirmed") !== "Cancelled").length;
+    const checkedOutCount = bookings.filter(b => b.bookingStatus === "Checked Out").length;
+    const totalRevenueSum = bookings.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+    const pendingPaymentsCount = bookings.filter(b => b.paymentStatus === "Pending").length;
+    const reviewsCount = reviews.length;
+
+    // Update Overview Cards on Dashboard Home
+    const elBookings = document.getElementById("overviewTotalBookings");
+    if (elBookings) elBookings.textContent = totalBookingsCount;
+
+    const elCheckedIn = document.getElementById("overviewCheckedIn");
+    if (elCheckedIn) elCheckedIn.textContent = checkedInCount;
+
+    const elCheckedOut = document.getElementById("overviewCheckedOut");
+    if (elCheckedOut) elCheckedOut.textContent = checkedOutCount;
+
+    const elRevenue = document.getElementById("overviewTotalRevenue");
+    if (elRevenue) elRevenue.textContent = `₹${totalRevenueSum.toLocaleString("en-IN")}`;
+
+    const elPending = document.getElementById("overviewPendingPayments");
+    if (elPending) elPending.textContent = pendingPaymentsCount;
+
+    const elReviews = document.getElementById("overviewTotalReviews");
+    if (elReviews) elReviews.textContent = reviewsCount;
+
+    // Update Detail Section Cards
+    const totalBookingsValue = document.querySelector("#totalBookingsSection .total-card h2");
+    if (totalBookingsValue) totalBookingsValue.textContent = totalBookingsCount;
+
+    const totalCustomersValue = document.querySelector("#totalCustomersSection .total-card h2");
+    if (totalCustomersValue) totalCustomersValue.textContent = customers.length;
+
+    const totalRevenueValue = document.querySelector("#totalRevenueSection .total-card h2");
+    if (totalRevenueValue) totalRevenueValue.textContent = `₹${totalRevenueSum.toLocaleString("en-IN")}`;
+
+    const totalRoomsValue = document.querySelector("#totalRoomsSection .total-card h2");
+    if (totalRoomsValue) totalRoomsValue.textContent = rooms.length;
+
+    updateRoomAvailabilitySummary();
+    return {
+        totalBookings: totalBookingsCount,
         totalCustomers: customers.length,
-        totalRevenue: bookings.reduce((sum, item) => sum + Number(item.amount || 0), 0),
+        totalRevenue: totalRevenueSum,
         totalRooms: rooms.length,
         availableRooms: rooms.filter(room => room.status !== "Occupied" && room.status !== "Maintenance").length,
         occupiedRooms: rooms.filter(room => room.status === "Occupied").length
     };
-
-    const totalBookingsValue = document.querySelector("#totalBookingsSection .total-card h2");
-    if (totalBookingsValue) totalBookingsValue.textContent = dashboard.totalBookings;
-
-    const totalCustomersValue = document.querySelector("#totalCustomersSection .total-card h2");
-    if (totalCustomersValue) totalCustomersValue.textContent = dashboard.totalCustomers;
-
-    const totalRevenueValue = document.querySelector("#totalRevenueSection .total-card h2");
-    if (totalRevenueValue) totalRevenueValue.textContent = `₹${Number(dashboard.totalRevenue).toLocaleString("en-IN")}`;
-
-    const totalRoomsValue = document.querySelector("#totalRoomsSection .total-card h2");
-    if (totalRoomsValue) totalRoomsValue.textContent = dashboard.totalRooms;
-
-    updateRoomAvailabilitySummary();
-    return dashboard;
 }
 
 function initializeSharedDataViews() {
@@ -2409,8 +2435,16 @@ document.addEventListener("change", function(e) {
     }
 });
 
-/* Master Initialization */
+/* Master Initialization & Automatic Cross-Page/Tab Sync */
 document.addEventListener("DOMContentLoaded", function() {
+    refreshAllDashboardDataAndViews();
+});
+
+window.addEventListener("pageshow", function() {
+    refreshAllDashboardDataAndViews();
+});
+
+window.addEventListener("storage", function() {
     refreshAllDashboardDataAndViews();
 });
 
