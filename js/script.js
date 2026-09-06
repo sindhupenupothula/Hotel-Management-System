@@ -144,6 +144,12 @@ function refreshAllDashboardDataAndViews() {
     renderSharedReviewsTable();
     renderSharedCustomersTable();
     renderRecentTablesOnDashboardHome();
+
+    renderCustomersPageTable();
+    renderCheckInPageTable();
+    renderCheckOutPageTable();
+    renderPaymentsPageTable();
+    renderReviewsPageTable();
 }
 
 function renderSharedBookingsTable() {
@@ -912,128 +918,66 @@ function showCancelledBookings() {
         "❌ Cancelled Bookings";
 }
 function generateBookingData() {
-    const tbody = document.getElementById("bookingsTableBody");
-    if (!tbody) return;
-
     const appData = readAppData();
-    if (appData.bookings.length) {
-        renderSharedBookingsTable();
+    if (appData.bookings && appData.bookings.length === 25) {
         return;
     }
 
-    tbody.innerHTML = "";
+    const sampleBookings = [
+        { bookingId: "BK557860", customerName: "Sindhu Priya", roomNo: "105", roomType: "Luxury", checkIn: "29-Aug-2026", checkOut: "31-Aug-2026", guests: 2, amount: 24000, bookingStatus: "Checked In", paymentStatus: "Paid" },
+        { bookingId: "BK557861", customerName: "Ravi Kumar", roomNo: "101", roomType: "Deluxe", checkIn: "29-Aug-2026", checkOut: "31-Aug-2026", guests: 1, amount: 14000, bookingStatus: "Checked In", paymentStatus: "Paid" },
+        { bookingId: "BK557862", customerName: "Priya Sharma", roomNo: "102", roomType: "Suite", checkIn: "29-Aug-2026", checkOut: "01-Sep-2026", guests: 2, amount: 32000, bookingStatus: "Checked In", paymentStatus: "Paid" },
+        { bookingId: "BK557863", customerName: "Anjali Mehta", roomNo: "201", roomType: "Luxury", checkIn: "30-Aug-2026", checkOut: "01-Sep-2026", guests: 1, amount: 22000, bookingStatus: "Checked In", paymentStatus: "Paid" },
+        { bookingId: "BK557864", customerName: "Mohan Reddy", roomNo: "221", roomType: "Deluxe", checkIn: "30-Aug-2026", checkOut: "01-Sep-2026", guests: 3, amount: 18000, bookingStatus: "Checked In", paymentStatus: "Paid" },
+        { bookingId: "BK557865", customerName: "Karthik Raja", roomNo: "106", roomType: "Luxury", checkIn: "31-Aug-2026", checkOut: "02-Sep-2026", guests: 2, amount: 20000, bookingStatus: "Checked In", paymentStatus: "Paid" },
+        { bookingId: "BK557866", customerName: "Deepika Padukone", roomNo: "107", roomType: "Deluxe", checkIn: "31-Aug-2026", checkOut: "02-Sep-2026", guests: 1, amount: 14000, bookingStatus: "Checked In", paymentStatus: "Paid" },
+        { bookingId: "BK557867", customerName: "Arjun Verma", roomNo: "202", roomType: "Suite", checkIn: "01-Sep-2026", checkOut: "03-Sep-2026", guests: 2, amount: 30000, bookingStatus: "Checked In", paymentStatus: "Paid" },
+        { bookingId: "BK557868", customerName: "Sneha Kapoor", roomNo: "203", roomType: "Luxury", checkIn: "01-Sep-2026", checkOut: "03-Sep-2026", guests: 1, amount: 22000, bookingStatus: "Checked In", paymentStatus: "Paid" },
+        { bookingId: "BK557869", customerName: "Rahul Dravid", roomNo: "108", roomType: "Deluxe", checkIn: "02-Sep-2026", checkOut: "04-Sep-2026", guests: 2, amount: 16000, bookingStatus: "Checked In", paymentStatus: "Paid" },
+        { bookingId: "BK557870", customerName: "Pooja Hegde", roomNo: "109", roomType: "Luxury", checkIn: "02-Sep-2026", checkOut: "04-Sep-2026", guests: 1, amount: 20000, bookingStatus: "Checked In", paymentStatus: "Paid" },
+        { bookingId: "BK557871", customerName: "Vijay Kumar", roomNo: "205", roomType: "Suite", checkIn: "03-Sep-2026", checkOut: "05-Sep-2026", guests: 2, amount: 32000, bookingStatus: "Checked In", paymentStatus: "Paid" },
+        
+        // 8 Checked Out Bookings
+        { bookingId: "BK557872", customerName: "Swathi Reddy", roomNo: "110", roomType: "Deluxe", checkIn: "20-Aug-2026", checkOut: "22-Aug-2026", guests: 2, amount: 14000, bookingStatus: "Checked Out", paymentStatus: "Paid" },
+        { bookingId: "BK557873", customerName: "Naveen Babu", roomNo: "111", roomType: "Luxury", checkIn: "21-Aug-2026", checkOut: "23-Aug-2026", guests: 1, amount: 20000, bookingStatus: "Checked Out", paymentStatus: "Paid" },
+        { bookingId: "BK557874", customerName: "Divya Teja", roomNo: "112", roomType: "Suite", checkIn: "22-Aug-2026", checkOut: "25-Aug-2026", guests: 3, amount: 45000, bookingStatus: "Checked Out", paymentStatus: "Paid" },
+        { bookingId: "BK557875", customerName: "Sai Krishna", roomNo: "113", roomType: "Luxury", checkIn: "23-Aug-2026", checkOut: "25-Aug-2026", guests: 2, amount: 22000, bookingStatus: "Checked Out", paymentStatus: "Paid" },
+        { bookingId: "BK557876", customerName: "Keerthi Suresh", roomNo: "114", roomType: "Deluxe", checkIn: "24-Aug-2026", checkOut: "26-Aug-2026", guests: 1, amount: 14000, bookingStatus: "Checked Out", paymentStatus: "Paid" },
+        { bookingId: "BK557877", customerName: "Manoj Kumar", roomNo: "115", roomType: "Luxury", checkIn: "25-Aug-2026", checkOut: "28-Aug-2026", guests: 2, amount: 30000, bookingStatus: "Checked Out", paymentStatus: "Paid" },
+        { bookingId: "BK557878", customerName: "Harika Roy", roomNo: "116", roomType: "Suite", checkIn: "26-Aug-2026", checkOut: "29-Aug-2026", guests: 3, amount: 48000, bookingStatus: "Checked Out", paymentStatus: "Paid" },
+        { bookingId: "BK557879", customerName: "Rohit Sharma", roomNo: "117", roomType: "Deluxe", checkIn: "27-Aug-2026", checkOut: "30-Aug-2026", guests: 1, amount: 16000, bookingStatus: "Checked Out", paymentStatus: "Paid" },
 
-    const names = [
-        "Ravi Kumar", "Priya", "Ramesh", "Suresh", "Anjali",
-        "Kiran", "Lakshmi", "Rahul", "Sneha", "Arjun",
-        "Pooja", "Vijay", "Swathi", "Naveen", "Divya",
-        "Sai Kumar", "Keerthi", "Manoj", "Harika", "Rohit"
+        // 5 Pending / Confirmed Bookings
+        { bookingId: "BK557880", customerName: "Nagamani", roomNo: "222", roomType: "Deluxe", checkIn: "04-Sep-2026", checkOut: "06-Sep-2026", guests: 2, amount: 8000, bookingStatus: "Pending", paymentStatus: "Pending" },
+        { bookingId: "BK557881", customerName: "Lokesh Chandra", roomNo: "215", roomType: "Luxury", checkIn: "05-Sep-2026", checkOut: "07-Sep-2026", guests: 1, amount: 24000, bookingStatus: "Pending", paymentStatus: "Pending" },
+        { bookingId: "BK557882", customerName: "Keerthana Roy", roomNo: "210", roomType: "Suite", checkIn: "06-Sep-2026", checkOut: "08-Sep-2026", guests: 3, amount: 32000, bookingStatus: "Pending", paymentStatus: "Pending" },
+        { bookingId: "BK557883", customerName: "Abhishek Varma", roomNo: "211", roomType: "Luxury", checkIn: "07-Sep-2026", checkOut: "09-Sep-2026", guests: 2, amount: 20000, bookingStatus: "Pending", paymentStatus: "Pending" },
+        { bookingId: "BK557884", customerName: "Mounika S", roomNo: "212", roomType: "Deluxe", checkIn: "08-Sep-2026", checkOut: "10-Sep-2026", guests: 1, amount: 12000, bookingStatus: "Pending", paymentStatus: "Pending" }
     ];
 
-    const roomTypes = ["Luxury", "Deluxe", "Suite"];
+    const customers = sampleBookings.map((b, idx) => ({
+        customerId: `CUS${String(idx + 1).padStart(3, "0")}`,
+        customerName: b.customerName,
+        phone: `9876543${String(idx + 10).padStart(3, "0")}`,
+        email: `${b.customerName.toLowerCase().replace(/\s+/g, "")}@gmail.com`,
+        roomType: b.roomType,
+        roomNo: b.roomNo,
+        type: idx % 3 === 0 ? "VIP" : "Regular",
+        totalBookings: 1 + (idx % 3),
+        lastBooking: b.checkIn,
+        status: idx === 4 ? "Inactive" : "Active",
+        bookingId: b.bookingId
+    }));
 
-    const today = new Date();
-
-    function formatDate(date) {
-        const months = [
-            "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-        ];
-
-        return String(date.getDate()).padStart(2, "0") +
-            "-" +
-            months[date.getMonth()] +
-            "-" +
-            date.getFullYear();
-    }
-
-    function addDays(date, days) {
-        const newDate = new Date(date);
-        newDate.setDate(newDate.getDate() + days);
-        return newDate;
-    }
-
-    for (let i = 1; i <= 85; i++) {
-        let status;
-        let checkIn;
-        let checkOut;
-
-        if (i <= 12) {
-            status = "Confirmed";
-            checkIn = formatDate(today);
-            checkOut = formatDate(addDays(today, 2));
-        } else if (i <= 65) {
-            status = "Confirmed";
-            const oldDate = addDays(today, -(i - 12));
-            checkIn = formatDate(oldDate);
-            checkOut = formatDate(addDays(oldDate, 2));
-        } else if (i <= 73) {
-            status = "Cancelled";
-            const oldDate = addDays(today, -(i - 20));
-            checkIn = formatDate(oldDate);
-            checkOut = formatDate(addDays(oldDate, 2));
-        } else {
-            status = "Pending";
-            const futureDate = addDays(today, i - 60);
-            checkIn = formatDate(futureDate);
-            checkOut = formatDate(addDays(futureDate, 2));
+    writeAppData({
+        bookings: sampleBookings,
+        customers: customers,
+        dashboard: {
+            totalBookings: 25,
+            totalCustomers: 25,
+            totalRevenue: 245000
         }
-
-        const name = names[(i - 1) % names.length];
-        const roomType = roomTypes[(i - 1) % roomTypes.length];
-        const roomNo = 101 + ((i - 1) % 248);
-        const guests = 1 + ((i - 1) % 4);
-        const priceMap = {
-            Luxury: 12000,
-            Deluxe: 8000,
-            Suite: 16000
-        };
-        const amount = priceMap[roomType] * guests;
-        const paymentStatus = i % 2 === 0 ? "Paid" : "Pending";
-        const bookingId = `BK${String(26210 + i).padStart(6, "0")}`;
-
-        const row = document.createElement("tr");
-        row.dataset.bookingId = bookingId;
-        row.innerHTML = `
-            <td>${bookingId}</td>
-            <td>${name}</td>
-            <td>${roomNo}</td>
-            <td>${roomType}</td>
-            <td>${checkIn}</td>
-            <td>${checkOut}</td>
-            <td>${guests}</td>
-            <td>₹${Number(amount).toLocaleString("en-IN")}</td>
-            <td>${status}</td>
-            <td>${paymentStatus}</td>
-            <td>
-                <button type="button" class="edit-booking-btn">Edit</button>
-                <button type="button" class="delete-booking-btn">Delete</button>
-            </td>
-        `;
-
-        tbody.appendChild(row);
-    }
-
-    writeAppData({ bookings: [], customers: [], dashboard: { totalBookings: 0, totalCustomers: 0, totalRevenue: 0 } });
-    setTimeout(() => {
-        const fallbackBookings = Array.from(tbody.querySelectorAll("tr")).map((row) => ({
-            bookingId: row.dataset.bookingId,
-            customerName: row.cells[1]?.textContent.trim(),
-            roomNo: row.cells[2]?.textContent.trim(),
-            roomType: row.cells[3]?.textContent.trim(),
-            checkIn: row.cells[4]?.textContent.trim(),
-            checkOut: row.cells[5]?.textContent.trim(),
-            guests: row.cells[6]?.textContent.trim(),
-            amount: row.cells[7]?.textContent.replace(/[₹,]/g, "").trim(),
-            bookingStatus: row.cells[8]?.textContent.trim(),
-            paymentStatus: row.cells[9]?.textContent.trim()
-        }));
-
-        syncSharedBookingData(fallbackBookings[0]);
-        if (fallbackBookings.length > 1) {
-            fallbackBookings.slice(1).forEach((booking) => syncSharedBookingData(booking));
-        }
-    }, 0);
+    generateBookingData();
 }
 
 generateBookingData();
@@ -2418,3 +2362,471 @@ document.addEventListener("change", function(e) {
 document.addEventListener("DOMContentLoaded", function() {
     refreshAllDashboardDataAndViews();
 });
+
+/* ==========================================================================
+   PAGE-SPECIFIC RENDERERS, FILTERS AND ACTIONS FOR NEW 5 PAGES
+   ========================================================================== */
+
+// 1. CUSTOMERS PAGE
+function renderCustomersPageTable() {
+    const tbody = document.getElementById("customersPageTableBody");
+    if (!tbody) return;
+
+    const appData = readAppData();
+    const customers = appData.customers || [];
+    
+    tbody.innerHTML = "";
+    
+    customers.forEach((c, idx) => {
+        const row = document.createElement("tr");
+        const cId = c.customerId || `CUS${String(idx + 1).padStart(3, "0")}`;
+        row.innerHTML = `
+            <td>${cId}</td>
+            <td><strong>${c.customerName || "Guest"}</strong></td>
+            <td>${c.phone || "9876543210"}</td>
+            <td>${c.email || (c.customerName ? c.customerName.toLowerCase().replace(/\s+/g, "") + "@gmail.com" : "guest@gmail.com")}</td>
+            <td><span class="status-pill status-blue">${c.type || "Regular"}</span></td>
+            <td>${c.totalBookings || 1}</td>
+            <td>${c.lastBooking || "29-Aug-2026"}</td>
+            <td><span class="status-pill ${c.status === 'Inactive' ? 'status-orange' : 'status-green'}">${c.status || "Active"}</span></td>
+            <td>
+                <button type="button" class="action-btn btn-view" onclick="openViewModal('${c.bookingId || cId}')">View</button>
+                <button type="button" class="action-btn btn-edit" onclick="openEditModal('${c.bookingId || cId}')">Edit</button>
+                <button type="button" class="action-btn btn-delete" onclick="deleteBooking('${c.bookingId || cId}')">Delete</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function filterCustomers() {
+    const searchVal = (document.getElementById("searchCustomerInput")?.value || "").toLowerCase().trim();
+    const typeVal = document.getElementById("customerTypeFilter")?.value || "";
+    const rows = document.querySelectorAll("#customersPageTableBody tr");
+
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        const typeCell = row.cells[4]?.innerText.trim() || "";
+        
+        const matchesSearch = !searchVal || text.includes(searchVal);
+        const matchesType = !typeVal || typeCell === typeVal;
+
+        row.style.display = matchesSearch && matchesType ? "" : "none";
+    });
+}
+
+function openAddCustomerModal() {
+    const modal = document.getElementById("addCustomerModalOverlay");
+    if (modal) modal.style.display = "flex";
+}
+
+function closeAddCustomerModal() {
+    const modal = document.getElementById("addCustomerModalOverlay");
+    if (modal) modal.style.display = "none";
+}
+
+function saveNewCustomer() {
+    const name = document.getElementById("addCustName")?.value.trim();
+    const phone = document.getElementById("addCustPhone")?.value.trim();
+    const email = document.getElementById("addCustEmail")?.value.trim();
+    const type = document.getElementById("addCustType")?.value || "Regular";
+
+    if (!name || !phone) {
+        alert("Please enter Customer Name and Phone Number.");
+        return;
+    }
+
+    const appData = readAppData();
+    const newCust = {
+        customerId: `CUS${String(appData.customers.length + 1).padStart(3, "0")}`,
+        customerName: name,
+        phone: phone,
+        email: email || `${name.toLowerCase().replace(/\s+/g, "")}@gmail.com`,
+        type: type,
+        totalBookings: 1,
+        lastBooking: "06-Sep-2026",
+        status: "Active"
+    };
+
+    appData.customers.unshift(newCust);
+    writeAppData(appData);
+    refreshAllDashboardDataAndViews();
+    closeAddCustomerModal();
+    alert("Customer added successfully!");
+}
+
+// 2. CHECK-IN PAGE
+function renderCheckInPageTable() {
+    const tbody = document.getElementById("checkInPageTableBody");
+    if (!tbody) return;
+
+    const appData = readAppData();
+    const checkIns = (appData.bookings || []).filter(b => b.bookingStatus === "Checked In" || b.bookingStatus === "Confirmed");
+    
+    tbody.innerHTML = "";
+
+    checkIns.forEach((item, index) => {
+        const chkId = item.checkInId || `CHK${String(index + 1).padStart(3, "0")}`;
+        const isCheckedIn = item.bookingStatus === "Checked In";
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${chkId}</td>
+            <td>${item.bookingId}</td>
+            <td><strong>${item.customerName || "Guest"}</strong></td>
+            <td>${item.roomNo || "101"}</td>
+            <td>${item.roomType || "Luxury"}</td>
+            <td>${item.checkIn || "29-Aug-2026"}</td>
+            <td>${item.checkOut || "31-Aug-2026"}</td>
+            <td>${item.guests || 1}</td>
+            <td><span class="status-pill ${isCheckedIn ? 'status-green' : 'status-orange'}">${item.bookingStatus || "Confirmed"}</span></td>
+            <td>
+                ${isCheckedIn 
+                    ? `<button type="button" class="action-btn btn-view" onclick="openViewModal('${item.bookingId}')">View</button>`
+                    : `<button type="button" class="action-btn btn-checkin" onclick="confirmCheckInAction('${item.bookingId}')">Check-In</button>`
+                }
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function confirmCheckInAction(bookingId) {
+    const appData = readAppData();
+    const booking = appData.bookings.find(b => b.bookingId === bookingId);
+    if (booking) {
+        booking.bookingStatus = "Checked In";
+        writeAppData(appData);
+        refreshAllDashboardDataAndViews();
+        alert(`Guest checked in successfully for Booking ${bookingId}!`);
+    }
+}
+
+function filterCheckInsPage() {
+    const searchVal = (document.getElementById("searchCheckInInput")?.value || "").toLowerCase().trim();
+    const dateVal = document.getElementById("checkInDateFilter")?.value || "";
+    const rows = document.querySelectorAll("#checkInPageTableBody tr");
+
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        const checkInDate = row.cells[5]?.innerText.trim() || "";
+
+        const matchesSearch = !searchVal || text.includes(searchVal);
+        const matchesDate = !dateVal || checkInDate === dateVal;
+
+        row.style.display = matchesSearch && matchesDate ? "" : "none";
+    });
+}
+
+function openAddCheckInModal() {
+    const modal = document.getElementById("addCheckInModalOverlay");
+    if (modal) modal.style.display = "flex";
+}
+
+function closeAddCheckInModal() {
+    const modal = document.getElementById("addCheckInModalOverlay");
+    if (modal) modal.style.display = "none";
+}
+
+function saveNewCheckIn() {
+    const name = document.getElementById("addChkName")?.value.trim();
+    const roomNo = document.getElementById("addChkRoomNo")?.value.trim();
+    const roomType = document.getElementById("addChkRoomType")?.value || "Luxury";
+    const checkInDate = document.getElementById("addChkDate")?.value.trim() || "29-Aug-2026";
+    const checkOutDate = document.getElementById("addChkOutDate")?.value.trim() || "31-Aug-2026";
+    const guests = Number(document.getElementById("addChkGuests")?.value || 1);
+
+    if (!name || !roomNo) {
+        alert("Please enter Guest Name and Room Number.");
+        return;
+    }
+
+    const bookingId = `BK${String(Math.floor(100000 + Math.random() * 900000))}`;
+    const newBooking = {
+        bookingId: bookingId,
+        customerName: name,
+        roomNo: roomNo,
+        roomType: roomType,
+        checkIn: checkInDate,
+        checkOut: checkOutDate,
+        guests: guests,
+        amount: roomType === "Suite" ? 15000 : roomType === "Luxury" ? 10000 : 7000,
+        bookingStatus: "Checked In",
+        paymentStatus: "Paid"
+    };
+
+    syncSharedBookingData(newBooking);
+    refreshAllDashboardDataAndViews();
+    closeAddCheckInModal();
+    alert(`Check-in recorded successfully for ${name} (Booking ${bookingId})!`);
+}
+
+// 3. CHECK-OUT PAGE
+function renderCheckOutPageTable() {
+    const tbody = document.getElementById("checkOutPageTableBody");
+    if (!tbody) return;
+
+    const appData = readAppData();
+    const checkOuts = appData.bookings || [];
+
+    tbody.innerHTML = "";
+
+    checkOuts.forEach((item, index) => {
+        const coutId = `COT${String(index + 1).padStart(3, "0")}`;
+        const isCheckedOut = item.bookingStatus === "Checked Out";
+        const roomAmt = Number(item.amount || 10000);
+        const extraCharges = Math.round(roomAmt * 0.1);
+        const totalAmt = roomAmt + extraCharges;
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${coutId}</td>
+            <td>${item.bookingId}</td>
+            <td><strong>${item.customerName || "Guest"}</strong></td>
+            <td>${item.roomNo || "101"}</td>
+            <td>${item.roomType || "Luxury"}</td>
+            <td>${item.checkOut || "31-Aug-2026"}</td>
+            <td>${item.guests || 1}</td>
+            <td>₹${roomAmt.toLocaleString("en-IN")}</td>
+            <td>₹${totalAmt.toLocaleString("en-IN")}</td>
+            <td><span class="status-pill ${isCheckedOut ? 'status-green' : 'status-orange'}">${isCheckedOut ? 'Checked-Out' : 'Pending'}</span></td>
+            <td>
+                ${isCheckedOut 
+                    ? `<button type="button" class="action-btn btn-view" onclick="openViewModal('${item.bookingId}')">View</button>`
+                    : `<button type="button" class="action-btn btn-checkout" onclick="checkoutBooking('${item.bookingId}')">Check-Out</button>`
+                }
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function filterCheckOutsPage() {
+    const searchVal = (document.getElementById("searchCheckOutInput")?.value || "").toLowerCase().trim();
+    const dateVal = document.getElementById("checkOutDateFilter")?.value || "";
+    const rows = document.querySelectorAll("#checkOutPageTableBody tr");
+
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        const checkOutDate = row.cells[5]?.innerText.trim() || "";
+
+        const matchesSearch = !searchVal || text.includes(searchVal);
+        const matchesDate = !dateVal || checkOutDate === dateVal;
+
+        row.style.display = matchesSearch && matchesDate ? "" : "none";
+    });
+}
+
+function openAddCheckOutModal() {
+    const modal = document.getElementById("addCheckOutModalOverlay");
+    if (modal) modal.style.display = "flex";
+}
+
+function closeAddCheckOutModal() {
+    const modal = document.getElementById("addCheckOutModalOverlay");
+    if (modal) modal.style.display = "none";
+}
+
+function saveNewCheckOut() {
+    const bookingId = document.getElementById("addCoutBookingId")?.value.trim();
+    if (!bookingId) {
+        alert("Please enter Booking ID.");
+        return;
+    }
+
+    checkoutBooking(bookingId);
+    closeAddCheckOutModal();
+}
+
+// 4. PAYMENTS PAGE
+function renderPaymentsPageTable() {
+    const tbody = document.getElementById("paymentsPageTableBody");
+    if (!tbody) return;
+
+    const appData = readAppData();
+    const bookings = appData.bookings || [];
+
+    tbody.innerHTML = "";
+
+    bookings.forEach((item, index) => {
+        const payId = `PAY${String(index + 1).padStart(3, "0")}`;
+        const roomAmt = Number(item.amount || 10000);
+        const extraCharges = Math.round(roomAmt * 0.1);
+        const discount = 0;
+        const totalAmt = roomAmt + extraCharges - discount;
+        const method = index % 3 === 0 ? "Card" : index % 3 === 1 ? "UPI" : "Cash";
+        const isPaid = item.paymentStatus === "Paid";
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${payId}</td>
+            <td>${item.bookingId}</td>
+            <td><strong>${item.customerName || "Guest"}</strong></td>
+            <td>${item.checkOut || "31-Aug-2026"}</td>
+            <td>₹${roomAmt.toLocaleString("en-IN")}</td>
+            <td>₹${extraCharges.toLocaleString("en-IN")}</td>
+            <td>₹${discount}</td>
+            <td><strong>₹${totalAmt.toLocaleString("en-IN")}</strong></td>
+            <td>${method}</td>
+            <td><span class="status-pill ${isPaid ? 'status-green' : 'status-orange'}">${isPaid ? 'Paid' : 'Pending'}</span></td>
+            <td>
+                <button type="button" class="action-btn btn-view" onclick="openInvoiceModal('${item.bookingId}')">View</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function filterPaymentsPage() {
+    const searchVal = (document.getElementById("searchPaymentInput")?.value || "").toLowerCase().trim();
+    const dateVal = document.getElementById("paymentDateFilter")?.value || "";
+    const rows = document.querySelectorAll("#paymentsPageTableBody tr");
+
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        const payDate = row.cells[3]?.innerText.trim() || "";
+
+        const matchesSearch = !searchVal || text.includes(searchVal);
+        const matchesDate = !dateVal || payDate === dateVal;
+
+        row.style.display = matchesSearch && matchesDate ? "" : "none";
+    });
+}
+
+function openAddPaymentModal() {
+    const modal = document.getElementById("addPaymentModalOverlay");
+    if (modal) modal.style.display = "flex";
+}
+
+function closeAddPaymentModal() {
+    const modal = document.getElementById("addPaymentModalOverlay");
+    if (modal) modal.style.display = "none";
+}
+
+function saveNewPayment() {
+    const bookingId = document.getElementById("addPayBookingId")?.value.trim();
+    const amount = Number(document.getElementById("addPayAmount")?.value || 0);
+    const method = document.getElementById("addPayMethod")?.value || "Card";
+
+    if (!bookingId || !amount) {
+        alert("Please fill Booking ID and Amount.");
+        return;
+    }
+
+    const appData = readAppData();
+    const booking = appData.bookings.find(b => b.bookingId === bookingId);
+    if (booking) {
+        booking.paymentStatus = "Paid";
+        writeAppData(appData);
+    }
+
+    refreshAllDashboardDataAndViews();
+    closeAddPaymentModal();
+    alert(`Payment of ₹${amount.toLocaleString("en-IN")} recorded successfully via ${method}!`);
+}
+
+// 5. REVIEWS PAGE
+function getStoredReviews() {
+    try {
+        const saved = JSON.parse(localStorage.getItem("sayoraReviews")) || [];
+        if (Array.isArray(saved) && saved.length > 0) return saved;
+
+        const defaultReviews = [
+            { id: "REV001", name: "Sindhu", bookingId: "BK557680", roomNo: "105", rating: 5, review: "Excellent stay and wonderful hospitality!", date: "31-Aug-2026", status: "Published" },
+            { id: "REV002", name: "Ravi Kumar", bookingId: "BK557879", roomNo: "101", rating: 5, review: "Very good service and quick check-in.", date: "31-Aug-2026", status: "Published" },
+            { id: "REV003", name: "Priya Sharma", bookingId: "BK557878", roomNo: "102", rating: 4, review: "Clean rooms and nice room service.", date: "31-Aug-2026", status: "Published" },
+            { id: "REV004", name: "Anjali Mehta", bookingId: "BK557877", roomNo: "201", rating: 5, review: "Amazing experience, will visit again!", date: "01-Sep-2026", status: "Published" },
+            { id: "REV005", name: "Mohan Reddy", bookingId: "BK557876", roomNo: "221", rating: 3, review: "Average food quality, room was good.", date: "01-Sep-2026", status: "Pending" }
+        ];
+        localStorage.setItem("sayoraReviews", JSON.stringify(defaultReviews));
+        return defaultReviews;
+    } catch(e) {
+        return [];
+    }
+}
+
+function renderReviewsPageTable() {
+    const tbody = document.getElementById("reviewsPageTableBody");
+    if (!tbody) return;
+
+    const reviews = getStoredReviews();
+    tbody.innerHTML = "";
+
+    reviews.forEach((r) => {
+        const stars = "★".repeat(r.rating || 5) + "☆".repeat(5 - (r.rating || 5));
+        const isPublished = r.status === "Published";
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${r.id}</td>
+            <td><strong>${r.name || "Guest"}</strong></td>
+            <td>${r.bookingId || "BK557860"}</td>
+            <td>${r.roomNo || "105"}</td>
+            <td style="color: #f59e0b; font-size: 16px;">${stars}</td>
+            <td>${r.review || "Great experience"}</td>
+            <td>${r.date || "31-Aug-2026"}</td>
+            <td><span class="status-pill ${isPublished ? 'status-green' : 'status-orange'}">${r.status || 'Published'}</span></td>
+            <td>
+                <button type="button" class="action-btn btn-view" onclick="openReplyModal('${r.id}')">Reply</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function filterReviewsPage() {
+    const searchVal = (document.getElementById("searchReviewInput")?.value || "").toLowerCase().trim();
+    const ratingVal = document.getElementById("ratingFilter")?.value || "";
+    const rows = document.querySelectorAll("#reviewsPageTableBody tr");
+
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        const starsCell = row.cells[4]?.innerText.trim() || "";
+        const starCount = (starsCell.match(/★/g) || []).length;
+
+        const matchesSearch = !searchVal || text.includes(searchVal);
+        const matchesRating = !ratingVal || String(starCount) === ratingVal;
+
+        row.style.display = matchesSearch && matchesRating ? "" : "none";
+    });
+}
+
+function openAddReviewModal() {
+    const modal = document.getElementById("addReviewModalOverlay");
+    if (modal) modal.style.display = "flex";
+}
+
+function closeAddReviewModal() {
+    const modal = document.getElementById("addReviewModalOverlay");
+    if (modal) modal.style.display = "none";
+}
+
+function saveNewReview() {
+    const name = document.getElementById("addRevName")?.value.trim();
+    const bookingId = document.getElementById("addRevBookingId")?.value.trim() || "BK557860";
+    const roomNo = document.getElementById("addRevRoomNo")?.value.trim() || "101";
+    const rating = Number(document.getElementById("addRevRating")?.value || 5);
+    const comment = document.getElementById("addRevComment")?.value.trim();
+
+    if (!name || !comment) {
+        alert("Please enter Name and Review comment.");
+        return;
+    }
+
+    const reviews = getStoredReviews();
+    const newRev = {
+        id: `REV${String(reviews.length + 1).padStart(3, "0")}`,
+        name: name,
+        bookingId: bookingId,
+        roomNo: roomNo,
+        rating: rating,
+        review: comment,
+        date: "06-Sep-2026",
+        status: "Published"
+    };
+
+    reviews.unshift(newRev);
+    localStorage.setItem("sayoraReviews", JSON.stringify(reviews));
+    renderReviewsPageTable();
+    closeAddReviewModal();
+    alert("Review submitted successfully!");
+}

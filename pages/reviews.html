@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Reviews - Sayora Hotels</title>
+    <link rel="stylesheet" href="../css/shared_pages.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <img src="../images/logo.jpg" alt="Sayora Hotels Logo">
+                <h2>SAYORA HOTELS</h2>
+            </div>
+            <ul class="nav-links">
+                <li><a href="../home.html">Home</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="rooms.html">Manage Rooms</a></li>
+                <li><a href="bookings.html">Bookings</a></li>
+                <li><a href="customers.html">Customers</a></li>
+                <li><a href="checkin.html">Check-In</a></li>
+                <li><a href="checkout.html">Check-Out</a></li>
+                <li><a href="#">Staff</a></li>
+                <li><a href="payments.html">Payments</a></li>
+                <li><a href="reviews.html" class="active">Reviews</a></li>
+                <li><a href="../index.html">Logout</a></li>
+            </ul>
+            <div class="profile-icon">
+                <i class="fa-solid fa-circle-user"></i>
+            </div>
+        </nav>
+    </header>
+
+    <div class="page-container">
+        <!-- Page Header Block -->
+        <div class="page-header-block">
+            <div class="header-title-group">
+                <h1>Customer Reviews</h1>
+                <p>View and manage customer reviews</p>
+            </div>
+            <button class="action-add-btn" style="background:#0d9488;" onclick="openAddReviewModal()"><i class="fa-solid fa-plus"></i> Add Review</button>
+        </div>
+
+        <!-- Filter Card -->
+        <div class="filter-card">
+            <div class="search-input-wrapper">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchReview" placeholder="Search by customer name..." onkeyup="filterReviewsPage()">
+            </div>
+            <select class="filter-select" id="ratingFilter" onchange="filterReviewsPage()">
+                <option value="">All Ratings</option>
+                <option value="5">5 Stars</option>
+                <option value="4">4 Stars</option>
+                <option value="3">3 Stars</option>
+            </select>
+        </div>
+
+        <!-- Table Card -->
+        <div class="table-card">
+            <div class="table-responsive">
+                <table class="custom-table theme-teal">
+                    <thead>
+                        <tr>
+                            <th>Review ID</th>
+                            <th>Customer Name</th>
+                            <th>Booking ID</th>
+                            <th>Room No.</th>
+                            <th>Rating</th>
+                            <th>Review</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reviewsPageTableBody">
+                        <!-- Populated dynamically by script.js -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination-block">
+                <button class="page-num-btn">&lt;</button>
+                <button class="page-num-btn active">1</button>
+                <button class="page-num-btn">2</button>
+                <button class="page-num-btn">3</button>
+                <button class="page-num-btn">&gt;</button>
+            </div>
+        </div>
+
+        <!-- Bottom Flow Box -->
+        <div class="bottom-flow-card flow-teal">
+            <h3>Review Flow</h3>
+            <p>After a guest completes their stay, they can submit a review and rating. Reviews help improve service quality.</p>
+        </div>
+    </div>
+
+    <!-- ADD REVIEW MODAL -->
+    <div id="addReviewModalOverlay" class="app-modal-overlay">
+        <div class="app-modal-card">
+            <div class="app-modal-header">
+                <h3><i class="fa-solid fa-star"></i> Add Customer Review</h3>
+                <button class="app-modal-close-btn" onclick="closeAddReviewModal()">&times;</button>
+            </div>
+            <form class="app-modal-form" onsubmit="event.preventDefault(); saveNewReview();">
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Customer Name</label>
+                        <input type="text" id="revCustName" required placeholder="Guest Name">
+                    </div>
+                    <div class="form-group">
+                        <label>Booking ID</label>
+                        <input type="text" id="revBookingId" required placeholder="BK557860">
+                    </div>
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Room No.</label>
+                        <input type="text" id="revRoomNo" required placeholder="105">
+                    </div>
+                    <div class="form-group">
+                        <label>Rating</label>
+                        <select id="revRating">
+                            <option value="★★★★★">★★★★★ (5 Stars)</option>
+                            <option value="★★★★☆">★★★★☆ (4 Stars)</option>
+                            <option value="★★★☆☆">★★★☆☆ (3 Stars)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Review Comment</label>
+                    <textarea id="revComment" required placeholder="Write guest feedback..." style="height:80px;"></textarea>
+                </div>
+                <div class="app-modal-footer">
+                    <button type="button" class="btn-secondary-action" onclick="closeAddReviewModal()">Cancel</button>
+                    <button type="submit" class="btn-primary-action" style="background:#0d9488;">Submit Review</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- REPLY TO REVIEW MODAL -->
+    <div id="replyModalOverlay" class="app-modal-overlay">
+        <div class="app-modal-card">
+            <div class="app-modal-header">
+                <h3><i class="fa-solid fa-reply"></i> Reply to Guest Review</h3>
+                <button class="app-modal-close-btn" onclick="closeReplyModal()">&times;</button>
+            </div>
+            <form class="app-modal-form" onsubmit="event.preventDefault(); confirmReplyReview();">
+                <input type="hidden" id="replyReviewId">
+                <div class="form-group">
+                    <label>Review From</label>
+                    <input type="text" id="replyReviewerName" readonly style="background:#f1f5f9;">
+                </div>
+                <div class="form-group">
+                    <label>Guest Comment</label>
+                    <textarea id="replyReviewComment" readonly style="background:#f1f5f9; height: 70px;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Management Reply</label>
+                    <textarea id="replyText" placeholder="Type your response here..." required style="height: 100px;"></textarea>
+                </div>
+                <div class="app-modal-footer">
+                    <button type="button" class="btn-secondary-action" onclick="closeReplyModal()">Cancel</button>
+                    <button type="submit" class="btn-primary-action" style="background:#0d9488;">Post Reply</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+</body>
+
+</html>

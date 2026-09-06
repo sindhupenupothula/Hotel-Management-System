@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check-In List - Sayora Hotels</title>
+    <link rel="stylesheet" href="../css/shared_pages.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <img src="../images/logo.jpg" alt="Sayora Hotels Logo">
+                <h2>SAYORA HOTELS</h2>
+            </div>
+            <ul class="nav-links">
+                <li><a href="../home.html">Home</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="rooms.html">Manage Rooms</a></li>
+                <li><a href="bookings.html">Bookings</a></li>
+                <li><a href="customers.html">Customers</a></li>
+                <li><a href="checkin.html" class="active">Check-In</a></li>
+                <li><a href="checkout.html">Check-Out</a></li>
+                <li><a href="#">Staff</a></li>
+                <li><a href="payments.html">Payments</a></li>
+                <li><a href="reviews.html">Reviews</a></li>
+                <li><a href="../index.html">Logout</a></li>
+            </ul>
+            <div class="profile-icon">
+                <i class="fa-solid fa-circle-user"></i>
+            </div>
+        </nav>
+    </header>
+
+    <div class="page-container">
+        <!-- Page Header Block -->
+        <div class="page-header-block">
+            <div class="header-title-group">
+                <h1>Check-In List</h1>
+                <p>List of confirmed bookings ready for check-in</p>
+            </div>
+            <button class="action-add-btn" style="background:#16a34a;" onclick="openNewCheckInModal()"><i class="fa-solid fa-plus"></i> New Check-In</button>
+        </div>
+
+        <!-- Filter Card -->
+        <div class="filter-card">
+            <div class="search-input-wrapper">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchCheckIn" placeholder="Search by booking ID / customer name / room no..." onkeyup="filterCheckInsPage()">
+            </div>
+            <input type="date" class="filter-select" id="checkInDateFilter" onchange="filterCheckInsPage()">
+        </div>
+
+        <!-- Table Card -->
+        <div class="table-card">
+            <div class="table-responsive">
+                <table class="custom-table theme-green">
+                    <thead>
+                        <tr>
+                            <th>Check-In ID</th>
+                            <th>Booking ID</th>
+                            <th>Customer Name</th>
+                            <th>Room No.</th>
+                            <th>Room Type</th>
+                            <th>Check-In Date</th>
+                            <th>Check-Out Date</th>
+                            <th>Guests</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="checkInPageTableBody">
+                        <!-- Populated dynamically by script.js -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination-block">
+                <button class="page-num-btn">&lt;</button>
+                <button class="page-num-btn active">1</button>
+                <button class="page-num-btn">2</button>
+                <button class="page-num-btn">3</button>
+                <button class="page-num-btn">&gt;</button>
+            </div>
+        </div>
+
+        <!-- Bottom Flow Box -->
+        <div class="bottom-flow-card flow-green">
+            <h3>Check-In Flow</h3>
+            <p>When a booking is confirmed, it appears in the Check-In list. Click 'Check-In' to mark the guest as checked-in.</p>
+        </div>
+    </div>
+
+    <!-- NEW CHECK-IN MODAL -->
+    <div id="newCheckInModalOverlay" class="app-modal-overlay">
+        <div class="app-modal-card">
+            <div class="app-modal-header">
+                <h3><i class="fa-solid fa-right-to-bracket"></i> New Check-In Entry</h3>
+                <button class="app-modal-close-btn" onclick="closeNewCheckInModal()">&times;</button>
+            </div>
+            <form class="app-modal-form" onsubmit="event.preventDefault(); saveNewCheckIn();">
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Guest Name</label>
+                        <input type="text" id="ciGuestName" required placeholder="Guest Name">
+                    </div>
+                    <div class="form-group">
+                        <label>Room No.</label>
+                        <input type="text" id="ciRoomNo" required placeholder="Room Number">
+                    </div>
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Room Type</label>
+                        <select id="ciRoomType">
+                            <option value="Luxury">Luxury</option>
+                            <option value="Deluxe">Deluxe</option>
+                            <option value="Suite">Suite</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Guests Count</label>
+                        <input type="number" id="ciGuests" value="2" required>
+                    </div>
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Check-In Date</label>
+                        <input type="text" id="ciCheckInDate" required placeholder="e.g. 31-Aug-2026">
+                    </div>
+                    <div class="form-group">
+                        <label>Check-Out Date</label>
+                        <input type="text" id="ciCheckOutDate" required placeholder="e.g. 02-Sep-2026">
+                    </div>
+                </div>
+                <div class="app-modal-footer">
+                    <button type="button" class="btn-secondary-action" onclick="closeNewCheckInModal()">Cancel</button>
+                    <button type="submit" class="btn-primary-action" style="background:#16a34a;">Check-In Guest</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/script.js"></script>
+</body>
+
+</html>

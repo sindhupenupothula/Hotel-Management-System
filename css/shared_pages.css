@@ -1,0 +1,310 @@
+/* ===== Shared Styles for Customer, Check-In, Check-Out, Payments, Reviews Pages ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #f8fafc;
+    min-height: 100vh;
+    color: #1e293b;
+}
+
+/* Header & Navbar */
+header {
+    background: #0f172a;
+    width: 100%;
+}
+
+.navbar {
+    max-width: 1350px;
+    margin: 0 auto;
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo img {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.logo h2 {
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 20px;
+}
+
+.nav-links a {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: #38bdf8;
+    font-weight: 600;
+}
+
+.profile-icon {
+    color: #ffffff;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Main Container */
+.page-container {
+    max-width: 1350px;
+    margin: 30px auto;
+    padding: 0 24px;
+}
+
+/* Page Header Block */
+.page-header-block {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.header-title-group h1 {
+    font-size: 26px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 6px;
+}
+
+.header-title-group p {
+    font-size: 14px;
+    color: #64748b;
+}
+
+.action-add-btn {
+    background: #2563eb;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+    transition: background 0.2s;
+}
+
+.action-add-btn:hover {
+    background: #1d4ed8;
+}
+
+/* Search & Filter Bar */
+.filter-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.search-input-wrapper {
+    flex: 1;
+    position: relative;
+}
+
+.search-input-wrapper i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+.search-input-wrapper input {
+    width: 100%;
+    padding: 10px 14px 10px 38px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.search-input-wrapper input:focus {
+    border-color: #2563eb;
+}
+
+.filter-select {
+    padding: 10px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #334155;
+    outline: none;
+    background: #ffffff;
+}
+
+/* Data Table Card */
+.table-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    margin-bottom: 24px;
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 13.5px;
+}
+
+.custom-table th {
+    padding: 14px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #ffffff;
+    white-space: nowrap;
+}
+
+/* Header colors per page theme */
+.theme-blue th { background: #2563eb; }
+.theme-green th { background: #16a34a; }
+.theme-purple th { background: #7c3aed; }
+.theme-orange th { background: #ea580c; }
+.theme-teal th { background: #0d9488; }
+
+.custom-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.custom-table tr:hover {
+    background: #f8fafc;
+}
+
+/* Status Pills */
+.pill {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.pill-green { background: #dcfce7; color: #15803d; }
+.pill-red { background: #fee2e2; color: #b91c1c; }
+.pill-orange { background: #ffedd5; color: #c2410c; }
+.pill-blue { background: #dbeafe; color: #1d4ed8; }
+.pill-purple { background: #f3e8ff; color: #6b21a8; }
+.pill-gray { background: #f1f5f9; color: #475569; }
+
+/* Table Action Buttons */
+.tbl-btn {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-right: 4px;
+    transition: background 0.2s;
+}
+
+.tbl-btn-blue { color: #2563eb; }
+.tbl-btn-blue:hover { background: #eff6ff; }
+.tbl-btn-green { color: #16a34a; }
+.tbl-btn-green:hover { background: #f0fdf4; }
+.tbl-btn-red { color: #dc2626; }
+.tbl-btn-red:hover { background: #fef2f2; }
+
+/* Pagination */
+.pagination-block {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 16px;
+    background: #ffffff;
+    border-top: 1px solid #f1f5f9;
+}
+
+.page-num-btn {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.page-num-btn.active {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+}
+
+/* Bottom Flow Card */
+.bottom-flow-card {
+    border-radius: 12px;
+    padding: 20px 24px;
+    border: 1px solid transparent;
+}
+
+.flow-blue { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
+.flow-green { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+.flow-purple { background: #faf5ff; border-color: #e9d5ff; color: #581c87; }
+.flow-orange { background: #fff7ed; border-color: #fed7aa; color: #9a3412; }
+.flow-teal { background: #f0fdfa; border-color: #99f6e4; color: #115e59; }
+
+.bottom-flow-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.bottom-flow-card p {
+    font-size: 13.5px;
+    line-height: 1.5;
+}
