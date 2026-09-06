@@ -2418,8 +2418,185 @@ document.addEventListener("DOMContentLoaded", function() {
    PAGE-SPECIFIC RENDERERS, FILTERS AND ACTIONS FOR NEW 5 PAGES
    ========================================================================== */
 
+/* Dynamic Modal Injector for Cross-Page View / Edit Overlays */
+function ensureGlobalModalsExist() {
+    if (!document.getElementById("viewModalOverlay")) {
+        const viewModalDiv = document.createElement("div");
+        viewModalDiv.id = "viewModalOverlay";
+        viewModalDiv.className = "app-modal-overlay";
+        viewModalDiv.innerHTML = `
+            <div class="app-modal-card">
+                <div class="app-modal-header">
+                    <h3><i class="fa-solid fa-circle-info"></i> Details View</h3>
+                    <button class="app-modal-close-btn" onclick="closeViewModal()">&times;</button>
+                </div>
+                <div id="viewDetailsBody" class="app-modal-body" style="padding: 16px;"></div>
+                <div class="app-modal-footer">
+                    <button type="button" class="btn-primary-action" onclick="closeViewModal()">Close</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(viewModalDiv);
+    }
+
+    if (!document.getElementById("editModalOverlay")) {
+        const editModalDiv = document.createElement("div");
+        editModalDiv.id = "editModalOverlay";
+        editModalDiv.className = "app-modal-overlay";
+        editModalDiv.innerHTML = `
+            <div class="app-modal-card">
+                <div class="app-modal-header">
+                    <h3><i class="fa-solid fa-pen-to-square"></i> Edit Details</h3>
+                    <button class="app-modal-close-btn" onclick="closeEditModal()">&times;</button>
+                </div>
+                <form class="app-modal-form" onsubmit="event.preventDefault(); saveEditBooking();">
+                    <input type="hidden" id="editItemKey">
+                    <input type="hidden" id="editBookingId">
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" id="editGuestName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Room No.</label>
+                            <input type="text" id="editRoomNo" required>
+                        </div>
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label>Room Type</label>
+                            <select id="editRoomType">
+                                <option value="Luxury">Luxury</option>
+                                <option value="Deluxe">Deluxe</option>
+                                <option value="Suite">Suite</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Amount (₹)</label>
+                            <input type="number" id="editAmount" required>
+                        </div>
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label>Check-In Date</label>
+                            <input type="text" id="editCheckIn" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Check-Out Date</label>
+                            <input type="text" id="editCheckOut" required>
+                        </div>
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label>Stay Status</label>
+                            <select id="editBookingStatus">
+                                <option value="Confirmed">Confirmed</option>
+                                <option value="Checked In">Checked In</option>
+                                <option value="Checked Out">Checked Out</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Payment Status</label>
+                            <select id="editPaymentStatus">
+                                <option value="Paid">Paid</option>
+                                <option value="Pending">Pending</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="app-modal-footer">
+                        <button type="button" class="btn-secondary-action" onclick="closeEditModal()">Cancel</button>
+                        <button type="submit" class="btn-primary-action">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        document.body.appendChild(editModalDiv);
+    }
+}
+
+/* Universal Table Pagination Helper */
+const paginationStateMap = {};
+
+function setupTablePagination(tbodyId, paginationId, rowsPerPage = 5) {
+    const tbody = document.getElementById(tbodyId);
+    const paginationContainer = document.getElementById(paginationId);
+    if (!tbody || !paginationContainer) return;
+
+    const allRows = Array.from(tbody.querySelectorAll("tr"));
+    const visibleRows = allRows.filter(row => row.getAttribute("data-filtered-out") !== "true");
+
+    if (visibleRows.length === 0) {
+        paginationContainer.innerHTML = "";
+        return;
+    }
+
+    let currentPage = paginationStateMap[tbodyId] || 1;
+    const totalPages = Math.ceil(visibleRows.length / rowsPerPage) || 1;
+    if (currentPage > totalPages) currentPage = totalPages;
+    paginationStateMap[tbodyId] = currentPage;
+
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+
+    visibleRows.forEach((row, idx) => {
+        if (idx >= start && idx < end) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+
+    allRows.forEach(row => {
+        if (row.getAttribute("data-filtered-out") === "true") {
+            row.style.display = "none";
+        }
+    });
+
+    paginationContainer.innerHTML = "";
+
+    // Prev button
+    const prevBtn = document.createElement("button");
+    prevBtn.className = "page-num-btn";
+    prevBtn.innerHTML = "&lt;";
+    prevBtn.disabled = currentPage === 1;
+    prevBtn.onclick = () => {
+        if (currentPage > 1) {
+            paginationStateMap[tbodyId] = currentPage - 1;
+            setupTablePagination(tbodyId, paginationId, rowsPerPage);
+        }
+    };
+    paginationContainer.appendChild(prevBtn);
+
+    // Numbered buttons
+    for (let i = 1; i <= totalPages; i++) {
+        const pageBtn = document.createElement("button");
+        pageBtn.className = `page-num-btn ${i === currentPage ? "active" : ""}`;
+        pageBtn.innerText = i;
+        pageBtn.onclick = () => {
+            paginationStateMap[tbodyId] = i;
+            setupTablePagination(tbodyId, paginationId, rowsPerPage);
+        };
+        paginationContainer.appendChild(pageBtn);
+    }
+
+    // Next button
+    const nextBtn = document.createElement("button");
+    nextBtn.className = "page-num-btn";
+    nextBtn.innerHTML = "&gt;";
+    nextBtn.disabled = currentPage === totalPages;
+    nextBtn.onclick = () => {
+        if (currentPage < totalPages) {
+            paginationStateMap[tbodyId] = currentPage + 1;
+            setupTablePagination(tbodyId, paginationId, rowsPerPage);
+        }
+    };
+    paginationContainer.appendChild(nextBtn);
+}
+
 // 1. CUSTOMERS PAGE
 function renderCustomersPageTable() {
+    ensureGlobalModalsExist();
     const tbody = document.getElementById("customersPageTableBody");
     if (!tbody) return;
 
@@ -2431,6 +2608,8 @@ function renderCustomersPageTable() {
     customers.forEach((c, idx) => {
         const row = document.createElement("tr");
         const cId = c.customerId || `CUS${String(idx + 1).padStart(3, "0")}`;
+        const bookingId = c.bookingId || `BK557${860 + idx}`;
+
         row.innerHTML = `
             <td>${cId}</td>
             <td><strong>${c.customerName || "Guest"}</strong></td>
@@ -2441,13 +2620,15 @@ function renderCustomersPageTable() {
             <td>${c.lastBooking || "29-Aug-2026"}</td>
             <td><span class="status-pill ${c.status === 'Inactive' ? 'status-orange' : 'status-green'}">${c.status || "Active"}</span></td>
             <td>
-                <button type="button" class="action-btn btn-view" onclick="openViewModal('${c.bookingId || cId}')">View</button>
-                <button type="button" class="action-btn btn-edit" onclick="openEditModal('${c.bookingId || cId}')">Edit</button>
-                <button type="button" class="action-btn btn-delete" onclick="deleteBooking('${c.bookingId || cId}')">Delete</button>
+                <button type="button" class="action-btn btn-view" onclick="openViewModal('${bookingId}')">View</button>
+                <button type="button" class="action-btn btn-edit" onclick="openEditModal('${bookingId}')">Edit</button>
+                <button type="button" class="action-btn btn-delete" onclick="deleteBooking('${bookingId}')">Delete</button>
             </td>
         `;
         tbody.appendChild(row);
     });
+
+    setupTablePagination("customersPageTableBody", "customersPagination", 5);
 }
 
 function filterCustomers() {
@@ -2462,11 +2643,18 @@ function filterCustomers() {
         const matchesSearch = !searchVal || text.includes(searchVal);
         const matchesType = !typeVal || typeCell === typeVal;
 
-        row.style.display = matchesSearch && matchesType ? "" : "none";
+        if (matchesSearch && matchesType) {
+            row.removeAttribute("data-filtered-out");
+        } else {
+            row.setAttribute("data-filtered-out", "true");
+        }
     });
+
+    setupTablePagination("customersPageTableBody", "customersPagination", 5);
 }
 
 function openAddCustomerModal() {
+    ensureGlobalModalsExist();
     const modal = document.getElementById("addCustomerModalOverlay");
     if (modal) modal.style.display = "flex";
 }
@@ -2496,7 +2684,8 @@ function saveNewCustomer() {
         type: type,
         totalBookings: 1,
         lastBooking: "06-Sep-2026",
-        status: "Active"
+        status: "Active",
+        bookingId: `BK${String(Math.floor(100000 + Math.random() * 900000))}`
     };
 
     appData.customers.unshift(newCust);
@@ -2508,6 +2697,7 @@ function saveNewCustomer() {
 
 // 2. CHECK-IN PAGE
 function renderCheckInPageTable() {
+    ensureGlobalModalsExist();
     const tbody = document.getElementById("checkInPageTableBody");
     if (!tbody) return;
 
@@ -2539,6 +2729,8 @@ function renderCheckInPageTable() {
         `;
         tbody.appendChild(row);
     });
+
+    setupTablePagination("checkInPageTableBody", "checkInPagination", 5);
 }
 
 function confirmCheckInAction(bookingId) {
@@ -2564,35 +2756,44 @@ function filterCheckInsPage() {
         const matchesSearch = !searchVal || text.includes(searchVal);
         const matchesDate = !dateVal || checkInDate === dateVal;
 
-        row.style.display = matchesSearch && matchesDate ? "" : "none";
+        if (matchesSearch && matchesDate) {
+            row.removeAttribute("data-filtered-out");
+        } else {
+            row.setAttribute("data-filtered-out", "true");
+        }
     });
+
+    setupTablePagination("checkInPageTableBody", "checkInPagination", 5);
 }
 
 function openAddCheckInModal() {
-    const modal = document.getElementById("addCheckInModalOverlay");
-    if (modal) modal.style.display = "flex";
+    openNewCheckInModal();
 }
 
 function closeAddCheckInModal() {
-    const modal = document.getElementById("addCheckInModalOverlay");
-    if (modal) modal.style.display = "none";
+    closeNewCheckInModal();
 }
 
 function openNewCheckInModal() {
-    openAddCheckInModal();
+    ensureGlobalModalsExist();
+    const modal = document.getElementById("newCheckInModalOverlay") || document.getElementById("addCheckInModalOverlay");
+    if (modal) modal.style.display = "flex";
 }
 
 function closeNewCheckInModal() {
-    closeAddCheckInModal();
+    const modal1 = document.getElementById("newCheckInModalOverlay");
+    const modal2 = document.getElementById("addCheckInModalOverlay");
+    if (modal1) modal1.style.display = "none";
+    if (modal2) modal2.style.display = "none";
 }
 
 function saveNewCheckIn() {
-    const name = document.getElementById("addChkName")?.value.trim();
-    const roomNo = document.getElementById("addChkRoomNo")?.value.trim();
-    const roomType = document.getElementById("addChkRoomType")?.value || "Luxury";
-    const checkInDate = document.getElementById("addChkDate")?.value.trim() || "29-Aug-2026";
-    const checkOutDate = document.getElementById("addChkOutDate")?.value.trim() || "31-Aug-2026";
-    const guests = Number(document.getElementById("addChkGuests")?.value || 1);
+    const name = (document.getElementById("ciGuestName")?.value || document.getElementById("addChkName")?.value || "").trim();
+    const roomNo = (document.getElementById("ciRoomNo")?.value || document.getElementById("addChkRoomNo")?.value || "").trim();
+    const roomType = document.getElementById("ciRoomType")?.value || document.getElementById("addChkRoomType")?.value || "Luxury";
+    const checkInDate = (document.getElementById("ciCheckInDate")?.value || document.getElementById("addChkDate")?.value || "31-Aug-2026").trim();
+    const checkOutDate = (document.getElementById("ciCheckOutDate")?.value || document.getElementById("addChkOutDate")?.value || "02-Sep-2026").trim();
+    const guests = Number(document.getElementById("ciGuests")?.value || document.getElementById("addChkGuests")?.value || 2);
 
     if (!name || !roomNo) {
         alert("Please enter Guest Name and Room Number.");
@@ -2615,12 +2816,13 @@ function saveNewCheckIn() {
 
     syncSharedBookingData(newBooking);
     refreshAllDashboardDataAndViews();
-    closeAddCheckInModal();
+    closeNewCheckInModal();
     alert(`Check-in recorded successfully for ${name} (Booking ${bookingId})!`);
 }
 
 // 3. CHECK-OUT PAGE
 function renderCheckOutPageTable() {
+    ensureGlobalModalsExist();
     const tbody = document.getElementById("checkOutPageTableBody");
     if (!tbody) return;
 
@@ -2657,6 +2859,8 @@ function renderCheckOutPageTable() {
         `;
         tbody.appendChild(row);
     });
+
+    setupTablePagination("checkOutPageTableBody", "checkOutPagination", 5);
 }
 
 function filterCheckOutsPage() {
@@ -2671,41 +2875,86 @@ function filterCheckOutsPage() {
         const matchesSearch = !searchVal || text.includes(searchVal);
         const matchesDate = !dateVal || checkOutDate === dateVal;
 
-        row.style.display = matchesSearch && matchesDate ? "" : "none";
+        if (matchesSearch && matchesDate) {
+            row.removeAttribute("data-filtered-out");
+        } else {
+            row.setAttribute("data-filtered-out", "true");
+        }
     });
+
+    setupTablePagination("checkOutPageTableBody", "checkOutPagination", 5);
 }
 
 function openAddCheckOutModal() {
-    const modal = document.getElementById("addCheckOutModalOverlay");
-    if (modal) modal.style.display = "flex";
+    openNewCheckOutModal();
 }
 
 function closeAddCheckOutModal() {
-    const modal = document.getElementById("addCheckOutModalOverlay");
-    if (modal) modal.style.display = "none";
+    closeNewCheckOutModal();
 }
 
 function openNewCheckOutModal() {
-    openAddCheckOutModal();
+    ensureGlobalModalsExist();
+    const modal = document.getElementById("newCheckOutModalOverlay") || document.getElementById("addCheckOutModalOverlay");
+    const select = document.getElementById("coSelectBooking");
+
+    if (select) {
+        const appData = readAppData();
+        const activeGuests = (appData.bookings || []).filter(b => b.bookingStatus !== "Checked Out" && b.bookingStatus !== "Cancelled");
+        select.innerHTML = activeGuests.length
+            ? activeGuests.map(b => `<option value="${b.bookingId}">${b.customerName || 'Guest'} (${b.bookingId} - Room ${b.roomNo || '101'})</option>`).join("")
+            : `<option value="">No Active Checked-In Guests</option>`;
+        populateCheckOutModalFields();
+    }
+
+    if (modal) modal.style.display = "flex";
 }
 
 function closeNewCheckOutModal() {
-    closeAddCheckOutModal();
+    const modal1 = document.getElementById("newCheckOutModalOverlay");
+    const modal2 = document.getElementById("addCheckOutModalOverlay");
+    if (modal1) modal1.style.display = "none";
+    if (modal2) modal2.style.display = "none";
+}
+
+function populateCheckOutModalFields() {
+    const select = document.getElementById("coSelectBooking");
+    const roomAmtInput = document.getElementById("coRoomAmt");
+    if (!select || !roomAmtInput) return;
+
+    const bookingId = select.value;
+    const appData = readAppData();
+    const b = (appData.bookings || []).find(x => x.bookingId === bookingId);
+
+    const amt = b ? Number(b.amount || 10000) : 10000;
+    roomAmtInput.value = amt;
+    calculateCheckOutTotal();
+}
+
+function calculateCheckOutTotal() {
+    const roomAmt = Number(document.getElementById("coRoomAmt")?.value || 10000);
+    const extra = Number(document.getElementById("coExtraCharges")?.value || 0);
+    const discount = Number(document.getElementById("coDiscount")?.value || 0);
+    const totalInput = document.getElementById("coTotalBill");
+    if (totalInput) {
+        totalInput.value = Math.max(0, roomAmt + extra - discount);
+    }
 }
 
 function saveNewCheckOut() {
-    const bookingId = document.getElementById("addCoutBookingId")?.value.trim();
+    const bookingId = document.getElementById("coSelectBooking")?.value || document.getElementById("addCoutBookingId")?.value.trim();
     if (!bookingId) {
-        alert("Please enter Booking ID.");
+        alert("Please select a valid Booking ID.");
         return;
     }
 
     checkoutBooking(bookingId);
-    closeAddCheckOutModal();
+    closeNewCheckOutModal();
 }
 
 // 4. PAYMENTS PAGE
 function renderPaymentsPageTable() {
+    ensureGlobalModalsExist();
     const tbody = document.getElementById("paymentsPageTableBody");
     if (!tbody) return;
 
@@ -2741,6 +2990,8 @@ function renderPaymentsPageTable() {
         `;
         tbody.appendChild(row);
     });
+
+    setupTablePagination("paymentsPageTableBody", "paymentsPagination", 5);
 }
 
 function filterPaymentsPage() {
@@ -2755,11 +3006,18 @@ function filterPaymentsPage() {
         const matchesSearch = !searchVal || text.includes(searchVal);
         const matchesDate = !dateVal || payDate === dateVal;
 
-        row.style.display = matchesSearch && matchesDate ? "" : "none";
+        if (matchesSearch && matchesDate) {
+            row.removeAttribute("data-filtered-out");
+        } else {
+            row.setAttribute("data-filtered-out", "true");
+        }
     });
+
+    setupTablePagination("paymentsPageTableBody", "paymentsPagination", 5);
 }
 
 function openAddPaymentModal() {
+    ensureGlobalModalsExist();
     const modal = document.getElementById("addPaymentModalOverlay");
     if (modal) modal.style.display = "flex";
 }
@@ -2770,25 +3028,41 @@ function closeAddPaymentModal() {
 }
 
 function saveNewPayment() {
-    const bookingId = document.getElementById("addPayBookingId")?.value.trim();
-    const amount = Number(document.getElementById("addPayAmount")?.value || 0);
-    const method = document.getElementById("addPayMethod")?.value || "Card";
+    const name = (document.getElementById("pmtCustName")?.value || "").trim();
+    const bookingId = (document.getElementById("pmtBookingId")?.value || document.getElementById("addPayBookingId")?.value || "").trim();
+    const roomAmt = Number(document.getElementById("pmtRoomAmt")?.value || document.getElementById("addPayAmount")?.value || 12000);
+    const extra = Number(document.getElementById("pmtExtra")?.value || 1500);
+    const discount = Number(document.getElementById("pmtDiscount")?.value || 0);
+    const method = document.getElementById("pmtMethod")?.value || document.getElementById("addPayMethod")?.value || "Card";
 
-    if (!bookingId || !amount) {
-        alert("Please fill Booking ID and Amount.");
+    if (!bookingId) {
+        alert("Please enter Booking ID.");
         return;
     }
 
     const appData = readAppData();
-    const booking = appData.bookings.find(b => b.bookingId === bookingId);
-    if (booking) {
+    let booking = appData.bookings.find(b => b.bookingId === bookingId);
+    if (!booking) {
+        booking = {
+            bookingId: bookingId,
+            customerName: name || "Guest",
+            roomNo: "105",
+            roomType: "Luxury",
+            checkIn: "29-Aug-2026",
+            checkOut: "31-Aug-2026",
+            amount: roomAmt,
+            bookingStatus: "Checked Out",
+            paymentStatus: "Paid"
+        };
+        appData.bookings.unshift(booking);
+    } else {
         booking.paymentStatus = "Paid";
-        writeAppData(appData);
     }
 
+    writeAppData(appData);
     refreshAllDashboardDataAndViews();
     closeAddPaymentModal();
-    alert(`Payment of ₹${amount.toLocaleString("en-IN")} recorded successfully via ${method}!`);
+    alert(`Payment recorded successfully via ${method}!`);
 }
 
 // 5. REVIEWS PAGE
@@ -2812,6 +3086,7 @@ function getStoredReviews() {
 }
 
 function renderReviewsPageTable() {
+    ensureGlobalModalsExist();
     const tbody = document.getElementById("reviewsPageTableBody");
     if (!tbody) return;
 
@@ -2819,7 +3094,15 @@ function renderReviewsPageTable() {
     tbody.innerHTML = "";
 
     reviews.forEach((r) => {
-        const stars = "★".repeat(r.rating || 5) + "☆".repeat(5 - (r.rating || 5));
+        const count = typeof r.rating === 'number' ? r.rating : (String(r.rating || '').match(/★/g) || []).length || 5;
+        let starsHtml = "";
+        for (let i = 0; i < 5; i++) {
+            if (i < count) {
+                starsHtml += `<i class="fa-solid fa-star" style="color: #f59e0b; font-size: 15px; margin-right: 2px;"></i>`;
+            } else {
+                starsHtml += `<i class="fa-regular fa-star" style="color: #cbd5e1; font-size: 15px; margin-right: 2px;"></i>`;
+            }
+        }
         const isPublished = r.status === "Published";
 
         const row = document.createElement("tr");
@@ -2828,7 +3111,7 @@ function renderReviewsPageTable() {
             <td><strong>${r.name || "Guest"}</strong></td>
             <td>${r.bookingId || "BK557860"}</td>
             <td>${r.roomNo || "105"}</td>
-            <td style="color: #f59e0b; font-size: 16px;">${stars}</td>
+            <td style="white-space: nowrap;">${starsHtml}</td>
             <td>${r.review || "Great experience"}</td>
             <td>${r.date || "31-Aug-2026"}</td>
             <td><span class="status-pill ${isPublished ? 'status-green' : 'status-orange'}">${r.status || 'Published'}</span></td>
@@ -2838,6 +3121,8 @@ function renderReviewsPageTable() {
         `;
         tbody.appendChild(row);
     });
+
+    setupTablePagination("reviewsPageTableBody", "reviewsPagination", 5);
 }
 
 function filterReviewsPage() {
@@ -2847,17 +3132,23 @@ function filterReviewsPage() {
 
     rows.forEach(row => {
         const text = row.innerText.toLowerCase();
-        const starsCell = row.cells[4]?.innerText.trim() || "";
-        const starCount = (starsCell.match(/★/g) || []).length;
+        const starIcons = row.querySelectorAll(".fa-star.fa-solid").length;
 
         const matchesSearch = !searchVal || text.includes(searchVal);
-        const matchesRating = !ratingVal || String(starCount) === ratingVal;
+        const matchesRating = !ratingVal || String(starIcons) === ratingVal;
 
-        row.style.display = matchesSearch && matchesRating ? "" : "none";
+        if (matchesSearch && matchesRating) {
+            row.removeAttribute("data-filtered-out");
+        } else {
+            row.setAttribute("data-filtered-out", "true");
+        }
     });
+
+    setupTablePagination("reviewsPageTableBody", "reviewsPagination", 5);
 }
 
 function openAddReviewModal() {
+    ensureGlobalModalsExist();
     const modal = document.getElementById("addReviewModalOverlay");
     if (modal) modal.style.display = "flex";
 }
@@ -2868,11 +3159,12 @@ function closeAddReviewModal() {
 }
 
 function saveNewReview() {
-    const name = document.getElementById("addRevName")?.value.trim();
-    const bookingId = document.getElementById("addRevBookingId")?.value.trim() || "BK557860";
-    const roomNo = document.getElementById("addRevRoomNo")?.value.trim() || "101";
-    const rating = Number(document.getElementById("addRevRating")?.value || 5);
-    const comment = document.getElementById("addRevComment")?.value.trim();
+    const name = (document.getElementById("revCustName")?.value || document.getElementById("addRevName")?.value || "").trim();
+    const bookingId = (document.getElementById("revBookingId")?.value || document.getElementById("addRevBookingId")?.value || "BK557860").trim();
+    const roomNo = (document.getElementById("revRoomNo")?.value || document.getElementById("addRevRoomNo")?.value || "105").trim();
+    const ratingStr = document.getElementById("revRating")?.value || "5";
+    const ratingNum = ratingStr.includes("★") ? (ratingStr.match(/★/g) || []).length : Number(ratingStr) || 5;
+    const comment = (document.getElementById("revComment")?.value || document.getElementById("addRevComment")?.value || "").trim();
 
     if (!name || !comment) {
         alert("Please enter Name and Review comment.");
@@ -2885,7 +3177,7 @@ function saveNewReview() {
         name: name,
         bookingId: bookingId,
         roomNo: roomNo,
-        rating: rating,
+        rating: ratingNum,
         review: comment,
         date: "06-Sep-2026",
         status: "Published"
@@ -2896,4 +3188,4 @@ function saveNewReview() {
     renderReviewsPageTable();
     closeAddReviewModal();
     alert("Review submitted successfully!");
-}
+}
