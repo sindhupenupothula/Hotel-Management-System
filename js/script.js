@@ -396,18 +396,69 @@ function hideAllDashboardSections() {
 
 function showDashboardHome() {
     hideAllDashboardSections();
-    if (document.getElementById("dashboardHome")) document.getElementById("dashboardHome").style.display = "block";
+    const el = document.getElementById("dashboardHome");
+    if (el) el.style.display = "block";
 }
 
 function showTotalRooms() {
-    document.getElementById("dashboardHome").style.display = "none";
-    document.getElementById("totalRoomsSection").style.display = "block";
-    document.getElementById("availableRoomsSection").style.display = "none";
+    hideAllDashboardSections();
+    const el = document.getElementById("totalRoomsSection");
+    if (el) el.style.display = "block";
 }
+
 function showAvailableRooms() {
-    document.getElementById("dashboardHome").style.display = "none";
-    document.getElementById("totalRoomsSection").style.display = "none";
-    document.getElementById("availableRoomsSection").style.display = "block";
+    hideAllDashboardSections();
+    const el = document.getElementById("availableRoomsSection");
+    if (el) el.style.display = "block";
+}
+
+function showOccupiedRooms() {
+    hideAllDashboardSections();
+    const el = document.getElementById("occupiedRoomsSection");
+    if (el) el.style.display = "block";
+    renderSharedCheckInsTable();
+}
+
+function showTotalBookings() {
+    hideAllDashboardSections();
+    const el = document.getElementById("totalBookingsSection");
+    if (el) el.style.display = "block";
+    renderSharedBookingsTable();
+}
+
+function showTotalCustomers() {
+    hideAllDashboardSections();
+    const el = document.getElementById("totalCustomersSection");
+    if (el) el.style.display = "block";
+    renderSharedCustomersTable();
+}
+
+function showCheckedOutRooms() {
+    hideAllDashboardSections();
+    const el = document.getElementById("checkedOutSection");
+    if (el) el.style.display = "block";
+    renderSharedCheckedOutTable();
+}
+
+function showTotalRevenue() {
+    hideAllDashboardSections();
+    const el = document.getElementById("totalRevenueSection");
+    if (el) el.style.display = "block";
+    renderSharedRevenueTable();
+}
+
+function showPendingPayments() {
+    hideAllDashboardSections();
+    const el = document.getElementById("pendingPaymentsSection");
+    if (el) el.style.display = "block";
+    renderSharedPendingPaymentsTable();
+}
+
+function showTotalReviews() {
+    hideAllDashboardSections();
+    const el = document.getElementById("totalReviewsSection");
+    if (el) el.style.display = "block";
+    renderSharedReviewsTable();
 }
 function renderRecentTablesOnDashboardHome() {
     const appData = readAppData();
@@ -977,7 +1028,7 @@ function generateBookingData() {
             totalCustomers: 25,
             totalRevenue: 245000
         }
-    generateBookingData();
+    });
 }
 
 generateBookingData();
@@ -2400,7 +2451,7 @@ function renderCustomersPageTable() {
 }
 
 function filterCustomers() {
-    const searchVal = (document.getElementById("searchCustomerInput")?.value || "").toLowerCase().trim();
+    const searchVal = (document.getElementById("searchCustomer")?.value || document.getElementById("searchCustomerInput")?.value || "").toLowerCase().trim();
     const typeVal = document.getElementById("customerTypeFilter")?.value || "";
     const rows = document.querySelectorAll("#customersPageTableBody tr");
 
@@ -2502,7 +2553,7 @@ function confirmCheckInAction(bookingId) {
 }
 
 function filterCheckInsPage() {
-    const searchVal = (document.getElementById("searchCheckInInput")?.value || "").toLowerCase().trim();
+    const searchVal = (document.getElementById("searchCheckIn")?.value || document.getElementById("searchCheckInInput")?.value || "").toLowerCase().trim();
     const dateVal = document.getElementById("checkInDateFilter")?.value || "";
     const rows = document.querySelectorAll("#checkInPageTableBody tr");
 
@@ -2525,6 +2576,14 @@ function openAddCheckInModal() {
 function closeAddCheckInModal() {
     const modal = document.getElementById("addCheckInModalOverlay");
     if (modal) modal.style.display = "none";
+}
+
+function openNewCheckInModal() {
+    openAddCheckInModal();
+}
+
+function closeNewCheckInModal() {
+    closeAddCheckInModal();
 }
 
 function saveNewCheckIn() {
@@ -2601,7 +2660,7 @@ function renderCheckOutPageTable() {
 }
 
 function filterCheckOutsPage() {
-    const searchVal = (document.getElementById("searchCheckOutInput")?.value || "").toLowerCase().trim();
+    const searchVal = (document.getElementById("searchCheckOut")?.value || document.getElementById("searchCheckOutInput")?.value || "").toLowerCase().trim();
     const dateVal = document.getElementById("checkOutDateFilter")?.value || "";
     const rows = document.querySelectorAll("#checkOutPageTableBody tr");
 
@@ -2624,6 +2683,14 @@ function openAddCheckOutModal() {
 function closeAddCheckOutModal() {
     const modal = document.getElementById("addCheckOutModalOverlay");
     if (modal) modal.style.display = "none";
+}
+
+function openNewCheckOutModal() {
+    openAddCheckOutModal();
+}
+
+function closeNewCheckOutModal() {
+    closeAddCheckOutModal();
 }
 
 function saveNewCheckOut() {
@@ -2677,7 +2744,7 @@ function renderPaymentsPageTable() {
 }
 
 function filterPaymentsPage() {
-    const searchVal = (document.getElementById("searchPaymentInput")?.value || "").toLowerCase().trim();
+    const searchVal = (document.getElementById("searchPayment")?.value || document.getElementById("searchPaymentInput")?.value || "").toLowerCase().trim();
     const dateVal = document.getElementById("paymentDateFilter")?.value || "";
     const rows = document.querySelectorAll("#paymentsPageTableBody tr");
 
@@ -2774,7 +2841,7 @@ function renderReviewsPageTable() {
 }
 
 function filterReviewsPage() {
-    const searchVal = (document.getElementById("searchReviewInput")?.value || "").toLowerCase().trim();
+    const searchVal = (document.getElementById("searchReview")?.value || document.getElementById("searchReviewInput")?.value || "").toLowerCase().trim();
     const ratingVal = document.getElementById("ratingFilter")?.value || "";
     const rows = document.querySelectorAll("#reviewsPageTableBody tr");
 
