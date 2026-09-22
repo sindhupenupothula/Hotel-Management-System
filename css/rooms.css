@@ -70,6 +70,8 @@ header {
     color: white;
     font-size: 14px;
     font-weight: 600;
+    padding: 6px 2px;
+    white-space: nowrap;
 }
 
 .nav-links a:hover,
@@ -235,10 +237,11 @@ header {
 }
 
 .room-list-card th {
-    background: #eef3fb;
-    padding: 13px 10px;
+    background: #1d68e1;
+    padding: 14px 12px;
     text-align: left;
-    color: #374151;
+    color: #ffffff;
+    font-weight: 600;
 }
 
 .room-list-card td {

@@ -56,14 +56,17 @@ body {
 .main-nav {
     display: flex;
     align-items: center;
-    gap: 22px;
+    gap: 28px;
 }
 
 .main-nav a {
     color: white;
     text-decoration: none;
     font-size: 14px;
+    font-weight: 600;
+    padding: 6px 2px;
     transition: 0.2s;
+    white-space: nowrap;
 }
 
 .main-nav a:hover {
@@ -252,15 +255,17 @@ body {
 }
 
 .booking-table thead {
-    background: #159bd3;
+    background: #1d68e1;
     color: white;
 }
 
 .booking-table th {
+    background: #1d68e1;
+    color: white;
     padding: 14px 10px;
     text-align: left;
-    font-size: 12px;
-    font-weight: bold;
+    font-size: 13px;
+    font-weight: 600;
     white-space: nowrap;
 }
 
