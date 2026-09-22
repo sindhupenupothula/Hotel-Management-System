@@ -101,9 +101,18 @@
         <!-- ROOM LIST -->
         <section class="room-list-card">
 
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom:12px;">
-                <h2 style="margin:0;">☷ Room List</h2>
-                <div id="roomPaginationTop" class="pagination" style="margin:0; padding:0;"></div>
+            <div class="room-list-header">
+                <div class="room-header-title">
+                    <h2>☷ Room List</h2>
+                    <span id="roomCountBadge" class="room-count-badge">Showing Rooms</span>
+                </div>
+                <div id="roomPaginationTop" class="pagination">
+                    <button class="page-num-btn first-btn" onclick="currentRoomPage=1;renderRoomPagination()" title="First Page">&laquo;</button>
+                    <button class="page-num-btn prev-btn" onclick="previousRoomPage()" title="Previous Page">&lt;</button>
+                    <button class="page-num-btn active" onclick="currentRoomPage=1;renderRoomPagination()">1</button>
+                    <button class="page-num-btn next-btn" onclick="nextRoomPage()" title="Next Page">&gt;</button>
+                    <button class="page-num-btn last-btn" onclick="nextRoomPage()" title="Last Page">&raquo;</button>
+                </div>
             </div>
 
             <table>
@@ -176,10 +185,14 @@
                 </tbody>
 
             </table>
-            <div id="roomPagination" class="pagination">
-                <button class="prev-btn" id="roomPrevBtn" onclick="previousRoomPage()" title="Previous Page">&lt;</button>
-                <button class="active">1</button>
-                <button class="next-btn" id="roomNextBtn" onclick="nextRoomPage()" title="Next Page">&gt;</button>
+            <div class="room-bottom-pagination-wrapper">
+                <div id="roomPagination" class="pagination">
+                    <button class="page-num-btn first-btn" onclick="currentRoomPage=1;renderRoomPagination()" title="First Page">&laquo;</button>
+                    <button class="page-num-btn prev-btn" id="roomPrevBtn" onclick="previousRoomPage()" title="Previous Page">&lt;</button>
+                    <button class="page-num-btn active" onclick="currentRoomPage=1;renderRoomPagination()">1</button>
+                    <button class="page-num-btn next-btn" id="roomNextBtn" onclick="nextRoomPage()" title="Next Page">&gt;</button>
+                    <button class="page-num-btn last-btn" onclick="nextRoomPage()" title="Last Page">&raquo;</button>
+                </div>
             </div>
         </section>
 

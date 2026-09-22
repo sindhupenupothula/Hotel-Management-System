@@ -1738,9 +1738,10 @@ function nextRoomPage() {
 
 function renderRoomPagination() {
     const tbody = document.getElementById("roomTableBody");
-    const pagination = document.getElementById("roomPagination");
+    const bottomPag = document.getElementById("roomPagination");
+    const topPag = document.getElementById("roomPaginationTop");
 
-    if (!tbody || !pagination) return;
+    if (!tbody) return;
 
     const allRows = Array.from(tbody.querySelectorAll("tr"));
     const visibleRows = allRows.filter(r => r.getAttribute("data-filtered-out") !== "true");
@@ -1766,11 +1767,33 @@ function renderRoomPagination() {
         row.style.display = (index >= start && index < end) ? "table-row" : "none";
     });
 
-    const pagContainers = [document.getElementById("roomPagination"), document.getElementById("roomPaginationTop")].filter(Boolean);
+    // Update room count badge if present
+    const countBadge = document.getElementById("roomCountBadge");
+    if (countBadge) {
+        const startItem = visibleRows.length === 0 ? 0 : start + 1;
+        const endItem = Math.min(end, visibleRows.length);
+        countBadge.textContent = `Showing ${startItem}–${endItem} of ${visibleRows.length} rooms (Page ${currentRoomPage} of ${totalPages})`;
+    }
+
+    const pagContainers = [topPag, bottomPag].filter(Boolean);
     if (pagContainers.length === 0) return;
 
     pagContainers.forEach(container => {
         container.innerHTML = "";
+
+        // First button (<<)
+        const firstButton = document.createElement("button");
+        firstButton.className = "page-num-btn first-btn";
+        firstButton.innerHTML = "&laquo;";
+        firstButton.title = "First Page (1)";
+        firstButton.disabled = currentRoomPage === 1;
+        firstButton.onclick = function() {
+            if (currentRoomPage > 1) {
+                currentRoomPage = 1;
+                renderRoomPagination();
+            }
+        };
+        container.appendChild(firstButton);
 
         // Previous button (<)
         const previousButton = document.createElement("button");
@@ -1786,17 +1809,36 @@ function renderRoomPagination() {
         };
         container.appendChild(previousButton);
 
-        // Page buttons starting from 1
-        for (let page = 1; page <= totalPages; page++) {
-            const pageButton = document.createElement("button");
-            pageButton.className = "page-num-btn" + (page === currentRoomPage ? " active" : "");
-            pageButton.innerText = page;
-            pageButton.onclick = function() {
-                currentRoomPage = page;
-                renderRoomPagination();
-            };
-            container.appendChild(pageButton);
+        // Compute page window so page 1 is always visible first
+        const pageItems = [];
+        if (totalPages <= 7) {
+            for (let i = 1; i <= totalPages; i++) pageItems.push(i);
+        } else if (currentRoomPage <= 4) {
+            pageItems.push(1, 2, 3, 4, 5, "...", totalPages);
+        } else if (currentRoomPage >= totalPages - 3) {
+            pageItems.push(1, "...", totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+        } else {
+            pageItems.push(1, "...", currentRoomPage - 1, currentRoomPage, currentRoomPage + 1, "...", totalPages);
         }
+
+        // Render page buttons starting from 1
+        pageItems.forEach(item => {
+            if (item === "...") {
+                const dots = document.createElement("span");
+                dots.className = "pagination-dots";
+                dots.innerText = "...";
+                container.appendChild(dots);
+            } else {
+                const pageButton = document.createElement("button");
+                pageButton.className = "page-num-btn" + (item === currentRoomPage ? " active" : "");
+                pageButton.innerText = item;
+                pageButton.onclick = function() {
+                    currentRoomPage = item;
+                    renderRoomPagination();
+                };
+                container.appendChild(pageButton);
+            }
+        });
 
         // Next button (>)
         const nextButton = document.createElement("button");
@@ -1811,6 +1853,20 @@ function renderRoomPagination() {
             }
         };
         container.appendChild(nextButton);
+
+        // Last button (>>)
+        const lastButton = document.createElement("button");
+        lastButton.className = "page-num-btn last-btn";
+        lastButton.innerHTML = "&raquo;";
+        lastButton.title = `Last Page (${totalPages})`;
+        lastButton.disabled = currentRoomPage === totalPages;
+        lastButton.onclick = function() {
+            if (currentRoomPage < totalPages) {
+                currentRoomPage = totalPages;
+                renderRoomPagination();
+            }
+        };
+        container.appendChild(lastButton);
     });
 }
 
@@ -3400,3 +3456,10 @@ function saveNewReview() {
     closeAddReviewModal();
     alert("Review submitted successfully!");
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+    if (document.getElementById("roomTableBody")) {
+        loadSavedRooms();
+        renderRoomPagination();
+    }
+});
