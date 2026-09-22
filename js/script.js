@@ -71,8 +71,11 @@ function syncSharedBookingData(bookingEntry) {
         normalizedBooking.bookingId = createBookingIdFromSeed(Date.now());
     }
 
+    const oldBooking = appData.bookings.find(item => item.bookingId === normalizedBooking.bookingId);
+    const oldRoomNo = oldBooking ? String(oldBooking.roomNo) : null;
+
     const guestSeed = normalizedBooking.customerName || normalizedBooking.phone || "Guest";
-    const customerId = normalizedBooking.customerId || `C${String(guestSeed).toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${String(Date.now()).slice(-4)}`;
+    const customerId = normalizedBooking.customerId || `CUS${String(appData.customers.length + 1).padStart(3, "0")}`;
     normalizedBooking.customerId = customerId;
 
     const mergedBookings = appData.bookings.filter(item => item.bookingId !== normalizedBooking.bookingId);
@@ -82,15 +85,19 @@ function syncSharedBookingData(bookingEntry) {
         customerId,
         customerName: normalizedBooking.customerName,
         phone: normalizedBooking.phone || "9876543210",
+        email: normalizedBooking.email || `${normalizedBooking.customerName.toLowerCase().replace(/\s+/g, "")}@gmail.com`,
         roomNo: normalizedBooking.roomNo,
         roomType: normalizedBooking.roomType,
-        guests: normalizedBooking.guests,
-        status: normalizedBooking.bookingStatus || "Confirmed",
+        guests: normalizedBooking.guests || 2,
+        status: normalizedBooking.bookingStatus === "Checked Out" ? "Inactive" : "Active",
         paymentStatus: normalizedBooking.paymentStatus || "Paid",
         bookingId: normalizedBooking.bookingId,
         checkIn: normalizedBooking.checkIn,
         checkOut: normalizedBooking.checkOut,
-        amount: normalizedBooking.amount
+        amount: normalizedBooking.amount,
+        type: "Regular",
+        totalBookings: 1,
+        lastBooking: normalizedBooking.checkIn
     };
 
     const mergedCustomers = appData.customers.filter(item => item.bookingId !== normalizedBooking.bookingId && item.customerId !== customerId && item.customerName !== normalizedBooking.customerName);
@@ -109,15 +116,81 @@ function syncSharedBookingData(bookingEntry) {
     };
 
     writeAppData(sharedData);
-    renderSharedBookingsTable();
-    renderSharedCustomersTable();
+
+    // Sync room status in sayoraRooms
+    try {
+        const rooms = getRoomList();
+        if (oldRoomNo && oldRoomNo !== String(normalizedBooking.roomNo)) {
+            const oldR = rooms.find(r => String(r.roomNo) === oldRoomNo);
+            if (oldR && oldR.status !== "Maintenance") oldR.status = "Available";
+        }
+        const newR = rooms.find(r => String(r.roomNo) === String(normalizedBooking.roomNo));
+        if (newR && newR.status !== "Maintenance") {
+            newR.status = normalizedBooking.bookingStatus === "Checked In" ? "Occupied" : "Booked";
+        }
+        localStorage.setItem("sayoraRooms", JSON.stringify(rooms));
+    } catch (e) {}
+
+    // Sync payment invoice in sayoraPayments
+    try {
+        const payments = JSON.parse(localStorage.getItem("sayoraPayments") || "[]");
+        const existingPayIdx = payments.findIndex(p => p.bookingId === normalizedBooking.bookingId);
+        const invoiceRecord = {
+            invoiceId: `INV-${String(normalizedBooking.bookingId).replace(/\D/g, "").slice(-4) || '1044'}`,
+            bookingId: normalizedBooking.bookingId,
+            guestName: normalizedBooking.customerName,
+            roomNo: normalizedBooking.roomNo,
+            amount: Number(normalizedBooking.amount || 10000),
+            date: normalizedBooking.checkIn,
+            method: "Card",
+            status: normalizedBooking.paymentStatus === "Paid" ? "Completed" : "Pending"
+        };
+        if (existingPayIdx !== -1) {
+            payments[existingPayIdx] = invoiceRecord;
+        } else {
+            payments.unshift(invoiceRecord);
+        }
+        localStorage.setItem("sayoraPayments", JSON.stringify(payments));
+    } catch (e) {}
+
+    syncRoomOccupancyWithBookings();
+    refreshAllDashboardDataAndViews();
     return sharedData;
 }
 
 function removeSharedBookingData(bookingId) {
     const appData = readAppData();
+    const targetBooking = (appData.bookings || []).find(item => item.bookingId === bookingId);
+    const customerName = targetBooking?.customerName;
+    const roomNo = targetBooking?.roomNo;
+
     const remainingBookings = appData.bookings.filter(item => item.bookingId !== bookingId);
-    const remainingCustomers = appData.customers.filter(item => item.bookingId !== bookingId);
+    const remainingCustomers = appData.customers.filter(item => {
+        if (item.bookingId === bookingId) return false;
+        if (customerName && item.customerName === customerName) {
+            return remainingBookings.some(b => b.customerName === customerName);
+        }
+        return true;
+    });
+
+    // Free room in sayoraRooms
+    if (roomNo) {
+        try {
+            const rooms = getRoomList();
+            const r = rooms.find(room => String(room.roomNo) === String(roomNo));
+            if (r && r.status !== "Maintenance") {
+                r.status = "Available";
+                localStorage.setItem("sayoraRooms", JSON.stringify(rooms));
+            }
+        } catch (e) {}
+    }
+
+    // Clean up sayoraPayments
+    try {
+        const payments = JSON.parse(localStorage.getItem("sayoraPayments") || "[]");
+        const filteredPayments = payments.filter(p => p.bookingId !== bookingId);
+        localStorage.setItem("sayoraPayments", JSON.stringify(filteredPayments));
+    } catch (e) {}
 
     const updatedData = {
         bookings: remainingBookings,
@@ -130,8 +203,8 @@ function removeSharedBookingData(bookingId) {
     };
 
     writeAppData(updatedData);
-    renderSharedBookingsTable();
-    renderSharedCustomersTable();
+    syncRoomOccupancyWithBookings();
+    refreshAllDashboardDataAndViews();
     return updatedData;
 }
 
@@ -160,6 +233,10 @@ function refreshAllDashboardDataAndViews() {
     renderCheckOutPageTable();
     renderPaymentsPageTable();
     renderReviewsPageTable();
+
+    if (typeof loadSavedRooms === "function" && document.getElementById("roomTableBody")) {
+        loadSavedRooms();
+    }
 }
 
 function renderSharedBookingsTable() {
@@ -1924,38 +2001,22 @@ if (addRoomInput) {
 }
 
 function loadSavedRooms() {
-
-    const savedRooms =
-        JSON.parse(localStorage.getItem("sayoraRooms")) || [];
-
     const tbody = document.getElementById("roomTableBody");
-
     if (!tbody) return;
-    const deletedRooms =
-        JSON.parse(localStorage.getItem("deletedRooms")) || [];
 
-    const existingRows = tbody.querySelectorAll("tr");
+    if (typeof syncRoomOccupancyWithBookings === "function") {
+        syncRoomOccupancyWithBookings();
+    }
 
-    existingRows.forEach(function (row) {
+    const savedRooms = JSON.parse(localStorage.getItem("sayoraRooms")) || [];
+    const deletedRooms = JSON.parse(localStorage.getItem("deletedRooms")) || [];
 
-        const roomNo = row.cells[0]?.innerText.trim();
-
-        if (deletedRooms.includes(String(roomNo))) {
-            row.remove();
-        }
-    });
+    tbody.innerHTML = "";
     savedRooms.forEach(function (room) {
-
-        // Avoid duplicate rooms
-        const existingRows = tbody.querySelectorAll("tr");
-
-        for (const row of existingRows) {
-            if (row.cells[0]?.innerText.trim() === room.roomNo) {
-                return;
-            }
-        }
+        if (deletedRooms.includes(String(room.roomNo))) return;
 
         const row = document.createElement("tr");
+        const statusClean = String(room.status || "Available").toLowerCase();
 
         row.innerHTML = `
             <td>${room.roomNo}</td>
@@ -1963,8 +2024,8 @@ function loadSavedRooms() {
             <td>${room.floor}</td>
             <td>₹${Number(room.price).toLocaleString("en-IN")}</td>
             <td>
-                <span class="status ${room.status.toLowerCase()}">
-                    ${room.status}
+                <span class="status ${statusClean}">
+                    ${room.status || "Available"}
                 </span>
             </td>
             <td>
@@ -2241,18 +2302,32 @@ function saveEditBooking() {
     const bookingId = document.getElementById("editBookingId").value;
     const appData = readAppData();
     let index = appData.bookings.findIndex(b => b.bookingId === bookingId);
+    const oldBooking = index !== -1 ? appData.bookings[index] : null;
+    const oldRoomNo = oldBooking ? String(oldBooking.roomNo) : null;
+    const oldCustomerName = oldBooking ? oldBooking.customerName : null;
+
+    const newGuestName = document.getElementById("editGuestName").value.trim();
+    const newRoomNo = document.getElementById("editRoomNo").value.trim();
+    const newRoomType = document.getElementById("editRoomType").value;
+    const newCheckIn = document.getElementById("editCheckIn").value.trim();
+    const newCheckOut = document.getElementById("editCheckOut").value.trim();
+    const newAmount = Number(document.getElementById("editAmount").value);
+    const newBookingStatus = document.getElementById("editBookingStatus").value;
+    const newPaymentStatus = document.getElementById("editPaymentStatus").value;
 
     const updatedBooking = {
         bookingId: bookingId,
-        customerName: document.getElementById("editGuestName").value.trim(),
-        roomNo: document.getElementById("editRoomNo").value.trim(),
-        roomType: document.getElementById("editRoomType").value,
-        checkIn: document.getElementById("editCheckIn").value.trim(),
-        checkOut: document.getElementById("editCheckOut").value.trim(),
-        amount: Number(document.getElementById("editAmount").value),
-        bookingStatus: document.getElementById("editBookingStatus").value,
-        paymentStatus: document.getElementById("editPaymentStatus").value,
-        guests: 2
+        customerName: newGuestName,
+        roomNo: newRoomNo,
+        roomType: newRoomType,
+        checkIn: newCheckIn,
+        checkOut: newCheckOut,
+        amount: newAmount,
+        bookingStatus: newBookingStatus,
+        paymentStatus: newPaymentStatus,
+        guests: oldBooking?.guests || 2,
+        phone: oldBooking?.phone || "9876543210",
+        email: oldBooking?.email || `${newGuestName.toLowerCase().replace(/\s+/g, "")}@gmail.com`
     };
 
     if (index !== -1) {
@@ -2261,23 +2336,111 @@ function saveEditBooking() {
         appData.bookings.push(updatedBooking);
     }
 
+    // CASCADE UPDATE to Customer Record in appData.customers
+    let custIndex = appData.customers.findIndex(c => c.bookingId === bookingId || (oldCustomerName && c.customerName === oldCustomerName));
+    if (custIndex !== -1) {
+        appData.customers[custIndex] = {
+            ...appData.customers[custIndex],
+            customerName: newGuestName,
+            roomNo: newRoomNo,
+            roomType: newRoomType,
+            status: newBookingStatus === "Checked Out" ? "Inactive" : "Active",
+            lastBooking: newCheckIn,
+            amount: newAmount,
+            email: updatedBooking.email
+        };
+    }
+
+    // Update Room Occupancy in sayoraRooms
+    try {
+        const rooms = getRoomList();
+        if (oldRoomNo && oldRoomNo !== newRoomNo) {
+            const oldR = rooms.find(r => String(r.roomNo) === oldRoomNo);
+            if (oldR && oldR.status !== "Maintenance") oldR.status = "Available";
+        }
+        const newR = rooms.find(r => String(r.roomNo) === newRoomNo);
+        if (newR && newR.status !== "Maintenance") {
+            newR.status = (newBookingStatus === "Checked In") ? "Occupied" : (newBookingStatus === "Checked Out") ? "Available" : "Booked";
+        }
+        localStorage.setItem("sayoraRooms", JSON.stringify(rooms));
+    } catch (e) {}
+
+    // CASCADE UPDATE in sayoraPayments
+    try {
+        const payments = JSON.parse(localStorage.getItem("sayoraPayments") || "[]");
+        const payIdx = payments.findIndex(p => p.bookingId === bookingId || (oldCustomerName && p.guestName === oldCustomerName));
+        if (payIdx !== -1) {
+            payments[payIdx].guestName = newGuestName;
+            payments[payIdx].roomNo = newRoomNo;
+            payments[payIdx].amount = newAmount;
+            payments[payIdx].status = newPaymentStatus === "Paid" ? "Completed" : "Pending";
+            localStorage.setItem("sayoraPayments", JSON.stringify(payments));
+        }
+    } catch (e) {}
+
+    appData.dashboard = {
+        totalBookings: appData.bookings.length,
+        totalCustomers: appData.customers.length,
+        totalRevenue: appData.bookings.reduce((sum, item) => sum + Number(item.amount || 0), 0)
+    };
+
     writeAppData(appData);
+    syncRoomOccupancyWithBookings();
     refreshAllDashboardDataAndViews();
     closeEditModal();
-    alert("Booking " + bookingId + " saved successfully!");
+    alert("Details updated everywhere across Bookings, Customers, Rooms, and Dashboard!");
 }
 
 function deleteCustomer(customerId) {
     if (!customerId) return;
-    if (confirm("Are you sure you want to delete this customer?")) {
+    if (confirm("Are you sure you want to delete this customer? This will remove all associated bookings and free their room.")) {
         const appData = readAppData();
         const targetCust = (appData.customers || []).find(c => c.customerId === customerId || c.id === customerId);
         const bookingId = targetCust?.bookingId;
+        const customerName = targetCust?.customerName;
 
+        // Collect all rooms to free
+        const roomsToFree = [];
+        (appData.bookings || []).forEach(b => {
+            if ((bookingId && b.bookingId === bookingId) || (customerName && b.customerName === customerName)) {
+                if (b.roomNo) roomsToFree.push(String(b.roomNo));
+            }
+        });
+
+        // Filter out customer
         appData.customers = (appData.customers || []).filter(c => c.customerId !== customerId && c.id !== customerId);
-        if (bookingId) {
-            appData.bookings = (appData.bookings || []).filter(b => b.bookingId !== bookingId);
+
+        // Filter out bookings
+        appData.bookings = (appData.bookings || []).filter(b => {
+            if (bookingId && b.bookingId === bookingId) return false;
+            if (customerName && b.customerName === customerName) return false;
+            return true;
+        });
+
+        // Free rooms in sayoraRooms
+        if (roomsToFree.length > 0) {
+            try {
+                const rooms = getRoomList();
+                rooms.forEach(r => {
+                    if (roomsToFree.includes(String(r.roomNo)) && r.status !== "Maintenance") {
+                        r.status = "Available";
+                    }
+                });
+                localStorage.setItem("sayoraRooms", JSON.stringify(rooms));
+            } catch (e) {}
         }
+
+        // Clean up sayoraPayments
+        try {
+            const payments = JSON.parse(localStorage.getItem("sayoraPayments") || "[]");
+            const filteredPayments = payments.filter(p => {
+                if (bookingId && p.bookingId === bookingId) return false;
+                if (customerName && p.guestName === customerName) return false;
+                return true;
+            });
+            localStorage.setItem("sayoraPayments", JSON.stringify(filteredPayments));
+        } catch (e) {}
+
         appData.dashboard = {
             totalBookings: appData.bookings.length,
             totalCustomers: appData.customers.length,
@@ -2285,11 +2448,9 @@ function deleteCustomer(customerId) {
         };
 
         writeAppData(appData);
-        localStorage.setItem("sayoraCustomers", JSON.stringify(appData.customers));
-        localStorage.setItem("sayoraBookings", JSON.stringify(appData.bookings));
-
+        syncRoomOccupancyWithBookings();
         refreshAllDashboardDataAndViews();
-        alert("Customer deleted successfully!");
+        alert("Customer, bookings, and associated records deleted everywhere successfully! Room is now available.");
     }
 }
 
@@ -2307,15 +2468,18 @@ function checkoutBooking(bookingId) {
         const booking = appData.bookings.find(b => b.bookingId === bookingId);
         if (booking) {
             booking.bookingStatus = "Checked Out";
+            const cust = appData.customers.find(c => c.bookingId === bookingId || (booking.customerName && c.customerName === booking.customerName));
+            if (cust) cust.status = "Inactive";
             writeAppData(appData);
 
             const rooms = getRoomList();
             const targetRoom = rooms.find(r => String(r.roomNo) === String(booking.roomNo));
-            if (targetRoom) {
+            if (targetRoom && targetRoom.status !== "Maintenance") {
                 targetRoom.status = "Available";
                 localStorage.setItem("sayoraRooms", JSON.stringify(rooms));
             }
 
+            syncRoomOccupancyWithBookings();
             refreshAllDashboardDataAndViews();
             alert("Guest checked out successfully! Room " + booking.roomNo + " is now available.");
         }
@@ -2854,11 +3018,41 @@ function validateCustomerPhone(val) {
     return true;
 }
 
+function autoFillCustomerRoomType() {
+    const roomInput = document.getElementById("addCustRoomNo");
+    const typeSelect = document.getElementById("addCustRoomType");
+    if (!roomInput || !typeSelect) return;
+    const val = roomInput.value.trim();
+    if (!val) return;
+
+    const rooms = (typeof getRoomList === "function") ? getRoomList() : [];
+    const matched = rooms.find(r => String(r.roomNo).trim() === val);
+    if (matched && matched.roomType) {
+        typeSelect.value = matched.roomType;
+        return;
+    }
+
+    const num = parseInt(val, 10);
+    if (!isNaN(num)) {
+        if ((num >= 101 && num <= 117) || (num >= 201 && num <= 217) || (num >= 301 && num <= 316)) {
+            typeSelect.value = "Luxury";
+        } else if ((num >= 118 && num <= 134) || (num >= 218 && num <= 234) || (num >= 317 && num <= 332)) {
+            typeSelect.value = "Deluxe";
+        } else if ((num >= 135 && num <= 150) || (num >= 235 && num <= 250) || (num >= 333 && num <= 350)) {
+            typeSelect.value = "Suite";
+        }
+    }
+}
+
 function saveNewCustomer() {
     const name = document.getElementById("addCustName")?.value.trim();
     const phone = document.getElementById("addCustPhone")?.value.trim();
     const email = document.getElementById("addCustEmail")?.value.trim();
     const type = document.getElementById("addCustType")?.value || "Regular";
+    let roomNo = document.getElementById("addCustRoomNo")?.value.trim();
+    const roomType = document.getElementById("addCustRoomType")?.value || "Luxury";
+    const rawCheckIn = document.getElementById("addCustCheckIn")?.value;
+    const rawCheckOut = document.getElementById("addCustCheckOut")?.value;
 
     if (!name || !phone) {
         alert("Please enter Customer Name and Phone Number.");
@@ -2867,29 +3061,56 @@ function saveNewCustomer() {
 
     const cleanPhone = String(phone).replace(/[^0-9]/g, "");
     if (cleanPhone.length !== 10) {
-        alert("Please check the Phone No.");
+        alert("Please check the Phone No. It must be 10 digits.");
         document.getElementById("addCustPhone")?.focus();
         return;
     }
 
     const appData = readAppData();
-    const newCust = {
-        customerId: `CUS${String(appData.customers.length + 1).padStart(3, "0")}`,
+
+    // If room number not provided, auto-assign first available room
+    if (!roomNo) {
+        const rooms = getRoomList();
+        const availableRoom = rooms.find(r => r.status === "Available" && (!roomType || r.roomType === roomType)) || rooms.find(r => r.status === "Available");
+        roomNo = availableRoom ? String(availableRoom.roomNo) : "101";
+    }
+
+    // Check if room is already booked
+    const isBooked = (appData.bookings || []).some(b =>
+        String(b.roomNo).trim() === String(roomNo).trim() &&
+        (b.bookingStatus === "Confirmed" || b.bookingStatus === "Checked In" || b.bookingStatus === "Pending")
+    );
+    if (isBooked) {
+        alert(`Room ${roomNo} is already booked! Please choose another room number.`);
+        document.getElementById("addCustRoomNo")?.focus();
+        return;
+    }
+
+    const checkInDate = formatBookingDate(rawCheckIn) || "31-Aug-2026";
+    const checkOutDate = formatBookingDate(rawCheckOut) || "02-Sep-2026";
+    const bookingId = `BK${String(Math.floor(100000 + Math.random() * 900000))}`;
+    const amount = roomType === "Suite" ? 15000 : roomType === "Luxury" ? 10000 : 7000;
+
+    const newBookingRecord = {
+        bookingId: bookingId,
         customerName: name,
         phone: cleanPhone,
         email: email || `${name.toLowerCase().replace(/\s+/g, "")}@gmail.com`,
-        type: type,
-        totalBookings: 1,
-        lastBooking: "06-Sep-2026",
-        status: "Active",
-        bookingId: `BK${String(Math.floor(100000 + Math.random() * 900000))}`
+        roomNo: roomNo,
+        roomType: roomType,
+        checkIn: checkInDate,
+        checkOut: checkOutDate,
+        guests: 2,
+        amount: amount,
+        bookingStatus: "Confirmed", // automatically ready for check-in!
+        paymentStatus: "Paid"
     };
 
-    appData.customers.unshift(newCust);
-    writeAppData(appData);
-    refreshAllDashboardDataAndViews();
+    // Use unified cross-page sync
+    syncSharedBookingData(newBookingRecord);
+
     closeAddCustomerModal();
-    alert("Customer added successfully!");
+    alert(`Customer "${name}" added successfully!\nAssigned Room: ${roomNo} (${roomType})\nBooking ID: ${bookingId}\nAutomatically synced to Bookings, Check-In, Rooms, and Dashboard!`);
 }
 
 // 2. CHECK-IN PAGE
@@ -2935,9 +3156,23 @@ function confirmCheckInAction(bookingId) {
     const booking = appData.bookings.find(b => b.bookingId === bookingId);
     if (booking) {
         booking.bookingStatus = "Checked In";
+        const cust = appData.customers.find(c => c.bookingId === bookingId || (booking.customerName && c.customerName === booking.customerName));
+        if (cust) cust.status = "Active";
         writeAppData(appData);
+
+        // Mark room as Occupied in sayoraRooms
+        try {
+            const rooms = getRoomList();
+            const r = rooms.find(room => String(room.roomNo) === String(booking.roomNo));
+            if (r && r.status !== "Maintenance") {
+                r.status = "Occupied";
+                localStorage.setItem("sayoraRooms", JSON.stringify(rooms));
+            }
+        } catch (e) {}
+
+        syncRoomOccupancyWithBookings();
         refreshAllDashboardDataAndViews();
-        alert(`Guest checked in successfully for Booking ${bookingId}!`);
+        alert(`Guest checked in successfully for Booking ${bookingId}! Room ${booking.roomNo} is now Occupied.`);
     }
 }
 
