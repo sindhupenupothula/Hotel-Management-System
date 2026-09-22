@@ -702,7 +702,7 @@ function getStoredReviews() {
     try {
         const saved = JSON.parse(localStorage.getItem("sayoraReviews")) || [];
         if (Array.isArray(saved) && saved.length > 0) return saved;
-    } catch(e){}
+    } catch (e) { }
     const defaultReviews = [
         { id: "REV001", name: "Sindhu Priya", roomType: "Luxury", rating: "★★★★★ (5.0)", comment: "Excellent stay! Clean rooms and friendly staff.", date: "31-Aug-2026", reply: "" },
         { id: "REV002", name: "Ravi Kumar", roomType: "Deluxe", rating: "★★★★★ (5.0)", comment: "Very good service and delicious food.", date: "31-Aug-2026", reply: "" },
@@ -767,7 +767,7 @@ function showTotalCustomers() {
     renderSharedCustomersTable();
     renderSharedDashboardSummary();
     const rows = document.querySelectorAll("#totalCustomersSection tbody tr");
-    rows.forEach(function(row) {
+    rows.forEach(function (row) {
         row.style.display = "";
     });
     document.getElementById("dashboardHome").style.display = "none";
@@ -819,8 +819,8 @@ function addMoreCustomers() {
     }
 }
 function showNewCustomers() {
-//Make sure all customer rows exit//
-addMoreCustomers();
+    //Make sure all customer rows exit//
+    addMoreCustomers();
 
     // Show Total Customers section
     document.getElementById("dashboardHome").style.display = "none";
@@ -857,7 +857,7 @@ function showReturningCustomers() {
 
     const rows = document.querySelectorAll("#totalCustomersSection tbody tr");
 
-    rows.forEach(function(row) {
+    rows.forEach(function (row) {
         const customerId = row.cells[0].innerText.trim();
         const customerNumber = parseInt(customerId.substring(1));
 
@@ -883,7 +883,7 @@ function showVIPCustomers() {
 
     const rows = document.querySelectorAll("#totalCustomersSection tbody tr");
 
-    rows.forEach(function(row) {
+    rows.forEach(function (row) {
 
         const customerId = row.cells[0].innerText.trim();
         const customerNumber = parseInt(customerId.substring(1));
@@ -942,7 +942,7 @@ function showTodaysBookings() {
     const rows = document.querySelectorAll("#bookingsTableBody tr");
 
     // Show only today's bookings
-    rows.forEach(function(row) {
+    rows.forEach(function (row) {
 
         const checkInDate = row.cells[4].innerText.trim();
 
@@ -974,7 +974,7 @@ function showConfirmedBookings() {
     const rows = document.querySelectorAll("#bookingsTableBody tr");
 
     // Show only confirmed bookings
-    rows.forEach(function(row) {
+    rows.forEach(function (row) {
 
         const status = row.cells[6].innerText.trim();
 
@@ -992,7 +992,7 @@ function showCancelledBookings() {
 
     const rows = document.querySelectorAll("#bookingsTableBody tr");
 
-    rows.forEach(function(row) {
+    rows.forEach(function (row) {
 
         const status = row.cells[6].innerText.trim();
 
@@ -1031,7 +1031,7 @@ function generateBookingData() {
         { bookingId: "BK557869", customerName: "Rahul Dravid", roomNo: "108", roomType: "Deluxe", checkIn: "02-Sep-2026", checkOut: "04-Sep-2026", guests: 2, amount: 16000, bookingStatus: "Checked In", paymentStatus: "Paid" },
         { bookingId: "BK557870", customerName: "Pooja Hegde", roomNo: "109", roomType: "Luxury", checkIn: "02-Sep-2026", checkOut: "04-Sep-2026", guests: 1, amount: 20000, bookingStatus: "Checked In", paymentStatus: "Paid" },
         { bookingId: "BK557871", customerName: "Vijay Kumar", roomNo: "205", roomType: "Suite", checkIn: "03-Sep-2026", checkOut: "05-Sep-2026", guests: 2, amount: 32000, bookingStatus: "Checked In", paymentStatus: "Paid" },
-        
+
         // 8 Checked Out Bookings
         { bookingId: "BK557872", customerName: "Swathi Reddy", roomNo: "110", roomType: "Deluxe", checkIn: "20-Aug-2026", checkOut: "22-Aug-2026", guests: 2, amount: 14000, bookingStatus: "Checked Out", paymentStatus: "Paid" },
         { bookingId: "BK557873", customerName: "Naveen Babu", roomNo: "111", roomType: "Luxury", checkIn: "21-Aug-2026", checkOut: "23-Aug-2026", guests: 1, amount: 20000, bookingStatus: "Checked Out", paymentStatus: "Paid" },
@@ -1108,7 +1108,7 @@ function createAvailableRoomNumbers(id, start, end, occupiedRooms = []) {
     for (let i = start; i <= end; i++) {
 
         if (occupiedRooms.includes(i)) {
-         continue;
+            continue;
         }
         const room = document.createElement("span");
         room.className = "room-no available";
@@ -1118,26 +1118,26 @@ function createAvailableRoomNumbers(id, start, end, occupiedRooms = []) {
 }
 
 // Luxury
-createAvailableRoomNumbers("luxuryFirst", 101, 120, [118,119,120]);
-createAvailableRoomNumbers("luxurySecond", 201, 220, [218,219,220]);
-createAvailableRoomNumbers("luxuryThird", 301, 320, [317,318,319,320]);
+createAvailableRoomNumbers("luxuryFirst", 101, 120, [118, 119, 120]);
+createAvailableRoomNumbers("luxurySecond", 201, 220, [218, 219, 220]);
+createAvailableRoomNumbers("luxuryThird", 301, 320, [317, 318, 319, 320]);
 
 // Deluxe
-createAvailableRoomNumbers("deluxeFirst", 121, 140, [134,135,136,137,138,139,140]);
-createAvailableRoomNumbers("deluxeSecond", 221, 240, [234,235,236,237,238,239,240]);
-createAvailableRoomNumbers("deluxeThird", 321, 340, [333,334,335,336,337,338,339,340]);
+createAvailableRoomNumbers("deluxeFirst", 121, 140, [134, 135, 136, 137, 138, 139, 140]);
+createAvailableRoomNumbers("deluxeSecond", 221, 240, [234, 235, 236, 237, 238, 239, 240]);
+createAvailableRoomNumbers("deluxeThird", 321, 340, [333, 334, 335, 336, 337, 338, 339, 340]);
 
 // Suite
-createAvailableRoomNumbers("suiteFirst", 141, 160, [148,149,150,151,152,153,154,155]);
-createAvailableRoomNumbers("suiteSecond", 241, 260, [248,249,250,251,252,253,254,255]);
-createAvailableRoomNumbers("suiteThird", 341, 360, [346,347,348,349,350,351,352,353]);
+createAvailableRoomNumbers("suiteFirst", 141, 160, [148, 149, 150, 151, 152, 153, 154, 155]);
+createAvailableRoomNumbers("suiteSecond", 241, 260, [248, 249, 250, 251, 252, 253, 254, 255]);
+createAvailableRoomNumbers("suiteThird", 341, 360, [346, 347, 348, 349, 350, 351, 352, 353]);
 function createOccupiedRoomNumbers(id, occupiedRooms = []) {
 
     const container = document.getElementById(id);
 
     if (!container) return;
 
-    occupiedRooms.forEach(function(roomNumber) {
+    occupiedRooms.forEach(function (roomNumber) {
 
         const room = document.createElement("span");
 
@@ -1149,19 +1149,19 @@ function createOccupiedRoomNumbers(id, occupiedRooms = []) {
     });
 }
 // Luxury
-createOccupiedRoomNumbers("occupiedLuxuryFirst", [118,119,120]);
-createOccupiedRoomNumbers("occupiedLuxurySecond", [218,219,220]);
-createOccupiedRoomNumbers("occupiedLuxuryThird", [317,318,319,320]);
+createOccupiedRoomNumbers("occupiedLuxuryFirst", [118, 119, 120]);
+createOccupiedRoomNumbers("occupiedLuxurySecond", [218, 219, 220]);
+createOccupiedRoomNumbers("occupiedLuxuryThird", [317, 318, 319, 320]);
 
 // Deluxe
-createOccupiedRoomNumbers("occupiedDeluxeFirst", [134,135,136,137,138,139,140]);
-createOccupiedRoomNumbers("occupiedDeluxeSecond", [234,235,236,237,238,239,240]);
-createOccupiedRoomNumbers("occupiedDeluxeThird", [333,334,335,336,337,338,339,340]);
+createOccupiedRoomNumbers("occupiedDeluxeFirst", [134, 135, 136, 137, 138, 139, 140]);
+createOccupiedRoomNumbers("occupiedDeluxeSecond", [234, 235, 236, 237, 238, 239, 240]);
+createOccupiedRoomNumbers("occupiedDeluxeThird", [333, 334, 335, 336, 337, 338, 339, 340]);
 
 // Suite
-createOccupiedRoomNumbers("occupiedSuiteFirst", [148,149,150,151,152,153,154,155]);
-createOccupiedRoomNumbers("occupiedSuiteSecond", [248,249,250,251,252,253,254,255]);
-createOccupiedRoomNumbers("occupiedSuiteThird", [346,347,348,349,350,351,352,353]);
+createOccupiedRoomNumbers("occupiedSuiteFirst", [148, 149, 150, 151, 152, 153, 154, 155]);
+createOccupiedRoomNumbers("occupiedSuiteSecond", [248, 249, 250, 251, 252, 253, 254, 255]);
+createOccupiedRoomNumbers("occupiedSuiteThird", [346, 347, 348, 349, 350, 351, 352, 353]);
 
 function showTotalRevenue() {
     renderSharedDashboardSummary();
@@ -1330,7 +1330,7 @@ function viewRoom(roomNumber) {
 
     let selectedRoom = null;
 
-    rows.forEach(function(row) {
+    rows.forEach(function (row) {
 
         const roomNo = row.cells[0].innerText.trim();
 
@@ -1384,7 +1384,7 @@ function editRoom(roomNumber) {
 
     editingRoomRow = null;
 
-    rows.forEach(function(row) {
+    rows.forEach(function (row) {
 
         if (row.cells[0].innerText.trim() === String(roomNumber)) {
             editingRoomRow = row;
@@ -1580,49 +1580,49 @@ function addRoom() {
         alert("Please fill all required fields.");
         return;
     }
-     const roomNumber = Number(roomNo);
+    const roomNumber = Number(roomNo);
 
-if (!Number.isInteger(roomNumber)) {
-    alert("Please enter a valid room number.");
-    return;
-}
-
-let validRoom = false;
-
-if (roomNumber >= 101 && roomNumber <= 117 && roomType === "Luxury" && floor === "1st Floor") {
-    validRoom = true;
-} else if (roomNumber >= 118 && roomNumber <= 134 && roomType === "Deluxe" && floor === "1st Floor") {
-    validRoom = true;
-} else if (roomNumber >= 135 && roomNumber <= 150 && roomType === "Suite" && floor === "1st Floor") {
-    validRoom = true;
-} else if (roomNumber >= 201 && roomNumber <= 217 && roomType === "Luxury" && floor === "2nd Floor") {
-    validRoom = true;
-} else if (roomNumber >= 218 && roomNumber <= 234 && roomType === "Deluxe" && floor === "2nd Floor") {
-    validRoom = true;
-} else if (roomNumber >= 235 && roomNumber <= 250 && roomType === "Suite" && floor === "2nd Floor") {
-    validRoom = true;
-} else if (roomNumber >= 301 && roomNumber <= 316 && roomType === "Luxury" && floor === "3rd Floor") {
-    validRoom = true;
-} else if (roomNumber >= 317 && roomNumber <= 332 && roomType === "Deluxe" && floor === "3rd Floor") {
-    validRoom = true;
-} else if (roomNumber >= 333 && roomNumber <= 350 && roomType === "Suite" && floor === "3rd Floor") {
-    validRoom = true;
-}
-
-if (!validRoom) {
-    alert("Invalid room number, room type or floor. Please use the room ranges defined in Dashboard.");
-    return;
-}
-const existingRooms = document.querySelectorAll("#roomTableBody tr");
-
-for (const row of existingRooms) {
-    const existingRoomNo = row.cells[0]?.innerText.trim();
-
-    if (existingRoomNo === roomNo) {
-        alert("Room number " + roomNo + " already exists.");
+    if (!Number.isInteger(roomNumber)) {
+        alert("Please enter a valid room number.");
         return;
     }
-}
+
+    let validRoom = false;
+
+    if (roomNumber >= 101 && roomNumber <= 117 && roomType === "Luxury" && floor === "1st Floor") {
+        validRoom = true;
+    } else if (roomNumber >= 118 && roomNumber <= 134 && roomType === "Deluxe" && floor === "1st Floor") {
+        validRoom = true;
+    } else if (roomNumber >= 135 && roomNumber <= 150 && roomType === "Suite" && floor === "1st Floor") {
+        validRoom = true;
+    } else if (roomNumber >= 201 && roomNumber <= 217 && roomType === "Luxury" && floor === "2nd Floor") {
+        validRoom = true;
+    } else if (roomNumber >= 218 && roomNumber <= 234 && roomType === "Deluxe" && floor === "2nd Floor") {
+        validRoom = true;
+    } else if (roomNumber >= 235 && roomNumber <= 250 && roomType === "Suite" && floor === "2nd Floor") {
+        validRoom = true;
+    } else if (roomNumber >= 301 && roomNumber <= 316 && roomType === "Luxury" && floor === "3rd Floor") {
+        validRoom = true;
+    } else if (roomNumber >= 317 && roomNumber <= 332 && roomType === "Deluxe" && floor === "3rd Floor") {
+        validRoom = true;
+    } else if (roomNumber >= 333 && roomNumber <= 350 && roomType === "Suite" && floor === "3rd Floor") {
+        validRoom = true;
+    }
+
+    if (!validRoom) {
+        alert("Invalid room number, room type or floor. Please use the room ranges defined in Dashboard.");
+        return;
+    }
+    const existingRooms = document.querySelectorAll("#roomTableBody tr");
+
+    for (const row of existingRooms) {
+        const existingRoomNo = row.cells[0]?.innerText.trim();
+
+        if (existingRoomNo === roomNo) {
+            alert("Room number " + roomNo + " already exists.");
+            return;
+        }
+    }
     const tbody = document.getElementById("roomTableBody");
 
     const row = document.createElement("tr");
@@ -1645,15 +1645,15 @@ for (const row of existingRooms) {
     tbody.appendChild(row);
     const savedRooms = JSON.parse(localStorage.getItem("sayoraRooms")) || [];
 
-savedRooms.push({
-    roomNo: roomNo,
-    roomType: roomType,
-    floor: floor,
-    price: price,
-    status: status
-});
+    savedRooms.push({
+        roomNo: roomNo,
+        roomType: roomType,
+        floor: floor,
+        price: price,
+        status: status
+    });
 
-localStorage.setItem("sayoraRooms", JSON.stringify(savedRooms));
+    localStorage.setItem("sayoraRooms", JSON.stringify(savedRooms));
     renderRoomPagination();
     closeAddRoom();
 
@@ -1669,7 +1669,7 @@ function deleteRoom(roomNumber) {
 
     let selectedRoom = null;
 
-    rows.forEach(function(row) {
+    rows.forEach(function (row) {
 
         if (row.cells[0].innerText.trim() === String(roomNumber)) {
             selectedRoom = row;
@@ -1686,29 +1686,29 @@ function deleteRoom(roomNumber) {
     if (!confirmDelete) return;
     selectedRoom.remove();
 
-let savedRooms =
-    JSON.parse(localStorage.getItem("sayoraRooms")) || [];
+    let savedRooms =
+        JSON.parse(localStorage.getItem("sayoraRooms")) || [];
 
-savedRooms = savedRooms.filter(function(room) {
-    return String(room.roomNo) !== String(roomNumber);
-});
+    savedRooms = savedRooms.filter(function (room) {
+        return String(room.roomNo) !== String(roomNumber);
+    });
 
-localStorage.setItem("sayoraRooms", JSON.stringify(savedRooms));
-// Remember deleted room
-let deletedRooms =
-    JSON.parse(localStorage.getItem("deletedRooms")) || [];
+    localStorage.setItem("sayoraRooms", JSON.stringify(savedRooms));
+    // Remember deleted room
+    let deletedRooms =
+        JSON.parse(localStorage.getItem("deletedRooms")) || [];
 
-if (!deletedRooms.includes(String(roomNumber))) {
-    deletedRooms.push(String(roomNumber));
-}
+    if (!deletedRooms.includes(String(roomNumber))) {
+        deletedRooms.push(String(roomNumber));
+    }
 
-localStorage.setItem(
-    "deletedRooms",
-    JSON.stringify(deletedRooms)
-);
-renderRoomPagination();
+    localStorage.setItem(
+        "deletedRooms",
+        JSON.stringify(deletedRooms)
+    );
+    renderRoomPagination();
 
-alert("Room deleted successfully!");
+    alert("Room deleted successfully!");
     alert("Room deleted successfully!");
 }
 // ===============================
@@ -1763,7 +1763,7 @@ function renderRoomPagination() {
     const start = (currentRoomPage - 1) * roomsPerPage;
     const end = start + roomsPerPage;
 
-    visibleRows.forEach(function(row, index) {
+    visibleRows.forEach(function (row, index) {
         row.style.display = (index >= start && index < end) ? "table-row" : "none";
     });
 
@@ -1787,7 +1787,7 @@ function renderRoomPagination() {
         firstButton.innerHTML = "&laquo;";
         firstButton.title = "First Page (1)";
         firstButton.disabled = currentRoomPage === 1;
-        firstButton.onclick = function() {
+        firstButton.onclick = function () {
             if (currentRoomPage > 1) {
                 currentRoomPage = 1;
                 renderRoomPagination();
@@ -1801,7 +1801,7 @@ function renderRoomPagination() {
         previousButton.innerHTML = "&lt;";
         previousButton.title = "Previous Page";
         previousButton.disabled = currentRoomPage === 1;
-        previousButton.onclick = function() {
+        previousButton.onclick = function () {
             if (currentRoomPage > 1) {
                 currentRoomPage--;
                 renderRoomPagination();
@@ -1832,7 +1832,7 @@ function renderRoomPagination() {
                 const pageButton = document.createElement("button");
                 pageButton.className = "page-num-btn" + (item === currentRoomPage ? " active" : "");
                 pageButton.innerText = item;
-                pageButton.onclick = function() {
+                pageButton.onclick = function () {
                     currentRoomPage = item;
                     renderRoomPagination();
                 };
@@ -1846,7 +1846,7 @@ function renderRoomPagination() {
         nextButton.innerHTML = "&gt;";
         nextButton.title = "Next Page";
         nextButton.disabled = currentRoomPage === totalPages;
-        nextButton.onclick = function() {
+        nextButton.onclick = function () {
             if (currentRoomPage < totalPages) {
                 currentRoomPage++;
                 renderRoomPagination();
@@ -1860,7 +1860,7 @@ function renderRoomPagination() {
         lastButton.innerHTML = "&raquo;";
         lastButton.title = `Last Page (${totalPages})`;
         lastButton.disabled = currentRoomPage === totalPages;
-        lastButton.onclick = function() {
+        lastButton.onclick = function () {
             if (currentRoomPage < totalPages) {
                 currentRoomPage = totalPages;
                 renderRoomPagination();
@@ -1881,7 +1881,7 @@ function applyFilters() {
 
     const rows = document.querySelectorAll("#roomTableBody tr");
 
-    rows.forEach(function(row) {
+    rows.forEach(function (row) {
         const roomNo = row.cells[0]?.innerText.trim().toLowerCase();
         const type = row.cells[1]?.innerText.trim();
         const roomFloor = row.cells[2]?.innerText.trim();
@@ -1910,7 +1910,7 @@ function resetFilters() {
     if (document.getElementById("statusFilter")) document.getElementById("statusFilter").value = "";
 
     const rows = document.querySelectorAll("#roomTableBody tr");
-    rows.forEach(function(row) {
+    rows.forEach(function (row) {
         row.removeAttribute("data-filtered-out");
     });
 
@@ -1931,19 +1931,19 @@ function loadSavedRooms() {
 
     if (!tbody) return;
     const deletedRooms =
-    JSON.parse(localStorage.getItem("deletedRooms")) || [];
+        JSON.parse(localStorage.getItem("deletedRooms")) || [];
 
-const existingRows = tbody.querySelectorAll("tr");
+    const existingRows = tbody.querySelectorAll("tr");
 
-existingRows.forEach(function(row) {
+    existingRows.forEach(function (row) {
 
-    const roomNo = row.cells[0]?.innerText.trim();
+        const roomNo = row.cells[0]?.innerText.trim();
 
-    if (deletedRooms.includes(String(roomNo))) {
-        row.remove();
-    }
-});
-    savedRooms.forEach(function(room) {
+        if (deletedRooms.includes(String(roomNo))) {
+            row.remove();
+        }
+    });
+    savedRooms.forEach(function (room) {
 
         // Avoid duplicate rooms
         const existingRows = tbody.querySelectorAll("tr");
@@ -2128,7 +2128,7 @@ function applyBookingFilters() {
 
     const rows = document.querySelectorAll("#bookingsTableBody tr");
 
-    rows.forEach(function(row) {
+    rows.forEach(function (row) {
         const bookingId = row.cells[0]?.innerText.trim().toLowerCase() || "";
         const customerName = row.cells[1]?.innerText.trim().toLowerCase() || "";
         const roomNo = row.cells[2]?.innerText.trim().toLowerCase() || "";
@@ -2194,7 +2194,7 @@ function resetBookingFilters() {
     const rows =
         document.querySelectorAll("#bookingsTableBody tr");
 
-    rows.forEach(function(row) {
+    rows.forEach(function (row) {
         row.style.display = "table-row";
     });
 }
@@ -2506,7 +2506,7 @@ function confirmReplyReview() {
 }
 
 /* Revenue Chart Dropdown Selector Listener */
-document.addEventListener("change", function(e) {
+document.addEventListener("change", function (e) {
     if (e.target && e.target.classList.contains("widget-select-dropdown")) {
         const value = e.target.value;
         const bars = document.querySelectorAll(".chart-bars-area .bar-column");
@@ -2544,17 +2544,17 @@ document.addEventListener("change", function(e) {
 });
 
 /* Master Initialization & Automatic Cross-Page/Tab Sync */
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     if (isLoginPage()) return;
     refreshAllDashboardDataAndViews();
 });
 
-window.addEventListener("pageshow", function() {
+window.addEventListener("pageshow", function () {
     if (isLoginPage()) return;
     refreshAllDashboardDataAndViews();
 });
 
-window.addEventListener("storage", function() {
+window.addEventListener("storage", function () {
     if (isLoginPage()) return;
     refreshAllDashboardDataAndViews();
 });
@@ -2781,9 +2781,9 @@ function renderCustomersPageTable() {
 
     const appData = readAppData();
     const customers = appData.customers || [];
-    
+
     tbody.innerHTML = "";
-    
+
     customers.forEach((c, idx) => {
         const row = document.createElement("tr");
         const cId = c.customerId || `CUS${String(idx + 1).padStart(3, "0")}`;
@@ -2818,7 +2818,7 @@ function filterCustomers() {
     rows.forEach(row => {
         const text = row.innerText.toLowerCase();
         const typeCell = row.cells[4]?.innerText.trim() || "";
-        
+
         const matchesSearch = !searchVal || text.includes(searchVal);
         const matchesType = !typeVal || typeCell === typeVal;
 
@@ -2899,7 +2899,7 @@ function renderCheckInPageTable() {
 
     const appData = readAppData();
     const checkIns = (appData.bookings || []).filter(b => b.bookingStatus === "Checked In" || b.bookingStatus === "Confirmed");
-    
+
     tbody.innerHTML = "";
 
     checkIns.forEach((item, index) => {
@@ -2917,10 +2917,10 @@ function renderCheckInPageTable() {
             <td>${item.guests || 1}</td>
             <td><span class="status-pill ${isCheckedIn ? 'status-green' : 'status-orange'}">${item.bookingStatus || "Confirmed"}</span></td>
             <td>
-                ${isCheckedIn 
-                    ? `<button type="button" class="action-btn btn-view" onclick="openViewModal('${item.bookingId}')">View</button>`
-                    : `<button type="button" class="action-btn btn-checkin" onclick="confirmCheckInAction('${item.bookingId}')">Check-In</button>`
-                }
+                ${isCheckedIn
+                ? `<button type="button" class="action-btn btn-view" onclick="openViewModal('${item.bookingId}')">View</button>`
+                : `<button type="button" class="action-btn btn-checkin" onclick="confirmCheckInAction('${item.bookingId}')">Check-In</button>`
+            }
             </td>
         `;
         tbody.appendChild(row);
@@ -3041,8 +3041,8 @@ function saveNewCheckIn() {
     }
 
     const appData = readAppData();
-    const isBooked = (appData.bookings || []).some(b => 
-        String(b.roomNo).trim() === String(roomNo).trim() && 
+    const isBooked = (appData.bookings || []).some(b =>
+        String(b.roomNo).trim() === String(roomNo).trim() &&
         (b.bookingStatus === "Confirmed" || b.bookingStatus === "Checked In" || b.bookingStatus === "Pending")
     );
     if (isBooked) {
@@ -3102,10 +3102,10 @@ function renderCheckOutPageTable() {
             <td>₹${totalAmt.toLocaleString("en-IN")}</td>
             <td><span class="status-pill ${isCheckedOut ? 'status-green' : 'status-orange'}">${isCheckedOut ? 'Checked-Out' : 'Pending'}</span></td>
             <td>
-                ${isCheckedOut 
-                    ? `<button type="button" class="action-btn btn-view" onclick="openViewModal('${item.bookingId}')">View</button>`
-                    : `<button type="button" class="action-btn btn-checkout" onclick="checkoutBooking('${item.bookingId}')">Check-Out</button>`
-                }
+                ${isCheckedOut
+                ? `<button type="button" class="action-btn btn-view" onclick="openViewModal('${item.bookingId}')">View</button>`
+                : `<button type="button" class="action-btn btn-checkout" onclick="checkoutBooking('${item.bookingId}')">Check-Out</button>`
+            }
             </td>
         `;
         tbody.appendChild(row);
@@ -3347,7 +3347,7 @@ function getStoredReviews() {
         ];
         localStorage.setItem("sayoraReviews", JSON.stringify(defaultReviews));
         return defaultReviews;
-    } catch(e) {
+    } catch (e) {
         return [];
     }
 }
@@ -3457,9 +3457,330 @@ function saveNewReview() {
     alert("Review submitted successfully!");
 }
 
-document.addEventListener("DOMContentLoaded", function() {
+// ==========================================
+// MANAGE STAFF MODULE
+// ==========================================
+
+let staffCurrentPage = 1;
+const staffPerPage = 5;
+
+function getStoredStaff() {
+    try {
+        const stored = localStorage.getItem("sayoraStaff");
+        if (stored) {
+            const parsed = JSON.parse(stored);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+                return parsed;
+            }
+        }
+    } catch (e) {
+        console.error("Error reading staff data", e);
+    }
+
+    const defaultStaff = [
+        { staffId: "ST001", name: "Rajesh Kumar", role: "Manager", department: "Management", phone: "9876543210", status: "Active" },
+        { staffId: "ST002", name: "Sunitha Devi", role: "Receptionist", department: "Front Office", phone: "9123456780", status: "Active" },
+        { staffId: "ST003", name: "Mahesh Babu", role: "Housekeeping", department: "Housekeeping", phone: "9988776655", status: "Active" },
+        { staffId: "ST004", name: "Kavya Reddy", role: "Chef", department: "Kitchen", phone: "9012345678", status: "Active" },
+        { staffId: "ST005", name: "Arun Kumar", role: "Security", department: "Security", phone: "9645123780", status: "Inactive" },
+        { staffId: "ST006", name: "Priya Sharma", role: "Front Desk Executive", department: "Front Office", phone: "9876501234", status: "Active" },
+        { staffId: "ST007", name: "Vikram Singh", role: "Head Chef", department: "Kitchen", phone: "9845123456", status: "Active" },
+        { staffId: "ST008", name: "Ramesh Naidu", role: "Assistant Manager", department: "Management", phone: "9701234567", status: "Active" },
+        { staffId: "ST009", name: "Lakshmi Bai", role: "Room Attendant", department: "Housekeeping", phone: "9618234567", status: "Active" },
+        { staffId: "ST010", name: "Suresh Varma", role: "Security Supervisor", department: "Security", phone: "9550123456", status: "Active" },
+        { staffId: "ST011", name: "Anita Rao", role: "Accountant", department: "Management", phone: "9440123456", status: "Active" },
+        { staffId: "ST012", name: "Deepak Patel", role: "Maintenance Engineer", department: "Housekeeping", phone: "9390123456", status: "Active" },
+        { staffId: "ST013", name: "Meena Kumari", role: "Waitress", department: "Kitchen", phone: "9280123456", status: "Inactive" },
+        { staffId: "ST014", name: "Rahul Das", role: "Bellboy", department: "Front Office", phone: "9170123456", status: "Active" },
+        { staffId: "ST015", name: "Kiran Kumar", role: "Night Auditor", department: "Front Office", phone: "9060123456", status: "Active" }
+    ];
+    localStorage.setItem("sayoraStaff", JSON.stringify(defaultStaff));
+    return defaultStaff;
+}
+
+function saveStoredStaff(staffList) {
+    localStorage.setItem("sayoraStaff", JSON.stringify(staffList));
+}
+
+function renderStaffTable() {
+    const tbody = document.getElementById("staffTableBody");
+    if (!tbody) return;
+
+    const allStaff = getStoredStaff();
+    const searchVal = (document.getElementById("staffSearchInput")?.value || "").trim().toLowerCase();
+    const deptVal = (document.getElementById("staffDeptFilter")?.value || "").trim();
+    const statusVal = (document.getElementById("staffStatusFilter")?.value || "").trim();
+
+    const filtered = allStaff.filter(item => {
+        const matchesSearch = !searchVal ||
+            (item.name && item.name.toLowerCase().includes(searchVal)) ||
+            (item.role && item.role.toLowerCase().includes(searchVal)) ||
+            (item.staffId && item.staffId.toLowerCase().includes(searchVal)) ||
+            (item.phone && item.phone.includes(searchVal));
+
+        const matchesDept = !deptVal || item.department === deptVal;
+        const matchesStatus = !statusVal || item.status === statusVal;
+
+        return matchesSearch && matchesDept && matchesStatus;
+    });
+
+    const totalPages = Math.max(1, Math.ceil(filtered.length / staffPerPage));
+    if (staffCurrentPage > totalPages) staffCurrentPage = totalPages;
+    if (staffCurrentPage < 1) staffCurrentPage = 1;
+
+    const startIdx = (staffCurrentPage - 1) * staffPerPage;
+    const pageItems = filtered.slice(startIdx, startIdx + staffPerPage);
+
+    tbody.innerHTML = "";
+    if (pageItems.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align:center; padding:30px; color:#6b7280;">
+                    No staff members found matching the selected filters.
+                </td>
+            </tr>
+        `;
+    } else {
+        pageItems.forEach(staff => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td><strong>${staff.staffId}</strong></td>
+                <td>${staff.name}</td>
+                <td>${staff.role}</td>
+                <td>${staff.department}</td>
+                <td>${staff.phone}</td>
+                <td class="${staff.status === 'Active' ? 'status-active' : 'status-inactive'}">${staff.status}</td>
+                <td>
+                    <div class="action-links">
+                        <button type="button" class="action-link" onclick="openEditStaffModal('${staff.staffId}')">Edit</button>
+                        <span class="action-divider">|</span>
+                        <button type="button" class="action-link" onclick="deleteStaffMember('${staff.staffId}')">Delete</button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    renderStaffPagination(totalPages);
+}
+
+function renderStaffPagination(totalPages) {
+    const container = document.getElementById("staffPagination");
+    if (!container) return;
+    container.innerHTML = "";
+
+    // Prev Button (<)
+    const prevBtn = document.createElement("button");
+    prevBtn.innerHTML = "&lt;";
+    prevBtn.title = "Previous Page";
+    prevBtn.disabled = staffCurrentPage === 1;
+    prevBtn.onclick = () => {
+        if (staffCurrentPage > 1) {
+            staffCurrentPage--;
+            renderStaffTable();
+        }
+    };
+    container.appendChild(prevBtn);
+
+    // Numbered Buttons
+    for (let i = 1; i <= totalPages; i++) {
+        const numBtn = document.createElement("button");
+        numBtn.innerText = i;
+        if (i === staffCurrentPage) {
+            numBtn.className = "active";
+        }
+        numBtn.onclick = () => {
+            staffCurrentPage = i;
+            renderStaffTable();
+        };
+        container.appendChild(numBtn);
+    }
+
+    // Next Button (>)
+    const nextBtn = document.createElement("button");
+    nextBtn.innerHTML = "&gt;";
+    nextBtn.title = "Next Page";
+    nextBtn.disabled = staffCurrentPage === totalPages;
+    nextBtn.onclick = () => {
+        if (staffCurrentPage < totalPages) {
+            staffCurrentPage++;
+            renderStaffTable();
+        }
+    };
+    container.appendChild(nextBtn);
+}
+
+function applyStaffFilters() {
+    staffCurrentPage = 1;
+    renderStaffTable();
+}
+
+function resetStaffFilters() {
+    const searchInput = document.getElementById("staffSearchInput");
+    const deptFilter = document.getElementById("staffDeptFilter");
+    const statusFilter = document.getElementById("staffStatusFilter");
+
+    if (searchInput) searchInput.value = "";
+    if (deptFilter) deptFilter.value = "";
+    if (statusFilter) statusFilter.value = "";
+
+    staffCurrentPage = 1;
+    renderStaffTable();
+}
+
+function getNextStaffId() {
+    const staffList = getStoredStaff();
+    let maxId = 0;
+    staffList.forEach(item => {
+        const num = parseInt(item.staffId.replace(/\D/g, ""), 10);
+        if (!isNaN(num) && num > maxId) maxId = num;
+    });
+    return `ST${String(maxId + 1).padStart(3, "0")}`;
+}
+
+function openAddStaffModal() {
+    const modal = document.getElementById("addStaffModal");
+    const form = document.getElementById("addStaffForm");
+    if (!modal) return;
+    if (form) form.reset();
+
+    const idInput = document.getElementById("addStaffId");
+    if (idInput) idInput.value = getNextStaffId();
+
+    modal.style.display = "flex";
+}
+
+function closeAddStaffModal() {
+    const modal = document.getElementById("addStaffModal");
+    if (modal) modal.style.display = "none";
+}
+
+function saveNewStaff() {
+    const staffId = (document.getElementById("addStaffId")?.value || "").trim();
+    const name = (document.getElementById("addStaffName")?.value || "").trim();
+    const role = (document.getElementById("addStaffRole")?.value || "").trim();
+    const department = (document.getElementById("addStaffDept")?.value || "Front Office").trim();
+    const phone = (document.getElementById("addStaffPhone")?.value || "").trim();
+    const status = (document.getElementById("addStaffStatus")?.value || "Active").trim();
+
+    if (!staffId || !name || !role || !department || !phone) {
+        alert("Please fill in all required fields.");
+        return;
+    }
+
+    if (!/^\d{10}$/.test(phone)) {
+        alert("Please enter a valid 10-digit mobile number.");
+        return;
+    }
+
+    const staffList = getStoredStaff();
+    if (staffList.some(item => item.staffId.toLowerCase() === staffId.toLowerCase())) {
+        alert(`Staff ID "${staffId}" already exists. Please choose a unique ID.`);
+        return;
+    }
+
+    const newStaff = { staffId, name, role, department, phone, status };
+    staffList.unshift(newStaff);
+    saveStoredStaff(staffList);
+
+    staffCurrentPage = 1;
+    renderStaffTable();
+    closeAddStaffModal();
+    alert(`Staff member "${name}" added successfully!`);
+}
+
+function openEditStaffModal(staffId) {
+    const staffList = getStoredStaff();
+    const member = staffList.find(item => item.staffId === staffId);
+    if (!member) {
+        alert("Staff member not found.");
+        return;
+    }
+
+    const modal = document.getElementById("editStaffModal");
+    if (!modal) return;
+
+    document.getElementById("editStaffOriginalId").value = member.staffId;
+    document.getElementById("editStaffId").value = member.staffId;
+    document.getElementById("editStaffName").value = member.name;
+    document.getElementById("editStaffRole").value = member.role;
+    document.getElementById("editStaffDept").value = member.department;
+    document.getElementById("editStaffPhone").value = member.phone;
+    document.getElementById("editStaffStatus").value = member.status;
+
+    modal.style.display = "flex";
+}
+
+function closeEditStaffModal() {
+    const modal = document.getElementById("editStaffModal");
+    if (modal) modal.style.display = "none";
+}
+
+function updateStaffMember() {
+    const origId = document.getElementById("editStaffOriginalId")?.value;
+    const name = (document.getElementById("editStaffName")?.value || "").trim();
+    const role = (document.getElementById("editStaffRole")?.value || "").trim();
+    const department = (document.getElementById("editStaffDept")?.value || "").trim();
+    const phone = (document.getElementById("editStaffPhone")?.value || "").trim();
+    const status = (document.getElementById("editStaffStatus")?.value || "Active").trim();
+
+    if (!name || !role || !department || !phone) {
+        alert("Please fill in all required fields.");
+        return;
+    }
+
+    if (!/^\d{10}$/.test(phone)) {
+        alert("Please enter a valid 10-digit mobile number.");
+        return;
+    }
+
+    const staffList = getStoredStaff();
+    const idx = staffList.findIndex(item => item.staffId === origId);
+    if (idx === -1) {
+        alert("Staff member not found.");
+        return;
+    }
+
+    staffList[idx] = {
+        staffId: origId,
+        name,
+        role,
+        department,
+        phone,
+        status
+    };
+
+    saveStoredStaff(staffList);
+    renderStaffTable();
+    closeEditStaffModal();
+    alert(`Staff member "${name}" updated successfully!`);
+}
+
+function deleteStaffMember(staffId) {
+    const staffList = getStoredStaff();
+    const member = staffList.find(item => item.staffId === staffId);
+    if (!member) return;
+
+    const confirmed = confirm(`Are you sure you want to delete staff member "${member.name}" (${staffId})?`);
+    if (!confirmed) return;
+
+    const updated = staffList.filter(item => item.staffId !== staffId);
+    saveStoredStaff(updated);
+
+    const totalPages = Math.max(1, Math.ceil(updated.length / staffPerPage));
+    if (staffCurrentPage > totalPages) staffCurrentPage = totalPages;
+
+    renderStaffTable();
+    alert(`Staff member "${member.name}" deleted successfully!`);
+}
+
+document.addEventListener("DOMContentLoaded", function () {
     if (document.getElementById("roomTableBody")) {
         loadSavedRooms();
         renderRoomPagination();
+    }
+    if (document.getElementById("staffTableBody")) {
+        renderStaffTable();
     }
 });
