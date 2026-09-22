@@ -20,7 +20,7 @@
         </div>
 
         <ul class="nav-links">
-            <li><a href="#">Home</a></li>
+            <li><a href="home.html" class="active">Home</a></li>
             <li><a href="pages/dashboard.html">Dashboard</a></li>
             <li><a href="pages/rooms.html">Manage Rooms</a></li>
             <li><a href="pages/bookings.html">Bookings</a></li>
@@ -32,15 +32,15 @@
             <li><a href="pages/reviews.html">Reviews</a></li>
         </ul>
         
-<div class="profile-icon">
-    <i class="fa-solid fa-circle-user"></i>
-</div>
+        <div class="profile-icon" title="Account Settings & Profile">
+            <i class="fa-solid fa-circle-user"></i>
+        </div>
     </nav>
 </header>
 <section class="hero">
 
    <div class="hero-section">
-    <img src="../images/home-bg.jpg" alt="Sayora Hotels">
+    <img src="./images/home-bg.jpg" alt="Sayora Hotels">
 
     <div class="hero-overlay">
         <h1>SAYORA HOTELS</h1>
@@ -55,11 +55,12 @@
 
         <em>"Where Every Stay Feels Like Home."</em>
 
-        <button>Explore Rooms</button>
+        <button onclick="window.location.href='pages/rooms.html'">Explore Rooms</button>
     </div>
 </div>
 
 </section>
 
+<script src="js/script.js"></script>
 </body>
 </html>

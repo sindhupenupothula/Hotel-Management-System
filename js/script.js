@@ -1,8 +1,9 @@
 function login() {
-    let username = document.getElementById("username").value;
+    let username = document.getElementById("username").value.trim();
     let password = document.getElementById("password").value;
 
-    if (username === "admin" && password === "1234") {
+    const storedPass = localStorage.getItem("sayoraAdminPassword") || "1234";
+    if (username === "admin" && password === storedPass) {
         window.location.href = "home.html";
     } else {
         alert("Invalid Username or Password");
@@ -3775,7 +3776,554 @@ function deleteStaffMember(staffId) {
     alert(`Staff member "${member.name}" deleted successfully!`);
 }
 
+/* ==========================================================================
+   USER PROFILE & ACCOUNT SETTINGS MODAL SYSTEM
+   ========================================================================== */
+
+function getUserProfile() {
+    try {
+        const saved = JSON.parse(localStorage.getItem("sayoraUserProfile"));
+        if (saved && saved.name) return saved;
+    } catch (e) {
+        // fallback to default
+    }
+    return {
+        name: "Sindhu Penupothula",
+        email: "sindhu.p@sayorahotels.com",
+        phone: "9876543210",
+        role: "Hotel Administrator"
+    };
+}
+
+function getInitials(name) {
+    if (!name) return "SP";
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+function ensureProfileModalExist() {
+    if (typeof isLoginPage === "function" && isLoginPage()) return;
+
+    // Inject styles if not present
+    if (!document.getElementById("userProfileModalStyles")) {
+        const styleEl = document.createElement("style");
+        styleEl.id = "userProfileModalStyles";
+        styleEl.textContent = `
+            .profile-modal-overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(11, 27, 58, 0.72);
+                backdrop-filter: blur(5px);
+                -webkit-backdrop-filter: blur(5px);
+                z-index: 999999;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                padding: 16px;
+                animation: fadeInOverlay 0.2s ease-out;
+            }
+            @keyframes fadeInOverlay {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            .profile-modal-card {
+                background: #ffffff;
+                width: 100%;
+                max-width: 460px;
+                border-radius: 18px;
+                overflow: hidden;
+                box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.4);
+                animation: scaleUpCard 0.22s ease-out;
+                font-family: Arial, sans-serif;
+                display: flex;
+                flex-direction: column;
+            }
+            @keyframes scaleUpCard {
+                from { transform: scale(0.94); opacity: 0; }
+                to { transform: scale(1); opacity: 1; }
+            }
+            .profile-modal-banner {
+                background: linear-gradient(135deg, #0b1b3a 0%, #1d68e1 100%);
+                padding: 24px 20px 18px;
+                text-align: center;
+                position: relative;
+                color: white;
+            }
+            .profile-close-btn {
+                position: absolute;
+                top: 12px;
+                right: 14px;
+                background: rgba(255, 255, 255, 0.18);
+                border: none;
+                color: white;
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                font-size: 20px;
+                line-height: 1;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: background 0.2s;
+            }
+            .profile-close-btn:hover {
+                background: rgba(255, 255, 255, 0.35);
+            }
+            .profile-avatar-circle {
+                width: 68px;
+                height: 68px;
+                border-radius: 50%;
+                background: #ffffff;
+                color: #1d68e1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 10px;
+                font-size: 24px;
+                font-weight: 800;
+                border: 3px solid rgba(255, 255, 255, 0.85);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            }
+            .profile-banner-name {
+                font-size: 19px;
+                font-weight: 700;
+                margin: 0 0 3px;
+                color: #ffffff;
+            }
+            .profile-banner-email {
+                font-size: 13px;
+                color: rgba(255, 255, 255, 0.85);
+                margin: 0 0 8px;
+            }
+            .profile-role-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+                background: rgba(255, 255, 255, 0.2);
+                padding: 3px 12px;
+                border-radius: 20px;
+                font-size: 11px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+            .profile-nav-tabs {
+                display: flex;
+                background: #f1f5f9;
+                border-bottom: 1px solid #e2e8f0;
+            }
+            .profile-tab-btn {
+                flex: 1;
+                padding: 12px 14px;
+                border: none;
+                background: transparent;
+                font-size: 13px;
+                font-weight: 600;
+                color: #64748b;
+                cursor: pointer;
+                transition: all 0.2s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 7px;
+                border-bottom: 2px solid transparent;
+            }
+            .profile-tab-btn:hover {
+                color: #1d68e1;
+            }
+            .profile-tab-btn.active {
+                color: #1d68e1;
+                background: #ffffff;
+                border-bottom-color: #1d68e1;
+            }
+            .profile-modal-content {
+                padding: 20px 22px;
+                max-height: 52vh;
+                overflow-y: auto;
+            }
+            .profile-form-group {
+                margin-bottom: 15px;
+                text-align: left;
+            }
+            .profile-form-group label {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 12.5px;
+                font-weight: 600;
+                color: #334155;
+                margin-bottom: 6px;
+            }
+            .profile-form-group label i {
+                color: #1d68e1;
+                font-size: 12px;
+            }
+            .profile-form-group input {
+                width: 100%;
+                padding: 9px 12px;
+                border: 1px solid #cbd5e1;
+                border-radius: 7px;
+                font-size: 13.5px;
+                box-sizing: border-box;
+                color: #1e293b;
+                background: #f8fafc;
+                transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+            }
+            .profile-form-group input:focus {
+                outline: none;
+                background: #ffffff;
+                border-color: #1d68e1;
+                box-shadow: 0 0 0 3px rgba(29, 104, 225, 0.15);
+            }
+            .profile-save-btn,
+            .profile-update-pwd-btn {
+                width: 100%;
+                background: #1d68e1;
+                color: white;
+                border: none;
+                padding: 10px 16px;
+                border-radius: 7px;
+                font-size: 13.5px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: background 0.2s, transform 0.1s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 7px;
+                margin-top: 10px;
+                box-shadow: 0 2px 5px rgba(29, 104, 225, 0.25);
+            }
+            .profile-save-btn:hover,
+            .profile-update-pwd-btn:hover {
+                background: #1557d6;
+                transform: translateY(-1px);
+            }
+            .profile-modal-footer {
+                padding: 14px 22px;
+                background: #f8fafc;
+                border-top: 1px solid #e2e8f0;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+            }
+            .profile-footer-info {
+                color: #64748b;
+                font-size: 12px;
+            }
+            .profile-logout-btn {
+                background: #fee2e2;
+                color: #dc2626;
+                border: 1px solid #fca5a5;
+                padding: 8px 16px;
+                border-radius: 7px;
+                font-size: 13px;
+                font-weight: 700;
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                gap: 7px;
+                transition: all 0.2s ease;
+                white-space: nowrap;
+            }
+            .profile-logout-btn:hover {
+                background: #dc2626;
+                color: #ffffff;
+                border-color: #dc2626;
+                box-shadow: 0 2px 6px rgba(220, 38, 38, 0.3);
+                transform: translateY(-1px);
+            }
+        `;
+        document.head.appendChild(styleEl);
+    }
+
+    // Inject modal HTML if not present
+    if (!document.getElementById("userProfileModalOverlay")) {
+        const modalDiv = document.createElement("div");
+        modalDiv.id = "userProfileModalOverlay";
+        modalDiv.className = "profile-modal-overlay";
+        modalDiv.innerHTML = `
+            <div class="profile-modal-card" onclick="event.stopPropagation()">
+                <!-- Banner & Profile Header -->
+                <div class="profile-modal-banner">
+                    <button type="button" class="profile-close-btn" onclick="closeUserProfileModal()" title="Close">&times;</button>
+                    <div class="profile-avatar-circle" id="profileModalAvatar">SP</div>
+                    <h3 class="profile-banner-name" id="profileModalName">Sindhu Penupothula</h3>
+                    <p class="profile-banner-email" id="profileModalEmail">sindhu.p@sayorahotels.com</p>
+                    <span class="profile-role-badge" id="profileModalRole"><i class="fa-solid fa-shield-halved"></i> Hotel Administrator</span>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <div class="profile-nav-tabs">
+                    <button type="button" class="profile-tab-btn active" id="profileTabAccountBtn" onclick="switchProfileTab('account')">
+                        <i class="fa-solid fa-user-gear"></i> Account Settings
+                    </button>
+                    <button type="button" class="profile-tab-btn" id="profileTabPasswordBtn" onclick="switchProfileTab('password')">
+                        <i class="fa-solid fa-key"></i> Change Password
+                    </button>
+                </div>
+
+                <!-- Modal Body Tab Content -->
+                <div class="profile-modal-content">
+                    <!-- Tab 1: Account Settings -->
+                    <div id="profileAccountTabPane">
+                        <form id="profileAccountForm" onsubmit="event.preventDefault(); saveUserProfile();">
+                            <div class="profile-form-group">
+                                <label for="profileFullName"><i class="fa-solid fa-user"></i> Full Name</label>
+                                <input type="text" id="profileFullName" required placeholder="Enter full name">
+                            </div>
+                            <div class="profile-form-group">
+                                <label for="profileEmailInput"><i class="fa-solid fa-envelope"></i> Email Address</label>
+                                <input type="email" id="profileEmailInput" required placeholder="name@sayorahotels.com">
+                            </div>
+                            <div class="profile-form-group">
+                                <label for="profilePhoneInput"><i class="fa-solid fa-phone"></i> Contact Number</label>
+                                <input type="tel" id="profilePhoneInput" required placeholder="10-digit mobile number">
+                            </div>
+                            <div class="profile-form-group">
+                                <label for="profileRoleInput"><i class="fa-solid fa-briefcase"></i> Designation / Role</label>
+                                <input type="text" id="profileRoleInput" required placeholder="e.g. Hotel Administrator">
+                            </div>
+                            <button type="submit" class="profile-save-btn">
+                                <i class="fa-solid fa-floppy-disk"></i> Save Profile Changes
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Tab 2: Change Password -->
+                    <div id="profilePasswordTabPane" style="display: none;">
+                        <form id="profilePasswordForm" onsubmit="event.preventDefault(); changeUserPassword();">
+                            <div class="profile-form-group">
+                                <label for="profileCurrentPassword"><i class="fa-solid fa-lock"></i> Current Password</label>
+                                <input type="password" id="profileCurrentPassword" required placeholder="Enter current password">
+                            </div>
+                            <div class="profile-form-group">
+                                <label for="profileNewPassword"><i class="fa-solid fa-key"></i> New Password</label>
+                                <input type="password" id="profileNewPassword" required placeholder="Enter new password (min 4 characters)">
+                            </div>
+                            <div class="profile-form-group">
+                                <label for="profileConfirmPassword"><i class="fa-solid fa-check-double"></i> Confirm New Password</label>
+                                <input type="password" id="profileConfirmPassword" required placeholder="Re-enter new password">
+                            </div>
+                            <button type="submit" class="profile-update-pwd-btn">
+                                <i class="fa-solid fa-shield-check"></i> Update Password
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Dedicated Bottom Section with Logout -->
+                <div class="profile-modal-footer">
+                    <div class="profile-footer-info">
+                        <i class="fa-solid fa-circle-check" style="color: #22c55e;"></i> Active Portal Session
+                    </div>
+                    <button type="button" class="profile-logout-btn" onclick="logoutUser()">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+                    </button>
+                </div>
+            </div>
+        `;
+
+        modalDiv.addEventListener("click", function (e) {
+            if (e.target === modalDiv) closeUserProfileModal();
+        });
+
+        document.body.appendChild(modalDiv);
+    }
+
+    // Attach click events to all profile icons on the page
+    document.querySelectorAll(".profile-icon").forEach(icon => {
+        icon.style.cursor = "pointer";
+        icon.setAttribute("title", "Account Settings & Profile");
+        icon.onclick = function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            openUserProfileModal();
+        };
+    });
+}
+
+function openUserProfileModal() {
+    ensureProfileModalExist();
+    const modal = document.getElementById("userProfileModalOverlay");
+    if (!modal) return;
+
+    const profile = getUserProfile();
+
+    // Populate header
+    const avatarEl = document.getElementById("profileModalAvatar");
+    const nameEl = document.getElementById("profileModalName");
+    const emailEl = document.getElementById("profileModalEmail");
+    const roleEl = document.getElementById("profileModalRole");
+
+    if (avatarEl) avatarEl.textContent = getInitials(profile.name);
+    if (nameEl) nameEl.textContent = profile.name;
+    if (emailEl) emailEl.textContent = profile.email;
+    if (roleEl) roleEl.innerHTML = `<i class="fa-solid fa-shield-halved"></i> ${profile.role}`;
+
+    // Populate form inputs
+    const fullNameInput = document.getElementById("profileFullName");
+    const emailInput = document.getElementById("profileEmailInput");
+    const phoneInput = document.getElementById("profilePhoneInput");
+    const roleInput = document.getElementById("profileRoleInput");
+
+    if (fullNameInput) fullNameInput.value = profile.name;
+    if (emailInput) emailInput.value = profile.email;
+    if (phoneInput) phoneInput.value = profile.phone;
+    if (roleInput) roleInput.value = profile.role;
+
+    // Reset password form
+    const pwdForm = document.getElementById("profilePasswordForm");
+    if (pwdForm) pwdForm.reset();
+
+    // Show account tab first
+    switchProfileTab("account");
+
+    modal.style.display = "flex";
+}
+
+function closeUserProfileModal() {
+    const modal = document.getElementById("userProfileModalOverlay");
+    if (modal) {
+        modal.style.display = "none";
+    }
+}
+
+function switchProfileTab(tabName) {
+    const accountTabBtn = document.getElementById("profileTabAccountBtn");
+    const pwdTabBtn = document.getElementById("profileTabPasswordBtn");
+    const accountPane = document.getElementById("profileAccountTabPane");
+    const pwdPane = document.getElementById("profilePasswordTabPane");
+
+    if (!accountTabBtn || !pwdTabBtn || !accountPane || !pwdPane) return;
+
+    if (tabName === "account") {
+        accountTabBtn.classList.add("active");
+        pwdTabBtn.classList.remove("active");
+        accountPane.style.display = "block";
+        pwdPane.style.display = "none";
+    } else {
+        pwdTabBtn.classList.add("active");
+        accountTabBtn.classList.remove("active");
+        pwdPane.style.display = "block";
+        accountPane.style.display = "none";
+    }
+}
+
+function saveUserProfile() {
+    const fullName = document.getElementById("profileFullName")?.value.trim();
+    const email = document.getElementById("profileEmailInput")?.value.trim();
+    const phone = document.getElementById("profilePhoneInput")?.value.trim();
+    const role = document.getElementById("profileRoleInput")?.value.trim();
+
+    if (!fullName) {
+        alert("Please enter your full name.");
+        return;
+    }
+    if (!email || !email.includes("@")) {
+        alert("Please enter a valid email address.");
+        return;
+    }
+    if (!phone || !/^\d{10}$/.test(phone.replace(/\D/g, ""))) {
+        alert("Please enter a valid 10-digit contact number.");
+        return;
+    }
+
+    const updatedProfile = {
+        name: fullName,
+        email: email,
+        phone: phone,
+        role: role || "Hotel Administrator"
+    };
+
+    localStorage.setItem("sayoraUserProfile", JSON.stringify(updatedProfile));
+
+    // Update banner display immediately
+    const avatarEl = document.getElementById("profileModalAvatar");
+    const nameEl = document.getElementById("profileModalName");
+    const emailEl = document.getElementById("profileModalEmail");
+    const roleEl = document.getElementById("profileModalRole");
+
+    if (avatarEl) avatarEl.textContent = getInitials(updatedProfile.name);
+    if (nameEl) nameEl.textContent = updatedProfile.name;
+    if (emailEl) emailEl.textContent = updatedProfile.email;
+    if (roleEl) roleEl.innerHTML = `<i class="fa-solid fa-shield-halved"></i> ${updatedProfile.role}`;
+
+    alert(`Profile updated successfully for "${updatedProfile.name}"!`);
+}
+
+function changeUserPassword() {
+    const currentPass = document.getElementById("profileCurrentPassword")?.value;
+    const newPass = document.getElementById("profileNewPassword")?.value;
+    const confirmPass = document.getElementById("profileConfirmPassword")?.value;
+
+    const storedPass = localStorage.getItem("sayoraAdminPassword") || "1234";
+
+    if (!currentPass) {
+        alert("Please enter your current password.");
+        return;
+    }
+    if (currentPass !== storedPass) {
+        alert("Incorrect current password! Please enter the correct password.");
+        return;
+    }
+    if (!newPass || newPass.length < 4) {
+        alert("New password must be at least 4 characters long.");
+        return;
+    }
+    if (newPass !== confirmPass) {
+        alert("New passwords do not match! Please re-type accurately.");
+        return;
+    }
+
+    localStorage.setItem("sayoraAdminPassword", newPass);
+
+    const pwdForm = document.getElementById("profilePasswordForm");
+    if (pwdForm) pwdForm.reset();
+
+    alert("Password updated successfully! You can now log in with your new password.");
+    switchProfileTab("account");
+}
+
+function logoutUser() {
+    const confirmed = confirm("Are you sure you want to log out of Sayora Hotels?");
+    if (!confirmed) return;
+
+    closeUserProfileModal();
+
+    // Check path depth to navigate to index.html accurately
+    const isInsidePages = window.location.pathname.includes("/pages/") || window.location.href.includes("/pages/");
+    const targetUrl = isInsidePages ? "../index.html" : "index.html";
+    window.location.href = targetUrl;
+}
+
+/* Automatically highlight active navigation link across all pages */
+function highlightCurrentNavPage() {
+    if (typeof isLoginPage === "function" && isLoginPage()) return;
+
+    const currentPath = window.location.pathname.toLowerCase();
+    const currentFile = currentPath.substring(currentPath.lastIndexOf("/") + 1) || "home.html";
+
+    const navLinks = document.querySelectorAll(".nav-links a, .main-nav a");
+    navLinks.forEach(link => {
+        const href = (link.getAttribute("href") || "").toLowerCase();
+        const linkFile = href.substring(href.lastIndexOf("/") + 1);
+
+        if (linkFile && linkFile === currentFile) {
+            link.classList.add("active");
+        } else if (linkFile && currentFile.includes(linkFile.replace(".html", ""))) {
+            link.classList.add("active");
+        }
+    });
+}
+
 document.addEventListener("DOMContentLoaded", function () {
+    highlightCurrentNavPage();
+    ensureProfileModalExist();
+
     if (document.getElementById("roomTableBody")) {
         loadSavedRooms();
         renderRoomPagination();
@@ -3783,4 +4331,4 @@ document.addEventListener("DOMContentLoaded", function () {
     if (document.getElementById("staffTableBody")) {
         renderStaffTable();
     }
-});
+});
