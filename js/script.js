@@ -134,7 +134,16 @@ function removeSharedBookingData(bookingId) {
     return updatedData;
 }
 
+function isLoginPage() {
+    return Boolean(
+        document.querySelector(".login-container") ||
+        document.querySelector(".login-right") ||
+        (document.getElementById("username") && document.getElementById("password") && !document.querySelector(".navbar"))
+    );
+}
+
 function refreshAllDashboardDataAndViews() {
+    if (isLoginPage()) return;
     renderSharedDashboardSummary();
     renderSharedBookingsTable();
     renderSharedCheckInsTable();
@@ -996,7 +1005,12 @@ function showCancelledBookings() {
 }
 function generateBookingData() {
     const appData = readAppData();
-    if (appData.bookings && appData.bookings.length === 25) {
+    if (localStorage.getItem("sayoraDataSeeded") && appData.bookings && appData.bookings.length > 0) {
+        return;
+    }
+    const existingBookings = JSON.parse(localStorage.getItem("sayoraBookings") || "[]");
+    if (existingBookings.length > 0 && appData.bookings && appData.bookings.length > 0) {
+        localStorage.setItem("sayoraDataSeeded", "true");
         return;
     }
 
@@ -1055,6 +1069,7 @@ function generateBookingData() {
             totalRevenue: 245000
         }
     });
+    localStorage.setItem("sayoraDataSeeded", "true");
 }
 
 generateBookingData();
@@ -1725,52 +1740,71 @@ function renderRoomPagination() {
 
     pagination.innerHTML = "";
 
-    // Previous button
-    const previousButton = document.createElement("button");
-    previousButton.innerText = "‹";
-    previousButton.disabled = currentRoomPage === 1;
+    // First page button (<<)
+    const firstButton = document.createElement("button");
+    firstButton.innerText = "<<";
+    firstButton.title = "First Page";
+    firstButton.disabled = currentRoomPage === 1;
+    firstButton.onclick = function() {
+        if (currentRoomPage > 1) {
+            currentRoomPage = 1;
+            renderRoomPagination();
+        }
+    };
+    pagination.appendChild(firstButton);
 
+    // Previous button (<)
+    const previousButton = document.createElement("button");
+    previousButton.innerText = "<";
+    previousButton.title = "Previous Page";
+    previousButton.disabled = currentRoomPage === 1;
     previousButton.onclick = function() {
         if (currentRoomPage > 1) {
             currentRoomPage--;
             renderRoomPagination();
         }
     };
-
     pagination.appendChild(previousButton);
 
     // Page buttons
     for (let page = 1; page <= totalPages; page++) {
-
         const pageButton = document.createElement("button");
-
         pageButton.innerText = page;
-
         if (page === currentRoomPage) {
             pageButton.classList.add("active");
         }
-
         pageButton.onclick = function() {
             currentRoomPage = page;
             renderRoomPagination();
         };
-
         pagination.appendChild(pageButton);
     }
 
-    // Next button
+    // Next button (>)
     const nextButton = document.createElement("button");
-    nextButton.innerText = "›";
+    nextButton.innerText = ">";
+    nextButton.title = "Next Page";
     nextButton.disabled = currentRoomPage === totalPages;
-
     nextButton.onclick = function() {
         if (currentRoomPage < totalPages) {
             currentRoomPage++;
             renderRoomPagination();
         }
     };
-
     pagination.appendChild(nextButton);
+
+    // Last page button (>>)
+    const lastButton = document.createElement("button");
+    lastButton.innerText = ">>";
+    lastButton.title = "Last Page";
+    lastButton.disabled = currentRoomPage === totalPages;
+    lastButton.onclick = function() {
+        if (currentRoomPage < totalPages) {
+            currentRoomPage = totalPages;
+            renderRoomPagination();
+        }
+    };
+    pagination.appendChild(lastButton);
 }
 
 // Initial pagination
@@ -1983,119 +2017,109 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 });
+function parseBookingDateToISO(dateValue) {
+    if (!dateValue) return "";
+    const clean = String(dateValue).trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(clean)) return clean;
+    if (/^\d{2}-[A-Za-z]{3}-\d{4}$/.test(clean)) {
+        const [day, monthName, year] = clean.split("-");
+        const monthMap = {
+            Jan: "01", Feb: "02", Mar: "03", Apr: "04", May: "05", Jun: "06",
+            Jul: "07", Aug: "08", Sep: "09", Oct: "10", Nov: "11", Dec: "12"
+        };
+        const m = monthMap[monthName] || "01";
+        return `${year}-${m}-${day.padStart(2, "0")}`;
+    }
+    return "";
+}
+
+function formatBookingDate(dateValue) {
+    if (!dateValue) return "";
+    const clean = String(dateValue).trim();
+    if (/^\d{2}-[A-Za-z]{3}-\d{4}$/.test(clean)) return clean;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(clean)) {
+        const [year, monthStr, dayStr] = clean.split("-");
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const mIdx = parseInt(monthStr, 10) - 1;
+        return `${dayStr.padStart(2, "0")}-${months[mIdx] || "Jan"}-${year}`;
+    }
+    return clean;
+}
+
+function datesMatch(dateStr, filterVal) {
+    if (!filterVal) return true;
+    if (!dateStr) return false;
+    const strTrim = String(dateStr).trim();
+    const filterTrim = String(filterVal).trim();
+    if (strTrim === filterTrim) return true;
+
+    const iso1 = parseBookingDateToISO(strTrim);
+    const iso2 = parseBookingDateToISO(filterTrim);
+    if (iso1 && iso2 && iso1 === iso2) return true;
+
+    const fmt1 = formatBookingDate(strTrim);
+    const fmt2 = formatBookingDate(filterTrim);
+    if (fmt1 && fmt2 && fmt1.toLowerCase() === fmt2.toLowerCase()) return true;
+
+    return false;
+}
+
 function applyBookingFilters() {
+    const searchBooking = (document.getElementById("searchBooking")?.value || "").trim().toLowerCase();
+    const bookingDate = document.getElementById("bookingDate")?.value || "";
+    const status = document.getElementById("bookingStatusFilter")?.value || "";
+    const paymentStatus = document.getElementById("paymentStatusFilter")?.value || "";
+    const guests = document.getElementById("guestFilter")?.value || "";
 
-    const searchBooking =
-        document.getElementById("searchBooking").value.trim().toLowerCase();
-
-    const bookingDate =
-        document.getElementById("bookingDate").value;
-
-    const status =
-        document.getElementById("bookingStatusFilter").value;
-
-    const paymentStatus =
-        document.getElementById("paymentStatusFilter").value;
-
-    const guests =
-        document.getElementById("guestFilter").value;
-
-    const rows =
-        document.querySelectorAll("#bookingsTableBody tr");
+    const rows = document.querySelectorAll("#bookingsTableBody tr");
 
     rows.forEach(function(row) {
+        const bookingId = row.cells[0]?.innerText.trim().toLowerCase() || "";
+        const customerName = row.cells[1]?.innerText.trim().toLowerCase() || "";
+        const roomNo = row.cells[2]?.innerText.trim().toLowerCase() || "";
+        const roomType = row.cells[3]?.innerText.trim().toLowerCase() || "";
+        const rowBookingDate = row.cells[4]?.innerText.trim() || "";
+        const rowGuests = parseInt(row.cells[6]?.innerText.trim()) || 0;
+        const rowStatus = row.cells[8]?.innerText.trim() || "";
+        const rowPayment = row.cells[9]?.innerText.trim() || "";
 
-        const bookingId =
-            row.cells[0]?.innerText.trim().toLowerCase();
+        // Search across all booking columns
+        const matchesBooking = !searchBooking ||
+            bookingId.includes(searchBooking) ||
+            customerName.includes(searchBooking) ||
+            roomNo.includes(searchBooking) ||
+            roomType.includes(searchBooking) ||
+            rowStatus.toLowerCase().includes(searchBooking) ||
+            rowPayment.toLowerCase().includes(searchBooking);
 
-        const rowBookingDate =
-            row.cells[4]?.innerText.trim();
-
-        const rowGuests =
-            parseInt(row.cells[6]?.innerText.trim()) || 0;
-
-        const rowStatus =
-            row.cells[8]?.innerText.trim();
-
-        const rowPayment =
-            row.cells[9]?.innerText.trim();
-
-
-        // Search Booking
-        const matchesBooking =
-            !searchBooking ||
-            bookingId.includes(searchBooking);
-
-
-        // Booking Date
-        let matchesDate = true;
-
-        if (bookingDate) {
-
-            const parts = bookingDate.split("-");
-
-            const year = parts[0];
-            const month = parts[1];
-            const day = parts[2];
-
-            const months = [
-                "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-            ];
-
-            const formattedDate =
-                `${day}-${months[parseInt(month) - 1]}-${year}`;
-
-            matchesDate =
-                rowBookingDate === formattedDate ||
-                rowBookingDate === bookingDate;
-        }
-
+        // Booking Date matching
+        const matchesDate = datesMatch(rowBookingDate, bookingDate);
 
         // Status
-        const matchesStatus =
-            !status ||
-            rowStatus === status;
-
+        const matchesStatus = !status || rowStatus === status;
 
         // Payment
-        const matchesPayment =
-            !paymentStatus ||
-            rowPayment === paymentStatus;
-
+        const matchesPayment = !paymentStatus || rowPayment === paymentStatus;
 
         // Guests
         let matchesGuests = true;
+        if (guests === "1") matchesGuests = rowGuests === 1;
+        else if (guests === "2") matchesGuests = rowGuests === 2;
+        else if (guests === "3") matchesGuests = rowGuests === 3;
+        else if (guests === "4") matchesGuests = rowGuests >= 4;
 
-        if (guests === "1") {
-            matchesGuests = rowGuests === 1;
-        }
-        else if (guests === "2") {
-            matchesGuests = rowGuests === 2;
-        }
-        else if (guests === "3") {
-            matchesGuests = rowGuests === 3;
-        }
-        else if (guests === "4") {
-            matchesGuests = rowGuests >= 4;
-        }
-
-
-        // Show / Hide
-        if (
-            matchesBooking &&
-            matchesDate &&
-            matchesStatus &&
-            matchesPayment &&
-            matchesGuests
-        ) {
-            row.style.display = "table-row";
-        }
-        else {
+        if (matchesBooking && matchesDate && matchesStatus && matchesPayment && matchesGuests) {
+            row.removeAttribute("data-filtered-out");
+            row.style.display = "";
+        } else {
+            row.setAttribute("data-filtered-out", "true");
             row.style.display = "none";
         }
-
     });
+
+    if (document.getElementById("bookingPagination")) {
+        setupTablePagination("bookingsTableBody", "bookingPagination", 5);
+    }
 }
 
 
@@ -2182,6 +2206,32 @@ function saveEditBooking() {
     refreshAllDashboardDataAndViews();
     closeEditModal();
     alert("Booking " + bookingId + " saved successfully!");
+}
+
+function deleteCustomer(customerId) {
+    if (!customerId) return;
+    if (confirm("Are you sure you want to delete this customer?")) {
+        const appData = readAppData();
+        const targetCust = (appData.customers || []).find(c => c.customerId === customerId || c.id === customerId);
+        const bookingId = targetCust?.bookingId;
+
+        appData.customers = (appData.customers || []).filter(c => c.customerId !== customerId && c.id !== customerId);
+        if (bookingId) {
+            appData.bookings = (appData.bookings || []).filter(b => b.bookingId !== bookingId);
+        }
+        appData.dashboard = {
+            totalBookings: appData.bookings.length,
+            totalCustomers: appData.customers.length,
+            totalRevenue: appData.bookings.reduce((sum, item) => sum + Number(item.amount || 0), 0)
+        };
+
+        writeAppData(appData);
+        localStorage.setItem("sayoraCustomers", JSON.stringify(appData.customers));
+        localStorage.setItem("sayoraBookings", JSON.stringify(appData.bookings));
+
+        refreshAllDashboardDataAndViews();
+        alert("Customer deleted successfully!");
+    }
 }
 
 function deleteBooking(bookingId) {
@@ -2437,14 +2487,17 @@ document.addEventListener("change", function(e) {
 
 /* Master Initialization & Automatic Cross-Page/Tab Sync */
 document.addEventListener("DOMContentLoaded", function() {
+    if (isLoginPage()) return;
     refreshAllDashboardDataAndViews();
 });
 
 window.addEventListener("pageshow", function() {
+    if (isLoginPage()) return;
     refreshAllDashboardDataAndViews();
 });
 
 window.addEventListener("storage", function() {
+    if (isLoginPage()) return;
     refreshAllDashboardDataAndViews();
 });
 
@@ -2454,10 +2507,13 @@ window.addEventListener("storage", function() {
 
 /* Dynamic Modal Injector for Cross-Page View / Edit Overlays */
 function ensureGlobalModalsExist() {
+    if (isLoginPage()) return;
+
     if (!document.getElementById("viewModalOverlay")) {
         const viewModalDiv = document.createElement("div");
         viewModalDiv.id = "viewModalOverlay";
         viewModalDiv.className = "app-modal-overlay";
+        viewModalDiv.style.display = "none";
         viewModalDiv.innerHTML = `
             <div class="app-modal-card">
                 <div class="app-modal-header">
@@ -2477,6 +2533,7 @@ function ensureGlobalModalsExist() {
         const editModalDiv = document.createElement("div");
         editModalDiv.id = "editModalOverlay";
         editModalDiv.className = "app-modal-overlay";
+        editModalDiv.style.display = "none";
         editModalDiv.innerHTML = `
             <div class="app-modal-card">
                 <div class="app-modal-header">
@@ -2589,10 +2646,25 @@ function setupTablePagination(tbodyId, paginationId, rowsPerPage = 5) {
 
     paginationContainer.innerHTML = "";
 
-    // Prev button
+    // First button (<<)
+    const firstBtn = document.createElement("button");
+    firstBtn.className = "page-num-btn";
+    firstBtn.innerText = "<<";
+    firstBtn.title = "First Page";
+    firstBtn.disabled = currentPage === 1;
+    firstBtn.onclick = () => {
+        if (currentPage > 1) {
+            paginationStateMap[tbodyId] = 1;
+            setupTablePagination(tbodyId, paginationId, rowsPerPage);
+        }
+    };
+    paginationContainer.appendChild(firstBtn);
+
+    // Prev button (<)
     const prevBtn = document.createElement("button");
     prevBtn.className = "page-num-btn";
-    prevBtn.innerHTML = "&lt;";
+    prevBtn.innerText = "<";
+    prevBtn.title = "Previous Page";
     prevBtn.disabled = currentPage === 1;
     prevBtn.onclick = () => {
         if (currentPage > 1) {
@@ -2614,10 +2686,11 @@ function setupTablePagination(tbodyId, paginationId, rowsPerPage = 5) {
         paginationContainer.appendChild(pageBtn);
     }
 
-    // Next button
+    // Next button (>)
     const nextBtn = document.createElement("button");
     nextBtn.className = "page-num-btn";
-    nextBtn.innerHTML = "&gt;";
+    nextBtn.innerText = ">";
+    nextBtn.title = "Next Page";
     nextBtn.disabled = currentPage === totalPages;
     nextBtn.onclick = () => {
         if (currentPage < totalPages) {
@@ -2626,13 +2699,27 @@ function setupTablePagination(tbodyId, paginationId, rowsPerPage = 5) {
         }
     };
     paginationContainer.appendChild(nextBtn);
+
+    // Last button (>>)
+    const lastBtn = document.createElement("button");
+    lastBtn.className = "page-num-btn";
+    lastBtn.innerText = ">>";
+    lastBtn.title = "Last Page";
+    lastBtn.disabled = currentPage === totalPages;
+    lastBtn.onclick = () => {
+        if (currentPage < totalPages) {
+            paginationStateMap[tbodyId] = totalPages;
+            setupTablePagination(tbodyId, paginationId, rowsPerPage);
+        }
+    };
+    paginationContainer.appendChild(lastBtn);
 }
 
 // 1. CUSTOMERS PAGE
 function renderCustomersPageTable() {
-    ensureGlobalModalsExist();
     const tbody = document.getElementById("customersPageTableBody");
     if (!tbody) return;
+    ensureGlobalModalsExist();
 
     const appData = readAppData();
     const customers = appData.customers || [];
@@ -2656,7 +2743,7 @@ function renderCustomersPageTable() {
             <td>
                 <button type="button" class="action-btn btn-view" onclick="openViewModal('${bookingId}')">View</button>
                 <button type="button" class="action-btn btn-edit" onclick="openEditModal('${bookingId}')">Edit</button>
-                <button type="button" class="action-btn btn-delete" onclick="deleteBooking('${bookingId}')">Delete</button>
+                <button type="button" class="action-btn btn-delete" onclick="deleteCustomer('${cId}')">Delete</button>
             </td>
         `;
         tbody.appendChild(row);
@@ -2698,6 +2785,16 @@ function closeAddCustomerModal() {
     if (modal) modal.style.display = "none";
 }
 
+function validateCustomerPhone(val) {
+    if (!val) return true;
+    const clean = String(val).replace(/[^0-9]/g, "");
+    if (clean.length !== 10) {
+        alert("Please check the Phone No.");
+        return false;
+    }
+    return true;
+}
+
 function saveNewCustomer() {
     const name = document.getElementById("addCustName")?.value.trim();
     const phone = document.getElementById("addCustPhone")?.value.trim();
@@ -2709,11 +2806,18 @@ function saveNewCustomer() {
         return;
     }
 
+    const cleanPhone = String(phone).replace(/[^0-9]/g, "");
+    if (cleanPhone.length !== 10) {
+        alert("Please check the Phone No.");
+        document.getElementById("addCustPhone")?.focus();
+        return;
+    }
+
     const appData = readAppData();
     const newCust = {
         customerId: `CUS${String(appData.customers.length + 1).padStart(3, "0")}`,
         customerName: name,
-        phone: phone,
+        phone: cleanPhone,
         email: email || `${name.toLowerCase().replace(/\s+/g, "")}@gmail.com`,
         type: type,
         totalBookings: 1,
@@ -2731,9 +2835,9 @@ function saveNewCustomer() {
 
 // 2. CHECK-IN PAGE
 function renderCheckInPageTable() {
-    ensureGlobalModalsExist();
     const tbody = document.getElementById("checkInPageTableBody");
     if (!tbody) return;
+    ensureGlobalModalsExist();
 
     const appData = readAppData();
     const checkIns = (appData.bookings || []).filter(b => b.bookingStatus === "Checked In" || b.bookingStatus === "Confirmed");
@@ -2788,7 +2892,7 @@ function filterCheckInsPage() {
         const checkInDate = row.cells[5]?.innerText.trim() || "";
 
         const matchesSearch = !searchVal || text.includes(searchVal);
-        const matchesDate = !dateVal || checkInDate === dateVal;
+        const matchesDate = datesMatch(checkInDate, dateVal);
 
         if (matchesSearch && matchesDate) {
             row.removeAttribute("data-filtered-out");
@@ -2825,12 +2929,24 @@ function saveNewCheckIn() {
     const name = (document.getElementById("ciGuestName")?.value || document.getElementById("addChkName")?.value || "").trim();
     const roomNo = (document.getElementById("ciRoomNo")?.value || document.getElementById("addChkRoomNo")?.value || "").trim();
     const roomType = document.getElementById("ciRoomType")?.value || document.getElementById("addChkRoomType")?.value || "Luxury";
-    const checkInDate = (document.getElementById("ciCheckInDate")?.value || document.getElementById("addChkDate")?.value || "31-Aug-2026").trim();
-    const checkOutDate = (document.getElementById("ciCheckOutDate")?.value || document.getElementById("addChkOutDate")?.value || "02-Sep-2026").trim();
+    const rawCheckIn = (document.getElementById("ciCheckInDate")?.value || document.getElementById("addChkDate")?.value || "").trim();
+    const rawCheckOut = (document.getElementById("ciCheckOutDate")?.value || document.getElementById("addChkOutDate")?.value || "").trim();
+    const checkInDate = formatBookingDate(rawCheckIn) || "31-Aug-2026";
+    const checkOutDate = formatBookingDate(rawCheckOut) || "02-Sep-2026";
     const guests = Number(document.getElementById("ciGuests")?.value || document.getElementById("addChkGuests")?.value || 2);
 
     if (!name || !roomNo) {
         alert("Please enter Guest Name and Room Number.");
+        return;
+    }
+
+    const appData = readAppData();
+    const isBooked = (appData.bookings || []).some(b => 
+        String(b.roomNo).trim() === String(roomNo).trim() && 
+        (b.bookingStatus === "Confirmed" || b.bookingStatus === "Checked In" || b.bookingStatus === "Pending")
+    );
+    if (isBooked) {
+        alert("Already booked this room");
         return;
     }
 
@@ -2856,9 +2972,9 @@ function saveNewCheckIn() {
 
 // 3. CHECK-OUT PAGE
 function renderCheckOutPageTable() {
-    ensureGlobalModalsExist();
     const tbody = document.getElementById("checkOutPageTableBody");
     if (!tbody) return;
+    ensureGlobalModalsExist();
 
     const appData = readAppData();
     const checkOuts = appData.bookings || [];
@@ -2988,9 +3104,9 @@ function saveNewCheckOut() {
 
 // 4. PAYMENTS PAGE
 function renderPaymentsPageTable() {
-    ensureGlobalModalsExist();
     const tbody = document.getElementById("paymentsPageTableBody");
     if (!tbody) return;
+    ensureGlobalModalsExist();
 
     const appData = readAppData();
     const bookings = appData.bookings || [];
@@ -3038,7 +3154,7 @@ function filterPaymentsPage() {
         const payDate = row.cells[3]?.innerText.trim() || "";
 
         const matchesSearch = !searchVal || text.includes(searchVal);
-        const matchesDate = !dateVal || payDate === dateVal;
+        const matchesDate = datesMatch(payDate, dateVal);
 
         if (matchesSearch && matchesDate) {
             row.removeAttribute("data-filtered-out");
@@ -3076,6 +3192,11 @@ function saveNewPayment() {
 
     const appData = readAppData();
     let booking = appData.bookings.find(b => b.bookingId === bookingId);
+    const totalAmt = roomAmt + extra - discount;
+    const today = new Date();
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const todayStr = `${String(today.getDate()).padStart(2, "0")}-${months[today.getMonth()]}-${today.getFullYear()}`;
+
     if (!booking) {
         booking = {
             bookingId: bookingId,
@@ -3083,17 +3204,28 @@ function saveNewPayment() {
             roomNo: "105",
             roomType: "Luxury",
             checkIn: "29-Aug-2026",
-            checkOut: "31-Aug-2026",
+            checkOut: todayStr,
             amount: roomAmt,
+            extraCharges: extra,
+            discount: discount,
+            totalAmount: totalAmt,
+            paymentMethod: method,
             bookingStatus: "Checked Out",
             paymentStatus: "Paid"
         };
         appData.bookings.unshift(booking);
     } else {
         booking.paymentStatus = "Paid";
+        booking.paymentMethod = method;
+        booking.extraCharges = extra;
+        booking.discount = discount;
+        booking.totalAmount = totalAmt;
+        if (name) booking.customerName = name;
+        if (!booking.checkOut) booking.checkOut = todayStr;
     }
 
     writeAppData(appData);
+    localStorage.setItem("sayoraBookings", JSON.stringify(appData.bookings));
     refreshAllDashboardDataAndViews();
     closeAddPaymentModal();
     alert(`Payment recorded successfully via ${method}!`);
@@ -3120,9 +3252,9 @@ function getStoredReviews() {
 }
 
 function renderReviewsPageTable() {
-    ensureGlobalModalsExist();
     const tbody = document.getElementById("reviewsPageTableBody");
     if (!tbody) return;
+    ensureGlobalModalsExist();
 
     const reviews = getStoredReviews();
     tbody.innerHTML = "";

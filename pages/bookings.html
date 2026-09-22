@@ -84,7 +84,9 @@
                 <input
                     type="text"
                     id="searchBooking"
-                    placeholder="Search by booking ID..."
+                    placeholder="Search by booking ID, customer, room..."
+                    oninput="applyBookingFilters()"
+                    onkeyup="applyBookingFilters()"
                 >
 
             </div>
@@ -559,110 +561,6 @@
 
 <script src="../js/script.js"></script>
 <script>
-    function formatBookingDate(dateValue) {
-        if (!dateValue) return "";
-
-        const parts = dateValue.split("-");
-        const year = parts[0];
-        const month = parseInt(parts[1], 10);
-        const day = parts[2];
-
-        const months = [
-            "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-        ];
-
-        return `${day}-${months[month - 1]}-${year}`;
-    }
-
-    function readAppData() {
-        return window.readAppData ? window.readAppData() : (() => {
-            try {
-                const saved = JSON.parse(localStorage.getItem("sayoraAppData")) || {};
-                return {
-                    bookings: Array.isArray(saved.bookings) ? saved.bookings : [],
-                    customers: Array.isArray(saved.customers) ? saved.customers : [],
-                    dashboard: saved.dashboard || {}
-                };
-            } catch (error) {
-                return { bookings: [], customers: [], dashboard: {} };
-            }
-        })();
-    }
-
-    function writeAppData(appData) {
-        if (window.writeAppData) {
-            return window.writeAppData(appData);
-        }
-        localStorage.setItem("sayoraAppData", JSON.stringify(appData));
-        return appData;
-    }
-
-    function syncSharedBookingData(bookingEntry) {
-        if (window.syncSharedBookingData) {
-            return window.syncSharedBookingData(bookingEntry);
-        }
-
-        const appData = readAppData();
-        const normalizedBooking = { ...bookingEntry };
-        const customerId = normalizedBooking.customerId || `C${String(normalizedBooking.customerName || "guest").toLowerCase().replace(/\s+/g, "-")}-${Date.now().toString().slice(-4)}`;
-        normalizedBooking.customerId = customerId;
-
-        const allBookings = appData.bookings.filter(item => item.bookingId !== normalizedBooking.bookingId);
-        allBookings.unshift(normalizedBooking);
-        appData.bookings = allBookings;
-
-        const customerRecord = {
-            customerId: customerId,
-            customerName: normalizedBooking.customerName,
-            phone: normalizedBooking.phone || "9876543210",
-            roomNo: normalizedBooking.roomNo,
-            roomType: normalizedBooking.roomType,
-            guests: normalizedBooking.guests,
-            status: normalizedBooking.bookingStatus || "Confirmed",
-            paymentStatus: normalizedBooking.paymentStatus || "Paid",
-            bookingId: normalizedBooking.bookingId,
-            checkIn: normalizedBooking.checkIn,
-            checkOut: normalizedBooking.checkOut,
-            amount: normalizedBooking.amount
-        };
-
-        const allCustomers = appData.customers.filter(item => item.customerId !== customerId && item.customerName !== normalizedBooking.customerName);
-        allCustomers.unshift(customerRecord);
-        appData.customers = allCustomers;
-
-        appData.dashboard = {
-            totalBookings: allBookings.length,
-            totalCustomers: allCustomers.length,
-            totalRevenue: allBookings.reduce((sum, item) => sum + Number(item.amount || 0), 0)
-        };
-
-        localStorage.setItem("sayoraBookings", JSON.stringify(allBookings));
-        localStorage.setItem("sayoraCustomers", JSON.stringify(allCustomers));
-        writeAppData(appData);
-        return appData;
-    }
-
-    function removeSharedBookingData(bookingId) {
-        if (window.removeSharedBookingData) {
-            return window.removeSharedBookingData(bookingId);
-        }
-
-        const appData = readAppData();
-        appData.bookings = appData.bookings.filter(item => item.bookingId !== bookingId);
-        appData.customers = appData.customers.filter(item => item.bookingId !== bookingId);
-        appData.dashboard = {
-            totalBookings: appData.bookings.length,
-            totalCustomers: appData.customers.length,
-            totalRevenue: appData.bookings.reduce((sum, item) => sum + Number(item.amount || 0), 0)
-        };
-
-        localStorage.setItem("sayoraBookings", JSON.stringify(appData.bookings));
-        localStorage.setItem("sayoraCustomers", JSON.stringify(appData.customers));
-        writeAppData(appData);
-        return appData;
-    }
-
     document.addEventListener("DOMContentLoaded", function () {
         const addNewBookingBtn = document.getElementById("addNewBookingBtn");
         const newBookingModal = document.getElementById("newBookingModal");
@@ -915,10 +813,21 @@
                 return;
             }
 
-            const savedBookings = getSavedBookings();
+            // Double Booking Validation
+            const appData = (typeof readAppData === "function") ? readAppData() : { bookings: [] };
+            const isAlreadyBooked = (appData.bookings || []).some(item => {
+                if (editingBookingId && item.bookingId === editingBookingId) return false;
+                if (String(item.roomNo).trim() !== String(roomNo).trim()) return false;
+                const status = String(item.bookingStatus || "").toLowerCase();
+                return status === "confirmed" || status === "checked in" || status === "pending";
+            });
+
+            if (isAlreadyBooked) {
+                alert("Already booked this room");
+                return;
+            }
 
             if (editingBookingId) {
-                const bookingIndex = savedBookings.findIndex(item => item.bookingId === editingBookingId);
                 const updatedBooking = {
                     bookingId: editingBookingId,
                     customerName,
@@ -932,51 +841,10 @@
                     paymentStatus
                 };
 
-                if (bookingIndex !== -1) {
-                    savedBookings[bookingIndex] = updatedBooking;
-                    localStorage.setItem("sayoraBookings", JSON.stringify(savedBookings));
-                    syncSharedBookingData(updatedBooking);
-                } else {
-                    const existingRow = bookingsTableBody.querySelector(`tr[data-booking-id="${editingBookingId}"]`);
-                    if (existingRow) {
-                        existingRow.dataset.bookingId = editingBookingId;
-                        updateRowFromBooking(updatedBooking);
-                    }
-                }
-
-                const existingRow = bookingsTableBody.querySelector(`tr[data-booking-id="${editingBookingId}"]`);
-                if (existingRow) {
-                    updateRowFromBooking(updatedBooking);
-                }
-
-                if (typeof renderSharedBookingsTable === "function") {
-                    renderSharedBookingsTable();
-                }
-
+                syncSharedBookingData(updatedBooking);
                 alert("Booking updated successfully!");
             } else {
-                const bookingId = `BK${String(Date.now()).slice(-6).padStart(6, "0")}`;
-                const row = document.createElement("tr");
-                row.dataset.bookingId = bookingId;
-                row.innerHTML = `
-                    <td>${bookingId}</td>
-                    <td>${customerName}</td>
-                    <td>${roomNo}</td>
-                    <td>${roomType}</td>
-                    <td>${checkIn}</td>
-                    <td>${checkOut}</td>
-                    <td>${guests}</td>
-                    <td>₹${Number(amount).toLocaleString("en-IN")}</td>
-                    <td>${bookingStatus}</td>
-                    <td>${paymentStatus}</td>
-                    <td>
-                        <button type="button" class="edit-booking-btn">Edit</button>
-                        <button type="button" class="delete-booking-btn">Delete</button>
-                    </td>
-                `;
-
-                bookingsTableBody.insertBefore(row, bookingsTableBody.firstChild);
-
+                const bookingId = `BK${String(Math.floor(100000 + Math.random() * 900000))}`;
                 const newBooking = {
                     bookingId,
                     customerName,
@@ -990,52 +858,21 @@
                     paymentStatus
                 };
 
-                savedBookings.unshift(newBooking);
-                localStorage.setItem("sayoraBookings", JSON.stringify(savedBookings));
                 syncSharedBookingData(newBooking);
-                if (typeof renderSharedBookingsTable === "function") {
-                    renderSharedBookingsTable();
-                }
                 alert("Booking added successfully!");
             }
 
+            localStorage.setItem("sayoraDataSeeded", "true");
             newBookingModal.style.display = "none";
             resetBookingForm();
+            if (typeof renderSharedBookingsTable === "function") {
+                renderSharedBookingsTable();
+            }
+            if (typeof applyBookingFilters === "function") {
+                applyBookingFilters();
+            }
         });
     });
-
-    function loadSavedBookings() {
-        const savedBookings = JSON.parse(localStorage.getItem("sayoraBookings")) || [];
-        const tbody = document.getElementById("bookingsTableBody");
-
-        if (!tbody) return;
-
-        savedBookings.forEach(function (booking) {
-            const row = document.createElement("tr");
-            row.dataset.bookingId = booking.bookingId;
-
-            row.innerHTML = `
-                <td>${booking.bookingId}</td>
-                <td>${booking.customerName}</td>
-                <td>${booking.roomNo}</td>
-                <td>${booking.roomType}</td>
-                <td>${booking.checkIn}</td>
-                <td>${booking.checkOut}</td>
-                <td>${booking.guests}</td>
-                <td>₹${Number(booking.amount).toLocaleString("en-IN")}</td>
-                <td>${booking.bookingStatus}</td>
-                <td>${booking.paymentStatus}</td>
-                <td>
-                    <button type="button" class="edit-booking-btn">Edit</button>
-                    <button type="button" class="delete-booking-btn">Delete</button>
-                </td>
-            `;
-
-            tbody.insertBefore(row, tbody.firstChild);
-        });
-    }
-
-    loadSavedBookings();
 </script>
 </body>
 </html>

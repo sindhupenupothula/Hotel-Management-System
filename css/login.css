@@ -92,3 +92,11 @@ body{
 .login-right button:hover{
     background:#062d6b;
 }
+
+/* Hide any injected modal overlays on login page */
+.app-modal-overlay,
+#editModalOverlay,
+#viewModalOverlay {
+    display: none !important;
+    visibility: hidden !important;
+}
