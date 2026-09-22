@@ -9,57 +9,91 @@ body{
     background:#f4f4f4;
 }
 
-.navbar{
-    background:#0b1b3a;
-    color:white;
-    display:flex;
-    padding: 15px 20px;
-    align-items:center;
-    padding:15px 40px;
+.navbar {
+    background: #0b1b3a;
+    color: white;
+    display: flex;
+    height: 64px;
+    min-height: 64px;
+    max-height: 64px;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
 }
 
-.logo{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-right:20px;
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-right: 20px;
 }
 
-.logo img{
-    width:60px;
-    height:60px;
-    border-radius:50%;
+.logo img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
-.logo h2{
-    font-size:28px;
+.logo h2 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin: 0;
+    line-height: 1;
 }
 
 .nav-links {
     list-style: none;
     display: flex;
     align-items: center;
-    gap: 28px;
-    margin-left: 20px;
+    gap: 26px;
+    margin: 0;
+    padding: 0;
 }
 
 .nav-links a {
     text-decoration: none;
-    color: white;
+    color: #cbd5e1;
     font-size: 14px;
     font-weight: 600;
     padding: 6px 2px;
     white-space: nowrap;
-    transition: color 0.2s ease;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s ease, border-color 0.2s ease;
 }
 
-.nav-links a:hover,
-.nav-links a.active {
-    color: #00c3ff;
+.nav-links a:hover {
+    color: #00b7ff;
 }
-.hero{
-    width:100%;
-    height:calc(100vh - 90px);
+
+.nav-links a.active {
+    color: #00b7ff !important;
+    font-weight: 700 !important;
+    border-bottom: 2px solid #00b7ff;
+}
+
+.profile-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    font-size: 24px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.profile-icon:hover {
+    color: #00b7ff;
+    transform: scale(1.08);
+}
+
+.hero {
+    width: 100%;
+    height: calc(100vh - 64px);
 }
 
 .hero-section{
