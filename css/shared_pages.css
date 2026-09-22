@@ -14,68 +14,93 @@ body {
 
 /* Header & Navbar */
 header {
-    background: #0f172a;
+    background: #0b1b3a;
     width: 100%;
 }
 
 .navbar {
-    max-width: 1350px;
-    margin: 0 auto;
-    padding: 12px 24px;
+    width: 100%;
+    max-width: 100%;
+    height: 64px;
+    min-height: 64px;
+    max-height: 64px;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0 32px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background: #0b1b3a;
 }
 
 .logo {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
+    margin-right: 20px;
 }
 
 .logo img {
-    width: 42px;
-    height: 42px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     object-fit: cover;
 }
 
 .logo h2 {
     color: #ffffff;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 700;
     letter-spacing: 0.5px;
+    margin: 0;
+    line-height: 1;
 }
 
 .nav-links {
     display: flex;
     list-style: none;
     align-items: center;
-    gap: 28px;
+    gap: 26px;
     margin: 0;
     padding: 0;
 }
 
 .nav-links a {
-    color: #e2e8f0;
+    color: #cbd5e1;
     text-decoration: none;
     font-size: 14px;
     font-weight: 600;
     padding: 6px 2px;
-    transition: color 0.2s;
     white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s ease, border-color 0.2s ease;
 }
 
-.nav-links a:hover,
+.nav-links a:hover {
+    color: #00b7ff;
+}
+
 .nav-links a.active {
-    color: #38bdf8;
-    font-weight: 600;
+    color: #00b7ff !important;
+    font-weight: 700 !important;
+    border-bottom: 2px solid #00b7ff;
 }
 
 .profile-icon {
-    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
     font-size: 24px;
+    color: #ffffff;
     cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.profile-icon:hover {
+    color: #00b7ff;
+    transform: scale(1.08);
 }
 
 /* Main Container */
@@ -106,20 +131,24 @@ header {
 }
 
 .action-add-btn {
-    background: #2563eb;
-    color: #ffffff;
+    background: #1d68e1 !important;
+    color: #ffffff !important;
     border: none;
     padding: 10px 20px;
-    border-radius: 8px;
+    border-radius: 6px;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
-    transition: background 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 6px rgba(29, 104, 225, 0.25);
+    transition: background 0.2s ease, transform 0.1s ease;
 }
 
 .action-add-btn:hover {
-    background: #1d4ed8;
+    background: #1557d6 !important;
+    transform: translateY(-1px);
 }
 
 /* Search & Filter Bar */
