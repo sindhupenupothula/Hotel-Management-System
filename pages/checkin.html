@@ -110,7 +110,7 @@
                     </div>
                     <div class="form-group">
                         <label>Room No.</label>
-                        <input type="text" id="ciRoomNo" required placeholder="Room Number">
+                        <input type="text" id="ciRoomNo" required placeholder="Room Number" oninput="autoFillCheckInRoomType()" onchange="autoFillCheckInRoomType()">
                     </div>
                 </div>
                 <div class="form-grid-2">
@@ -130,11 +130,11 @@
                 <div class="form-grid-2">
                     <div class="form-group">
                         <label>Check-In Date</label>
-                        <input type="text" id="ciCheckInDate" required placeholder="e.g. 31-Aug-2026">
+                        <input type="date" id="ciCheckInDate" required style="width:100%; cursor:pointer;">
                     </div>
                     <div class="form-group">
                         <label>Check-Out Date</label>
-                        <input type="text" id="ciCheckOutDate" required placeholder="e.g. 02-Sep-2026">
+                        <input type="date" id="ciCheckOutDate" required style="width:100%; cursor:pointer;">
                     </div>
                 </div>
                 <div class="app-modal-footer">

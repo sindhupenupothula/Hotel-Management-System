@@ -101,7 +101,10 @@
         <!-- ROOM LIST -->
         <section class="room-list-card">
 
-            <h2>☷ Room List</h2>
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom:12px;">
+                <h2 style="margin:0;">☷ Room List</h2>
+                <div id="roomPaginationTop" class="pagination" style="margin:0; padding:0;"></div>
+            </div>
 
             <table>
 
@@ -173,7 +176,11 @@
                 </tbody>
 
             </table>
-            <div id="roomPagination" class="pagination"></div>
+            <div id="roomPagination" class="pagination">
+                <button class="prev-btn" id="roomPrevBtn" onclick="previousRoomPage()" title="Previous Page">&lt;</button>
+                <button class="active">1</button>
+                <button class="next-btn" id="roomNextBtn" onclick="nextRoomPage()" title="Next Page">&gt;</button>
+            </div>
         </section>
 
     </div>

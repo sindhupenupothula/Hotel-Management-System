@@ -189,6 +189,10 @@ function renderSharedBookingsTable() {
         `;
         tbody.appendChild(row);
     });
+
+    if (document.getElementById("bookingPagination") && typeof setupTablePagination === "function") {
+        setupTablePagination("bookingsTableBody", "bookingPagination", 5);
+    }
 }
 
 function renderSharedCustomersTable() {
@@ -1714,107 +1718,110 @@ alert("Room deleted successfully!");
 let currentRoomPage = 1;
 const roomsPerPage = 5;
 
-function renderRoomPagination() {
+function previousRoomPage() {
+    if (currentRoomPage > 1) {
+        currentRoomPage--;
+        renderRoomPagination();
+    }
+}
 
+function nextRoomPage() {
+    const tbody = document.getElementById("roomTableBody");
+    if (!tbody) return;
+    const visibleRows = Array.from(tbody.querySelectorAll("tr")).filter(r => r.getAttribute("data-filtered-out") !== "true");
+    const totalPages = Math.max(1, Math.ceil(visibleRows.length / roomsPerPage));
+    if (currentRoomPage < totalPages) {
+        currentRoomPage++;
+        renderRoomPagination();
+    }
+}
+
+function renderRoomPagination() {
     const tbody = document.getElementById("roomTableBody");
     const pagination = document.getElementById("roomPagination");
 
     if (!tbody || !pagination) return;
 
-    const rows = Array.from(tbody.querySelectorAll("tr"));
-
-    const totalPages = Math.ceil(rows.length / roomsPerPage);
+    const allRows = Array.from(tbody.querySelectorAll("tr"));
+    const visibleRows = allRows.filter(r => r.getAttribute("data-filtered-out") !== "true");
+    const totalPages = Math.max(1, Math.ceil(visibleRows.length / roomsPerPage));
 
     if (currentRoomPage > totalPages) {
-        currentRoomPage = totalPages || 1;
+        currentRoomPage = totalPages;
+    }
+    if (currentRoomPage < 1) {
+        currentRoomPage = 1;
     }
 
-    rows.forEach(function(row, index) {
-
-        const start = (currentRoomPage - 1) * roomsPerPage;
-        const end = start + roomsPerPage;
-
-        row.style.display =
-            index >= start && index < end ? "table-row" : "none";
+    allRows.forEach(row => {
+        if (row.getAttribute("data-filtered-out") === "true") {
+            row.style.display = "none";
+        }
     });
 
-    pagination.innerHTML = "";
+    const start = (currentRoomPage - 1) * roomsPerPage;
+    const end = start + roomsPerPage;
 
-    // First page button (<<)
-    const firstButton = document.createElement("button");
-    firstButton.innerText = "<<";
-    firstButton.title = "First Page";
-    firstButton.disabled = currentRoomPage === 1;
-    firstButton.onclick = function() {
-        if (currentRoomPage > 1) {
-            currentRoomPage = 1;
-            renderRoomPagination();
-        }
-    };
-    pagination.appendChild(firstButton);
+    visibleRows.forEach(function(row, index) {
+        row.style.display = (index >= start && index < end) ? "table-row" : "none";
+    });
 
-    // Previous button (<)
-    const previousButton = document.createElement("button");
-    previousButton.innerText = "<";
-    previousButton.title = "Previous Page";
-    previousButton.disabled = currentRoomPage === 1;
-    previousButton.onclick = function() {
-        if (currentRoomPage > 1) {
-            currentRoomPage--;
-            renderRoomPagination();
-        }
-    };
-    pagination.appendChild(previousButton);
+    const pagContainers = [document.getElementById("roomPagination"), document.getElementById("roomPaginationTop")].filter(Boolean);
+    if (pagContainers.length === 0) return;
 
-    // Page buttons
-    for (let page = 1; page <= totalPages; page++) {
-        const pageButton = document.createElement("button");
-        pageButton.innerText = page;
-        if (page === currentRoomPage) {
-            pageButton.classList.add("active");
-        }
-        pageButton.onclick = function() {
-            currentRoomPage = page;
-            renderRoomPagination();
+    pagContainers.forEach(container => {
+        container.innerHTML = "";
+
+        // Previous button (<)
+        const previousButton = document.createElement("button");
+        previousButton.className = "page-num-btn prev-btn";
+        previousButton.innerHTML = "&lt;";
+        previousButton.title = "Previous Page";
+        previousButton.disabled = currentRoomPage === 1;
+        previousButton.onclick = function() {
+            if (currentRoomPage > 1) {
+                currentRoomPage--;
+                renderRoomPagination();
+            }
         };
-        pagination.appendChild(pageButton);
-    }
+        container.appendChild(previousButton);
 
-    // Next button (>)
-    const nextButton = document.createElement("button");
-    nextButton.innerText = ">";
-    nextButton.title = "Next Page";
-    nextButton.disabled = currentRoomPage === totalPages;
-    nextButton.onclick = function() {
-        if (currentRoomPage < totalPages) {
-            currentRoomPage++;
-            renderRoomPagination();
+        // Page buttons starting from 1
+        for (let page = 1; page <= totalPages; page++) {
+            const pageButton = document.createElement("button");
+            pageButton.className = "page-num-btn" + (page === currentRoomPage ? " active" : "");
+            pageButton.innerText = page;
+            pageButton.onclick = function() {
+                currentRoomPage = page;
+                renderRoomPagination();
+            };
+            container.appendChild(pageButton);
         }
-    };
-    pagination.appendChild(nextButton);
 
-    // Last page button (>>)
-    const lastButton = document.createElement("button");
-    lastButton.innerText = ">>";
-    lastButton.title = "Last Page";
-    lastButton.disabled = currentRoomPage === totalPages;
-    lastButton.onclick = function() {
-        if (currentRoomPage < totalPages) {
-            currentRoomPage = totalPages;
-            renderRoomPagination();
-        }
-    };
-    pagination.appendChild(lastButton);
+        // Next button (>)
+        const nextButton = document.createElement("button");
+        nextButton.className = "page-num-btn next-btn";
+        nextButton.innerHTML = "&gt;";
+        nextButton.title = "Next Page";
+        nextButton.disabled = currentRoomPage === totalPages;
+        nextButton.onclick = function() {
+            if (currentRoomPage < totalPages) {
+                currentRoomPage++;
+                renderRoomPagination();
+            }
+        };
+        container.appendChild(nextButton);
+    });
 }
 
 // Initial pagination
 renderRoomPagination();
 
 function applyFilters() {
-    const searchRoom = document.getElementById("searchRoom").value.trim().toLowerCase();
-    const roomType = document.getElementById("roomTypeFilter").value;
-    const floor = document.getElementById("floorFilter").value;
-    const status = document.getElementById("statusFilter").value;
+    const searchRoom = document.getElementById("searchRoom") ? document.getElementById("searchRoom").value.trim().toLowerCase() : "";
+    const roomType = document.getElementById("roomTypeFilter") ? document.getElementById("roomTypeFilter").value : "";
+    const floor = document.getElementById("floorFilter") ? document.getElementById("floorFilter").value : "";
+    const status = document.getElementById("statusFilter") ? document.getElementById("statusFilter").value : "";
 
     const rows = document.querySelectorAll("#roomTableBody tr");
 
@@ -1824,43 +1831,35 @@ function applyFilters() {
         const roomFloor = row.cells[2]?.innerText.trim();
         const roomStatus = row.cells[4]?.innerText.trim();
 
-        const matchesSearch =
-            !searchRoom || roomNo.includes(searchRoom);
+        const matchesSearch = !searchRoom || roomNo.includes(searchRoom);
+        const matchesType = !roomType || type === roomType;
+        const matchesFloor = !floor || roomFloor === floor;
+        const matchesStatus = !status || roomStatus === status;
 
-        const matchesType =
-            !roomType || type === roomType;
-
-        const matchesFloor =
-            !floor || roomFloor === floor;
-
-        const matchesStatus =
-            !status || roomStatus === status;
-
-        if (
-            matchesSearch &&
-            matchesType &&
-            matchesFloor &&
-            matchesStatus
-        ) {
-            row.style.display = "";
+        if (matchesSearch && matchesType && matchesFloor && matchesStatus) {
+            row.removeAttribute("data-filtered-out");
         } else {
-            row.style.display = "none";
+            row.setAttribute("data-filtered-out", "true");
         }
     });
+
+    currentRoomPage = 1;
+    renderRoomPagination();
 }
 
-
 function resetFilters() {
-    document.getElementById("searchRoom").value = "";
-    document.getElementById("roomTypeFilter").value = "";
-    document.getElementById("floorFilter").value = "";
-    document.getElementById("statusFilter").value = "";
+    if (document.getElementById("searchRoom")) document.getElementById("searchRoom").value = "";
+    if (document.getElementById("roomTypeFilter")) document.getElementById("roomTypeFilter").value = "";
+    if (document.getElementById("floorFilter")) document.getElementById("floorFilter").value = "";
+    if (document.getElementById("statusFilter")) document.getElementById("statusFilter").value = "";
 
     const rows = document.querySelectorAll("#roomTableBody tr");
-
     rows.forEach(function(row) {
-        row.style.display = "";
+        row.removeAttribute("data-filtered-out");
     });
+
+    currentRoomPage = 1;
+    renderRoomPagination();
 }
 const addRoomInput = document.getElementById("addRoomNo");
 if (addRoomInput) {
@@ -2159,18 +2158,21 @@ function openEditModal(bookingId) {
         paymentStatus: "Paid"
     };
 
-    document.getElementById("editItemKey").value = bookingId;
-    document.getElementById("editBookingId").value = booking.bookingId;
-    document.getElementById("editGuestName").value = booking.customerName || "Guest";
-    document.getElementById("editRoomNo").value = booking.roomNo || "101";
-    document.getElementById("editRoomType").value = booking.roomType || "Luxury";
-    document.getElementById("editCheckIn").value = booking.checkIn || "29-Aug-2026";
-    document.getElementById("editCheckOut").value = booking.checkOut || "31-Aug-2026";
-    document.getElementById("editAmount").value = booking.amount || 10000;
-    document.getElementById("editBookingStatus").value = booking.bookingStatus || "Confirmed";
-    document.getElementById("editPaymentStatus").value = booking.paymentStatus || "Paid";
-
-    document.getElementById("editModalOverlay").style.display = "flex";
+    if (document.getElementById("editModalOverlay")) {
+        if (document.getElementById("editItemKey")) document.getElementById("editItemKey").value = bookingId;
+        if (document.getElementById("editBookingId")) document.getElementById("editBookingId").value = booking.bookingId;
+        if (document.getElementById("editGuestName")) document.getElementById("editGuestName").value = booking.customerName || "Guest";
+        if (document.getElementById("editRoomNo")) document.getElementById("editRoomNo").value = booking.roomNo || "101";
+        if (document.getElementById("editRoomType")) document.getElementById("editRoomType").value = booking.roomType || "Luxury";
+        if (document.getElementById("editCheckIn")) document.getElementById("editCheckIn").value = booking.checkIn || "29-Aug-2026";
+        if (document.getElementById("editCheckOut")) document.getElementById("editCheckOut").value = booking.checkOut || "31-Aug-2026";
+        if (document.getElementById("editAmount")) document.getElementById("editAmount").value = booking.amount || 10000;
+        if (document.getElementById("editBookingStatus")) document.getElementById("editBookingStatus").value = booking.bookingStatus || "Confirmed";
+        if (document.getElementById("editPaymentStatus")) document.getElementById("editPaymentStatus").value = booking.paymentStatus || "Paid";
+        document.getElementById("editModalOverlay").style.display = "flex";
+    } else if (typeof populateBookingForm === "function") {
+        populateBookingForm(booking);
+    }
 }
 
 function closeEditModal() {
@@ -2912,10 +2914,52 @@ function closeAddCheckInModal() {
     closeNewCheckInModal();
 }
 
+function autoFillCheckInRoomType() {
+    const roomNoInput = document.getElementById("ciRoomNo") || document.getElementById("addChkRoomNo");
+    const roomTypeSelect = document.getElementById("ciRoomType") || document.getElementById("addChkRoomType");
+    if (!roomNoInput || !roomTypeSelect) return;
+
+    const val = roomNoInput.value.trim();
+    if (!val) return;
+
+    const rooms = (typeof getRoomList === "function") ? getRoomList() : [];
+    const matched = rooms.find(r => String(r.roomNo).trim() === val);
+    if (matched && matched.roomType) {
+        roomTypeSelect.value = matched.roomType;
+        return;
+    }
+
+    const num = parseInt(val, 10);
+    if (!isNaN(num)) {
+        if ((num >= 101 && num <= 117) || (num >= 201 && num <= 217) || (num >= 301 && num <= 316)) {
+            roomTypeSelect.value = "Luxury";
+        } else if ((num >= 118 && num <= 134) || (num >= 218 && num <= 234) || (num >= 317 && num <= 332)) {
+            roomTypeSelect.value = "Deluxe";
+        } else if ((num >= 135 && num <= 150) || (num >= 235 && num <= 250) || (num >= 333 && num <= 350)) {
+            roomTypeSelect.value = "Suite";
+        }
+    }
+}
+
 function openNewCheckInModal() {
     ensureGlobalModalsExist();
     const modal = document.getElementById("newCheckInModalOverlay") || document.getElementById("addCheckInModalOverlay");
     if (modal) modal.style.display = "flex";
+
+    const ciRoom = document.getElementById("ciRoomNo");
+    if (ciRoom) {
+        ciRoom.removeEventListener("input", autoFillCheckInRoomType);
+        ciRoom.addEventListener("input", autoFillCheckInRoomType);
+        ciRoom.removeEventListener("change", autoFillCheckInRoomType);
+        ciRoom.addEventListener("change", autoFillCheckInRoomType);
+    }
+
+    const ciIn = document.getElementById("ciCheckInDate");
+    const ciOut = document.getElementById("ciCheckOutDate");
+    const today = new Date().toISOString().split("T")[0];
+    const tomorrow = new Date(Date.now() + 86400000).toISOString().split("T")[0];
+    if (ciIn && !ciIn.value) ciIn.value = today;
+    if (ciOut && !ciOut.value) ciOut.value = tomorrow;
 }
 
 function closeNewCheckInModal() {
@@ -2946,7 +2990,7 @@ function saveNewCheckIn() {
         (b.bookingStatus === "Confirmed" || b.bookingStatus === "Checked In" || b.bookingStatus === "Pending")
     );
     if (isBooked) {
-        alert("Already booked this room");
+        alert("Room " + roomNo + " is already booked! Please select an available room.");
         return;
     }
 
@@ -2965,6 +3009,7 @@ function saveNewCheckIn() {
     };
 
     syncSharedBookingData(newBooking);
+    localStorage.setItem("sayoraDataSeeded", "true");
     refreshAllDashboardDataAndViews();
     closeNewCheckInModal();
     alert(`Check-in recorded successfully for ${name} (Booking ${bookingId})!`);

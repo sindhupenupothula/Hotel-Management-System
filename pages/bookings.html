@@ -398,28 +398,17 @@
             <div class="form-row">
 
                 <div class="form-group">
-
-                    <label>
-                        Room Type
-                    </label>
-
-                    <input
-    type="text"
-    id="bookingRoomType"
-    placeholder="Room type will appear automatically"
-    readonly
-    required
->
-
+                    <label>Room Type</label>
+                    <select id="bookingRoomType" required>
+                        <option value="">Select Room Type</option>
+                        <option value="Luxury">Luxury (₹10,000/night)</option>
+                        <option value="Deluxe">Deluxe (₹7,000/night)</option>
+                        <option value="Suite">Suite (₹15,000/night)</option>
+                    </select>
                 </div>
 
-
                 <div class="form-group">
-
-                    <label>
-                        Number of Guests
-                    </label>
-
+                    <label>Number of Guests</label>
                     <input
                         type="number"
                         id="bookingGuests"
@@ -427,62 +416,38 @@
                         value="1"
                         required
                     >
-
                 </div>
-
             </div>
 
-
             <div class="form-row">
-
                 <div class="form-group">
-
-                    <label>
-                        Check-In
-                    </label>
-
+                    <label>Check-In Date</label>
                     <input
                         type="date"
                         id="checkInDate"
                         required
                     >
-
                 </div>
 
-
                 <div class="form-group">
-
-                    <label>
-                        Check-Out
-                    </label>
-
+                    <label>Check-Out Date</label>
                     <input
                         type="date"
                         id="checkOutDate"
                         required
                     >
-
                 </div>
-
             </div>
 
-
             <div class="form-row">
-
                 <div class="form-group">
-
-                    <label>
-                        Total Amount
-                    </label>
-
+                    <label>Total Amount (₹)</label>
                     <input
                         type="number"
                         id="bookingAmount"
-                        placeholder="Amount will appear automatically"
-                        readonly
+                        placeholder="Amount calculates automatically"
                         required
                     >
-
                 </div>
 
 
@@ -670,8 +635,10 @@
         const bookingRoomType = document.getElementById("bookingRoomType");
         const bookingAmount = document.getElementById("bookingAmount");
         const bookingGuests = document.getElementById("bookingGuests");
-        const roomDetails = {};
+        const checkInDateInput = document.getElementById("checkInDate");
+        const checkOutDateInput = document.getElementById("checkOutDate");
 
+        const roomDetails = {};
         for (let roomNo = 101; roomNo <= 350; roomNo++) {
             let type = "";
             let amount = 0;
@@ -702,51 +669,65 @@
         }
 
         function calculateBookingAmount() {
-            const roomNumber = bookingRoomNo.value.trim();
-            const guests = Number(bookingGuests.value) || 1;
+            const roomNumber = bookingRoomNo ? bookingRoomNo.value.trim() : "";
+            const guests = Number(bookingGuests ? bookingGuests.value : 1) || 1;
 
-            if (roomDetails[roomNumber]) {
-                const baseAmount = Number(roomDetails[roomNumber].amount) || 0;
+            if (roomNumber && roomDetails[roomNumber] && bookingRoomType && !bookingRoomType.value) {
                 bookingRoomType.value = roomDetails[roomNumber].type;
-                bookingAmount.value = baseAmount * guests;
-                return;
             }
 
-            const roomType = bookingRoomType.value.trim();
+            const roomType = bookingRoomType ? bookingRoomType.value.trim() : "";
             const roomRates = {
                 Luxury: 10000,
                 Deluxe: 7000,
                 Suite: 15000
             };
 
-            const baseAmount = roomRates[roomType] || 0;
-            if (!baseAmount) {
-                bookingAmount.value = "";
-                return;
+            let baseRate = (roomNumber && roomDetails[roomNumber]) ? roomDetails[roomNumber].amount : (roomRates[roomType] || 10000);
+
+            // Calculate nights
+            let nights = 1;
+            if (checkInDateInput && checkOutDateInput && checkInDateInput.value && checkOutDateInput.value) {
+                const d1 = new Date(checkInDateInput.value);
+                const d2 = new Date(checkOutDateInput.value);
+                const diffTime = d2.getTime() - d1.getTime();
+                if (diffTime > 0) {
+                    nights = Math.max(1, Math.round(diffTime / (1000 * 60 * 60 * 24)));
+                }
             }
 
-            bookingAmount.value = baseAmount * guests;
+            if (bookingAmount && (roomType || roomNumber)) {
+                bookingAmount.value = baseRate * guests * nights;
+            }
         }
 
-        bookingRoomNo.addEventListener("input", function () {
-            const roomNumber = bookingRoomNo.value.trim();
-
-            if (roomDetails[roomNumber]) {
-                bookingRoomType.value = roomDetails[roomNumber].type;
+        if (bookingRoomNo) {
+            bookingRoomNo.addEventListener("input", function () {
+                const roomNumber = bookingRoomNo.value.trim();
+                if (roomDetails[roomNumber] && bookingRoomType) {
+                    bookingRoomType.value = roomDetails[roomNumber].type;
+                }
                 calculateBookingAmount();
-            } else {
-                bookingRoomType.value = "";
-                bookingAmount.value = "";
-            }
-        });
+            });
+            bookingRoomNo.addEventListener("change", calculateBookingAmount);
+        }
 
-        bookingGuests.addEventListener("input", function () {
-            const guests = Number(bookingGuests.value);
-            if (!guests || guests < 1) {
-                bookingGuests.value = 1;
-            }
-            calculateBookingAmount();
-        });
+        if (bookingRoomType) {
+            bookingRoomType.addEventListener("change", calculateBookingAmount);
+        }
+
+        if (bookingGuests) {
+            bookingGuests.addEventListener("input", calculateBookingAmount);
+            bookingGuests.addEventListener("change", calculateBookingAmount);
+        }
+
+        if (checkInDateInput) {
+            checkInDateInput.addEventListener("change", calculateBookingAmount);
+        }
+
+        if (checkOutDateInput) {
+            checkOutDateInput.addEventListener("change", calculateBookingAmount);
+        }
 
         cancelBookingBtn.addEventListener("click", function () {
             newBookingModal.style.display = "none";
@@ -793,23 +774,40 @@
             }
         });
 
-        newBookingForm.addEventListener("submit", function (event) {
-            event.preventDefault();
+        function handleSaveBooking(event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
 
-            const customerName = document.getElementById("customerName").value.trim();
-            const roomNo = document.getElementById("bookingRoomNo").value.trim();
-            const roomType = document.getElementById("bookingRoomType").value.trim();
-            const guests = document.getElementById("bookingGuests").value.trim();
-            const checkInValue = document.getElementById("checkInDate").value;
-            const checkOutValue = document.getElementById("checkOutDate").value;
+            const customerName = document.getElementById("customerName") ? document.getElementById("customerName").value.trim() : "";
+            const roomNo = document.getElementById("bookingRoomNo") ? document.getElementById("bookingRoomNo").value.trim() : "";
+            const roomType = document.getElementById("bookingRoomType") ? document.getElementById("bookingRoomType").value.trim() : "";
+            const guests = document.getElementById("bookingGuests") ? document.getElementById("bookingGuests").value.trim() : "1";
+            const checkInValue = document.getElementById("checkInDate") ? document.getElementById("checkInDate").value : "";
+            const checkOutValue = document.getElementById("checkOutDate") ? document.getElementById("checkOutDate").value : "";
             const checkIn = formatBookingDate(checkInValue);
             const checkOut = formatBookingDate(checkOutValue);
-            const amount = document.getElementById("bookingAmount").value;
-            const paymentStatus = document.getElementById("bookingPaymentStatus").value;
-            const bookingStatus = document.getElementById("newBookingStatus").value;
+            let amount = document.getElementById("bookingAmount") ? document.getElementById("bookingAmount").value.trim() : "";
+            const paymentStatus = document.getElementById("bookingPaymentStatus") ? document.getElementById("bookingPaymentStatus").value : "Paid";
+            const bookingStatus = document.getElementById("newBookingStatus") ? document.getElementById("newBookingStatus").value : "Confirmed";
 
-            if (!customerName || !roomNo || !roomType || !checkInValue || !checkOutValue || !amount) {
-                alert("Please fill all booking fields before saving.");
+            // If amount wasn't calculated yet, calculate it now
+            if (!amount && roomType) {
+                calculateBookingAmount();
+                amount = document.getElementById("bookingAmount") ? document.getElementById("bookingAmount").value.trim() : "";
+            }
+
+            const missing = [];
+            if (!customerName) missing.push("Customer Name");
+            if (!roomNo) missing.push("Room Number");
+            if (!roomType) missing.push("Room Type");
+            if (!checkInValue) missing.push("Check-In Date");
+            if (!checkOutValue) missing.push("Check-Out Date");
+            if (!amount) missing.push("Total Amount");
+
+            if (missing.length > 0) {
+                alert("Please fill in: " + missing.join(", "));
                 return;
             }
 
@@ -823,7 +821,7 @@
             });
 
             if (isAlreadyBooked) {
-                alert("Already booked this room");
+                alert("Room " + roomNo + " is already booked! Please choose another room.");
                 return;
             }
 
@@ -865,13 +863,32 @@
             localStorage.setItem("sayoraDataSeeded", "true");
             newBookingModal.style.display = "none";
             resetBookingForm();
+
             if (typeof renderSharedBookingsTable === "function") {
                 renderSharedBookingsTable();
             }
-            if (typeof applyBookingFilters === "function") {
+            if (typeof setupTablePagination === "function") {
+                if (window.paginationStateMap) window.paginationStateMap["bookingsTableBody"] = 1;
+                setupTablePagination("bookingsTableBody", "bookingPagination", 5);
+            } else if (typeof applyBookingFilters === "function") {
                 applyBookingFilters();
             }
-        });
+        }
+
+        newBookingForm.addEventListener("submit", handleSaveBooking);
+        if (saveBookingBtn) {
+            saveBookingBtn.addEventListener("click", handleSaveBooking);
+        }
+
+        // Initialize table on load
+        if (typeof renderSharedBookingsTable === "function") {
+            renderSharedBookingsTable();
+        }
+        if (typeof setupTablePagination === "function") {
+            setupTablePagination("bookingsTableBody", "bookingPagination", 5);
+        } else if (typeof applyBookingFilters === "function") {
+            applyBookingFilters();
+        }
     });
 </script>
 </body>
