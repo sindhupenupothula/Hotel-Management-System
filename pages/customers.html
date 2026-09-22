@@ -128,6 +128,30 @@
                         </select>
                     </div>
                 </div>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Room Number</label>
+                        <input type="text" id="addCustRoomNo" placeholder="e.g. 101, 102 (or leave for auto)" oninput="autoFillCustomerRoomType()">
+                    </div>
+                    <div class="form-group">
+                        <label>Room Type</label>
+                        <select id="addCustRoomType">
+                            <option value="Luxury">Luxury</option>
+                            <option value="Deluxe">Deluxe</option>
+                            <option value="Suite">Suite</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Check-In Date</label>
+                        <input type="date" id="addCustCheckIn" style="width:100%; cursor:pointer;">
+                    </div>
+                    <div class="form-group">
+                        <label>Check-Out Date</label>
+                        <input type="date" id="addCustCheckOut" style="width:100%; cursor:pointer;">
+                    </div>
+                </div>
                 <div class="app-modal-footer">
                     <button type="button" class="btn-secondary-action" onclick="closeAddCustomerModal()">Cancel</button>
                     <button type="submit" class="btn-primary-action">Add Customer</button>
