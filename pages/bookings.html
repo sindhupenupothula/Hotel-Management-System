@@ -772,6 +772,9 @@
                     const updatedBookings = savedBookings.filter(item => item.bookingId !== bookingId);
                     localStorage.setItem("sayoraBookings", JSON.stringify(updatedBookings));
                     removeSharedBookingData(bookingId);
+                    if (typeof refreshAllDashboardDataAndViews === "function") {
+                        refreshAllDashboardDataAndViews();
+                    }
                 }
 
                 row.remove();
@@ -868,7 +871,9 @@
             newBookingModal.style.display = "none";
             resetBookingForm();
 
-            if (typeof renderSharedBookingsTable === "function") {
+            if (typeof refreshAllDashboardDataAndViews === "function") {
+                refreshAllDashboardDataAndViews();
+            } else if (typeof renderSharedBookingsTable === "function") {
                 renderSharedBookingsTable();
             }
             if (typeof setupTablePagination === "function") {
