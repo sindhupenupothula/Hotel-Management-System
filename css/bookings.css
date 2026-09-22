@@ -18,34 +18,46 @@ body {
    HEADER
 ================================ */
 
-.top-header {
+.top-header,
+.navbar {
     width: 100%;
-    min-height: 72px;
-    background: #111827;
+    height: 64px;
+    min-height: 64px;
+    max-height: 64px;
+    box-sizing: border-box;
+    background: #0b1b3a;
     color: white;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 28px;
+    padding: 0 32px;
 }
 
-.logo-section {
+.logo-section,
+.logo {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
+    margin-right: 20px;
     white-space: nowrap;
 }
 
-.logo-section img {
-    width: 42px;
-    height: 42px;
+.logo-section img,
+.logo img {
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     object-fit: cover;
 }
 
-.logo-section h2 {
+.logo-section h2,
+.logo h2 {
     margin: 0;
     font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    line-height: 1;
+    color: white;
 }
 
 
@@ -53,29 +65,55 @@ body {
    NAVIGATION
 ================================ */
 
-.main-nav {
+.main-nav,
+.nav-links {
+    list-style: none;
     display: flex;
     align-items: center;
-    gap: 28px;
+    gap: 26px;
+    margin: 0;
+    padding: 0;
 }
 
-.main-nav a {
-    color: white;
+.main-nav a,
+.nav-links a {
+    color: #cbd5e1;
     text-decoration: none;
     font-size: 14px;
     font-weight: 600;
     padding: 6px 2px;
-    transition: 0.2s;
     white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s ease, border-color 0.2s ease;
 }
 
-.main-nav a:hover {
-    color: #159bd3;
+.main-nav a:hover,
+.nav-links a:hover {
+    color: #00b7ff;
 }
 
-.main-nav a.active {
-    color: #159bd3;
-    font-weight: bold;
+.main-nav a.active,
+.nav-links a.active {
+    color: #00b7ff !important;
+    font-weight: 700 !important;
+    border-bottom: 2px solid #00b7ff;
+}
+
+.profile-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    font-size: 24px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.profile-icon:hover {
+    color: #00b7ff;
+    transform: scale(1.08);
 }
 
 
@@ -113,16 +151,23 @@ body {
 
 .new-booking-btn {
     border: none;
-    background: #159bd3;
-    color: white;
-    padding: 13px 22px;
-    border-radius: 5px;
+    background: #1d68e1 !important;
+    color: white !important;
+    padding: 10px 20px;
+    border-radius: 6px;
     font-size: 14px;
+    font-weight: 600;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 6px rgba(29, 104, 225, 0.25);
+    transition: background 0.2s ease, transform 0.1s ease;
 }
 
 .new-booking-btn:hover {
-    background: #087eaf;
+    background: #1557d6 !important;
+    transform: translateY(-1px);
 }
 
 
