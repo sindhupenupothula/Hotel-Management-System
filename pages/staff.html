@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Staff - Sayora Hotels</title>
+    <link rel="stylesheet" href="../css/staff.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+<header>
+    <nav class="navbar">
+        <div class="logo">
+            <img src="../images/logo.jpg" alt="Sayora Hotels Logo">
+            <h2>SAYORA HOTELS</h2>
+        </div>
+
+        <ul class="nav-links">
+            <li><a href="../home.html">Home</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="rooms.html">Manage Rooms</a></li>
+            <li><a href="bookings.html">Bookings</a></li>
+            <li><a href="customers.html">Customers</a></li>
+            <li><a href="checkin.html">Check-In</a></li>
+            <li><a href="checkout.html">Check-Out</a></li>
+            <li><a href="staff.html" class="active">Staff</a></li>
+            <li><a href="payments.html">Payments</a></li>
+            <li><a href="reviews.html">Reviews</a></li>
+            <li><a href="../index.html">Logout</a></li>
+        </ul>
+
+        <div class="profile-icon">
+            <i class="fa-solid fa-circle-user"></i>
+        </div>
+    </nav>
+</header>
+
+<main class="staff-page">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+        <div class="page-header-text">
+            <h1>Manage Staff</h1>
+            <p>Add, view and manage hotel staff</p>
+        </div>
+        <button class="add-staff-btn" onclick="openAddStaffModal()">
+            <i class="fa-solid fa-plus"></i> Add New Staff
+        </button>
+    </div>
+
+    <!-- MAIN TWO COLUMN LAYOUT -->
+    <div class="staff-layout">
+
+        <!-- FILTERS SIDEBAR (LEFT) -->
+        <aside class="filters-card">
+            <h2>Filters</h2>
+
+            <div class="filter-group">
+                <label for="staffSearchInput">Search Staff</label>
+                <input type="text" id="staffSearchInput" placeholder="Search by name, role..." oninput="applyStaffFilters()">
+            </div>
+
+            <div class="filter-group">
+                <label for="staffDeptFilter">Department</label>
+                <select id="staffDeptFilter" onchange="applyStaffFilters()">
+                    <option value="">All Departments</option>
+                    <option value="Management">Management</option>
+                    <option value="Front Office">Front Office</option>
+                    <option value="Housekeeping">Housekeeping</option>
+                    <option value="Kitchen">Kitchen</option>
+                    <option value="Security">Security</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="staffStatusFilter">Status</label>
+                <select id="staffStatusFilter" onchange="applyStaffFilters()">
+                    <option value="">All Status</option>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
+            </div>
+
+            <div class="filter-buttons">
+                <button class="apply-btn" onclick="applyStaffFilters()">Apply Filters</button>
+                <button class="reset-btn" onclick="resetStaffFilters()">Reset</button>
+            </div>
+        </aside>
+
+        <!-- STAFF TABLE (RIGHT) -->
+        <section class="staff-table-card">
+            <div class="table-responsive">
+                <table class="staff-table">
+                    <thead>
+                        <tr>
+                            <th>Staff ID</th>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Department</th>
+                            <th>Phone</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="staffTableBody">
+                        <!-- Populated by script.js -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- PAGINATION -->
+            <div id="staffPagination" class="staff-pagination">
+                <!-- Dynamically rendered -->
+            </div>
+        </section>
+
+    </div>
+
+</main>
+
+<!-- ADD NEW STAFF MODAL -->
+<div id="addStaffModal" class="modal-overlay">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3>Add New Staff</h3>
+            <button class="close-modal-btn" onclick="closeAddStaffModal()">&times;</button>
+        </div>
+        <form id="addStaffForm" onsubmit="event.preventDefault(); saveNewStaff();">
+            <div class="modal-body">
+                <div class="form-row">
+                    <label for="addStaffId">Staff ID</label>
+                    <input type="text" id="addStaffId" placeholder="e.g. ST016" required>
+                </div>
+                <div class="form-row">
+                    <label for="addStaffName">Full Name</label>
+                    <input type="text" id="addStaffName" placeholder="e.g. Rajesh Kumar" required>
+                </div>
+                <div class="form-row">
+                    <label for="addStaffRole">Role</label>
+                    <input type="text" id="addStaffRole" placeholder="e.g. Manager / Receptionist" required>
+                </div>
+                <div class="form-row">
+                    <label for="addStaffDept">Department</label>
+                    <select id="addStaffDept" required>
+                        <option value="Management">Management</option>
+                        <option value="Front Office">Front Office</option>
+                        <option value="Housekeeping">Housekeeping</option>
+                        <option value="Kitchen">Kitchen</option>
+                        <option value="Security">Security</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="addStaffPhone">Phone Number</label>
+                    <input type="tel" id="addStaffPhone" placeholder="10-digit mobile number" maxlength="10" pattern="[0-9]{10}" required>
+                </div>
+                <div class="form-row">
+                    <label for="addStaffStatus">Status</label>
+                    <select id="addStaffStatus" required>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="cancel-modal-btn" onclick="closeAddStaffModal()">Cancel</button>
+                <button type="submit" class="save-modal-btn">Save Staff</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- EDIT STAFF MODAL -->
+<div id="editStaffModal" class="modal-overlay">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3>Edit Staff Member</h3>
+            <button class="close-modal-btn" onclick="closeEditStaffModal()">&times;</button>
+        </div>
+        <form id="editStaffForm" onsubmit="event.preventDefault(); updateStaffMember();">
+            <input type="hidden" id="editStaffOriginalId">
+            <div class="modal-body">
+                <div class="form-row">
+                    <label for="editStaffId">Staff ID</label>
+                    <input type="text" id="editStaffId" readonly style="background:#f3f4f6; cursor:not-allowed;">
+                </div>
+                <div class="form-row">
+                    <label for="editStaffName">Full Name</label>
+                    <input type="text" id="editStaffName" required>
+                </div>
+                <div class="form-row">
+                    <label for="editStaffRole">Role</label>
+                    <input type="text" id="editStaffRole" required>
+                </div>
+                <div class="form-row">
+                    <label for="editStaffDept">Department</label>
+                    <select id="editStaffDept" required>
+                        <option value="Management">Management</option>
+                        <option value="Front Office">Front Office</option>
+                        <option value="Housekeeping">Housekeeping</option>
+                        <option value="Kitchen">Kitchen</option>
+                        <option value="Security">Security</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="editStaffPhone">Phone Number</label>
+                    <input type="tel" id="editStaffPhone" maxlength="10" pattern="[0-9]{10}" required>
+                </div>
+                <div class="form-row">
+                    <label for="editStaffStatus">Status</label>
+                    <select id="editStaffStatus" required>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="cancel-modal-btn" onclick="closeEditStaffModal()">Cancel</button>
+                <button type="submit" class="save-modal-btn">Update Staff</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="../js/script.js"></script>
+
+</body>
+</html>
